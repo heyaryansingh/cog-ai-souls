@@ -1,0 +1,10 @@
+saved results/learn_train_mixture_lat4_b40_a6_lesion-transitions+laws.json  (369s)
+attempt  win%   [95% CI]     death%  boss-HP-left
+    1   12.5%  [5%-26%]  87.5%   0.28
+    2   12.5%  [5%-26%]  87.5%   0.25
+    3   25.0%  [14%-40%]  75.0%   0.21
+    4   30.0%  [18%-45%]  70.0%   0.20
+    5   32.5%  [20%-48%]  67.5%   0.19
+    6   20.0%  [10%-35%]  80.0%   0.22
+deaths-to-first-win: median 2.0 over 27/40 bosses that were beaten; never beaten: 13
+second-half win rate: 27.5% [20%-36%] n=120

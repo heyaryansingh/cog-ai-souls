@@ -57,12 +57,17 @@ def oracle_continuation(env: MiniSouls, humble: bool = False, latency: int = 0) 
     R, bs, boss, p = env.R, env.bs, env.boss, env.player
     m = boss.moves[bs.k]
     D = bs.D
-    if humble and bs.stage == WINDUP:
+    D_dodge = D
+    if humble == "dodge" and bs.stage == WINDUP:
+        # only the *dodge timing* of the imagined player is limited to prediction: it cannot defer a
+        # roll and then time it perfectly, which made waiting look free (Entry 24)
+        D_dodge = _cond_median_D(env, bs)
+    elif humble and bs.stage == WINDUP:
         # an imagined player with the agent's own limits: it cannot read the move before the tell
         # (plus perception delay) is over, and it predicts the wind-up end, it does not know it
         if bs.j <= boss.tell_ticks + latency and m.primitive.name != "idle":
             return IDLE if env.dist <= 4.0 else APPROACH
-        D = _cond_median_D(env, bs)
+        D = D_dodge = _cond_median_D(env, bs)
     prim = m.primitive
     impact = prim.active if prim.lunge else 1
     reach = prim.reach + prim.lunge
@@ -70,7 +75,7 @@ def oracle_continuation(env: MiniSouls, humble: bool = False, latency: int = 0) 
     can_dodge = p.stamina >= R.dodge_cost
     if bs.stage in (WINDUP, ACTIVE) and threat:
         if bs.stage == WINDUP:
-            tti = (D - bs.j + 1) + impact      # dodge tick that would meet the impact
+            tti = (D_dodge - bs.j + 1) + impact      # dodge tick that would meet the impact
         else:
             tti = impact - bs.j + 1
         if can_dodge and R.iframe_start <= tti <= R.iframe_start + R.iframe_len - 1:

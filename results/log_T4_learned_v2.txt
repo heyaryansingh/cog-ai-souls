@@ -1,0 +1,12 @@
+saved results/learn_T4_mixture_self-learned_lat4_b30_a8_v2.json  (447s)
+attempt  win%   [95% CI]     death%  boss-HP-left
+    1    3.3%  [1%-17%]  96.7%   0.38
+    2   33.3%  [19%-51%]  66.7%   0.24
+    3   30.0%  [17%-48%]  70.0%   0.25
+    4   46.7%  [30%-64%]  53.3%   0.21
+    5   40.0%  [25%-58%]  60.0%   0.19
+    6   53.3%  [36%-70%]  46.7%   0.13
+    7   53.3%  [36%-70%]  46.7%   0.15
+    8   46.7%  [30%-64%]  53.3%   0.16
+deaths-to-first-win: median 2.0 over 24/30 bosses that were beaten; never beaten: 6
+second-half win rate: 48.3% [40%-57%] n=120

@@ -1,0 +1,4 @@
+rollouts  12 horizon  45: win 41.2% [31%-52%]  death 58.8%  boss-HP-left 0.15  hp-left  16.8  s/fight 4.4  n=80
+rollouts  24 horizon  45: win 47.5% [37%-58%]  death 52.5%  boss-HP-left 0.12  hp-left  13.3  s/fight 9.8  n=80
+rollouts  48 horizon  45: win 50.0% [39%-61%]  death 50.0%  boss-HP-left 0.12  hp-left  19.3  s/fight 18.0  n=80
+rollouts  24 horizon  90: win 40.0% [30%-51%]  death 60.0%  boss-HP-left 0.17  hp-left  12.0  s/fight 15.9  n=80

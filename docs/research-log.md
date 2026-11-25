@@ -541,6 +541,26 @@ At latency 4 the planner almost never rolls. It hedges by blocking, which costs 
 
 **Next ceiling idea:** a predictive commitment roll. Roll at the predicted impact minus the i-frame start, using the conditional wind-up distribution: choose the roll tick that maximizes P(impact ∈ i-frames). With 4 i-frame ticks and wind-up sd of about 10%, this should beat blocking on most moves.
 
+## 2026-11-25 · Entry 25: the planner's optimism is load-bearing
+
+Variant: limit **only the roll timing** of the imagined player to prediction (conditional median wind-up); everything else stays omniscient. Oracle, 40 bosses × 2:
+
+| Imagined player | Latency 4 | Latency 0 |
+|---|---|---|
+| Omniscient (default) | 41.2% | 68.8% |
+| Roll timing by prediction | 20.0% (many timeouts) | 41.2% |
+| Fully humble (E24) | 23.8% | — |
+
+Any realism added to the imagined player's defence makes imagined futures dangerous. The planner then stops attacking, and fights time out.
+
+**Conclusion:** with a one-step lookahead over a fixed heuristic continuation, optimism about one's own future skill is what keeps the agent aggressive enough to win. This mirrors the "optimism in the face of uncertainty" principle, here at the level of self-model.
+
+Raising the latency-4 ceiling properly needs a better continuation policy, not a more pessimistic one. Candidates:
+- a reflex policy distilled from planner rollouts (DAgger, as in the plan's M4);
+- a two-level search.
+
+Defaults are unchanged (`humble=False`).
+
 ## Agenda (living)
 
 Done: latency + laws (E5); M2 slow mind (E6); RL² baseline (E7, E13); empirical Bayes (E7); T4 self-model (E8, E10); T2/T3 generalization (E10–11); M3 intuition net + amortization gap (E12, E18); active scouting (E15).

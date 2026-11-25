@@ -1,0 +1,12 @@
+saved results/learn_T3_mixture_lat4_b30_a8.json  (329s)
+attempt  win%   [95% CI]     death%  boss-HP-left
+    1   16.7%  [7%-34%]  83.3%   0.28
+    2   40.0%  [25%-58%]  60.0%   0.22
+    3   46.7%  [30%-64%]  53.3%   0.19
+    4   66.7%  [49%-81%]  33.3%   0.11
+    5   76.7%  [59%-88%]  23.3%   0.07
+    6   70.0%  [52%-83%]  30.0%   0.10
+    7   76.7%  [59%-88%]  23.3%   0.07
+    8   63.3%  [46%-78%]  36.7%   0.11
+deaths-to-first-win: median 1.5 over 30/30 bosses that were beaten; never beaten: 0
+second-half win rate: 71.7% [63%-79%] n=120

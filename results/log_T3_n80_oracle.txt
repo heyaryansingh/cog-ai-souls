@@ -1,0 +1,8 @@
+saved results/learn_T3_oracle_lat4_b80_a4_n80.json  (242s)
+attempt  win%   [95% CI]     death%  boss-HP-left
+    1   75.0%  [65%-83%]  25.0%   0.07
+    2   78.8%  [69%-86%]  21.2%   0.07
+    3   76.2%  [66%-84%]  23.8%   0.06
+    4   76.2%  [66%-84%]  23.8%   0.07
+deaths-to-first-win: median 0.0 over 76/80 bosses that were beaten; never beaten: 4
+second-half win rate: 76.2% [69%-82%] n=160

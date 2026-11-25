@@ -1,0 +1,10 @@
+saved results/learn_train_mixture_lat4_b40_a6_poollaw.json  (377s)
+attempt  win%   [95% CI]     death%  boss-HP-left
+    1   12.5%  [5%-26%]  87.5%   0.28
+    2   25.0%  [14%-40%]  75.0%   0.22
+    3   32.5%  [20%-48%]  67.5%   0.19
+    4   25.0%  [14%-40%]  75.0%   0.22
+    5   35.0%  [22%-50%]  65.0%   0.17
+    6   27.5%  [16%-43%]  72.5%   0.18
+deaths-to-first-win: median 2.0 over 30/40 bosses that were beaten; never beaten: 10
+second-half win rate: 29.2% [22%-38%] n=120

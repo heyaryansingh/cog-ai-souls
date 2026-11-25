@@ -1,0 +1,8 @@
+saved results/learn_T1_online_lat4_b30_a4.json  (176s)
+attempt  win%   [95% CI]     death%  boss-HP-left
+    1   13.3%  [5%-30%]  86.7%   0.31
+    2   30.0%  [17%-48%]  70.0%   0.21
+    3   33.3%  [19%-51%]  66.7%   0.19
+    4   33.3%  [19%-51%]  66.7%   0.22
+deaths-to-first-win: median 1.0 over 16/30 bosses that were beaten; never beaten: 14
+second-half win rate: 33.3% [23%-46%] n=60

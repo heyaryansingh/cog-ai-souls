@@ -1,0 +1,2 @@
+humble=dodge latency=4: win 20.0% [13%-30%]  death 55.0%  boss-HP-left 0.35  hp-left  24.3  s/fight 16.9  n=80
+humble=dodge latency=0: win 41.2% [31%-52%]  death 36.2%  boss-HP-left 0.26  hp-left  34.4  s/fight 19.5  n=80

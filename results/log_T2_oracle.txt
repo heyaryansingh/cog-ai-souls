@@ -1,0 +1,12 @@
+saved results/learn_T2_oracle_lat4_b30_a8.json  (361s)
+attempt  win%   [95% CI]     death%  boss-HP-left
+    1   30.0%  [17%-48%]  70.0%   0.20
+    2   16.7%  [7%-34%]  83.3%   0.19
+    3   26.7%  [14%-44%]  73.3%   0.23
+    4   43.3%  [27%-61%]  56.7%   0.18
+    5   33.3%  [19%-51%]  66.7%   0.17
+    6   30.0%  [17%-48%]  70.0%   0.23
+    7   33.3%  [19%-51%]  66.7%   0.22
+    8   40.0%  [25%-58%]  60.0%   0.19
+deaths-to-first-win: median 1.5 over 20/30 bosses that were beaten; never beaten: 10
+second-half win rate: 34.2% [26%-43%] n=120

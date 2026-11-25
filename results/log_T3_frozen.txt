@@ -1,0 +1,12 @@
+saved results/learn_T3_frozen_lat4_b30_a8.json  (190s)
+attempt  win%   [95% CI]     death%  boss-HP-left
+    1   16.7%  [7%-34%]  83.3%   0.28
+    2   10.0%  [3%-26%]  90.0%   0.34
+    3   20.0%  [10%-37%]  80.0%   0.33
+    4    6.7%  [2%-21%]  93.3%   0.36
+    5   10.0%  [3%-26%]  90.0%   0.38
+    6   23.3%  [12%-41%]  76.7%   0.28
+    7   10.0%  [3%-26%]  90.0%   0.37
+    8   10.0%  [3%-26%]  90.0%   0.33
+deaths-to-first-win: median 1.0 over 15/30 bosses that were beaten; never beaten: 15
+second-half win rate: 13.3% [8%-21%] n=120

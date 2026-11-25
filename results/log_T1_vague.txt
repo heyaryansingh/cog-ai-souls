@@ -1,0 +1,12 @@
+saved results/learn_T1_mixture_vague_lat4_b30_a8.json  (375s)
+attempt  win%   [95% CI]     death%  boss-HP-left
+    1   10.0%  [3%-26%]  90.0%   0.30
+    2   23.3%  [12%-41%]  76.7%   0.25
+    3   26.7%  [14%-44%]  73.3%   0.23
+    4   26.7%  [14%-44%]  73.3%   0.23
+    5   36.7%  [22%-54%]  63.3%   0.19
+    6   30.0%  [17%-48%]  70.0%   0.18
+    7   53.3%  [36%-70%]  46.7%   0.15
+    8   23.3%  [12%-41%]  76.7%   0.24
+deaths-to-first-win: median 2.0 over 21/30 bosses that were beaten; never beaten: 9
+second-half win rate: 35.8% [28%-45%] n=120

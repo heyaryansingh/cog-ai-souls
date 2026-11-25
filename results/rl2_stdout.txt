@@ -1,0 +1,177 @@
+update    0  fights     65  recent win 0.000  loss_v 0.450  ent 2.074
+update   10  fights    332  recent win 0.000  loss_v 0.038  ent 2.016
+update   20  fights    412  recent win 0.000  loss_v 0.029  ent 1.913
+update   30  fights    472  recent win 0.000  loss_v 0.017  ent 1.594
+update   40  fights    517  recent win 0.000  loss_v 0.009  ent 1.516
+update   50  fights    563  recent win 0.000  loss_v 0.004  ent 1.433
+update   60  fights    600  recent win 0.000  loss_v 0.001  ent 1.232
+update   70  fights    645  recent win 0.000  loss_v 0.002  ent 1.347
+update   80  fights    682  recent win 0.000  loss_v 0.002  ent 1.289
+update   90  fights    723  recent win 0.000  loss_v 0.001  ent 1.113
+update  100  fights    766  recent win 0.000  loss_v 0.001  ent 1.209
+update  110  fights    808  recent win 0.000  loss_v 0.001  ent 1.220
+update  120  fights    842  recent win 0.000  loss_v 0.000  ent 1.285
+update  130  fights    874  recent win 0.000  loss_v 0.000  ent 1.286
+update  140  fights    903  recent win 0.000  loss_v 0.000  ent 1.267
+update  150  fights    940  recent win 0.000  loss_v 0.000  ent 1.062
+update  160  fights    981  recent win 0.000  loss_v 0.000  ent 0.852
+update  170  fights   1016  recent win 0.000  loss_v 0.000  ent 0.947
+update  180  fights   1052  recent win 0.000  loss_v 0.000  ent 1.104
+update  190  fights   1082  recent win 0.000  loss_v 0.000  ent 1.126
+update  200  fights   1116  recent win 0.000  loss_v 0.000  ent 1.097
+update  210  fights   1148  recent win 0.000  loss_v 0.000  ent 1.309
+update  220  fights   1174  recent win 0.000  loss_v 0.000  ent 1.372
+update  230  fights   1199  recent win 0.000  loss_v 0.000  ent 1.227
+update  240  fights   1229  recent win 0.000  loss_v 0.000  ent 1.317
+update  250  fights   1257  recent win 0.000  loss_v 0.000  ent 1.391
+update  260  fights   1280  recent win 0.000  loss_v 0.000  ent 1.549
+update  270  fights   1308  recent win 0.000  loss_v 0.000  ent 1.418
+update  280  fights   1338  recent win 0.000  loss_v 0.000  ent 1.397
+update  290  fights   1367  recent win 0.000  loss_v 0.000  ent 1.415
+update  300  fights   1399  recent win 0.000  loss_v 0.000  ent 1.305
+update  310  fights   1431  recent win 0.000  loss_v 0.000  ent 1.405
+update  320  fights   1462  recent win 0.000  loss_v 0.000  ent 1.429
+update  330  fights   1491  recent win 0.000  loss_v 0.000  ent 1.250
+update  340  fights   1525  recent win 0.000  loss_v 0.000  ent 1.177
+update  350  fights   1555  recent win 0.000  loss_v 0.000  ent 1.113
+update  360  fights   1585  recent win 0.000  loss_v 0.000  ent 1.245
+update  370  fights   1613  recent win 0.000  loss_v 0.000  ent 1.150
+update  380  fights   1643  recent win 0.000  loss_v 0.005  ent 1.194
+update  390  fights   1675  recent win 0.000  loss_v 0.000  ent 0.993
+update  400  fights   1709  recent win 0.000  loss_v 0.001  ent 0.987
+update  410  fights   1744  recent win 0.000  loss_v 0.000  ent 1.058
+update  420  fights   1776  recent win 0.000  loss_v 0.000  ent 1.149
+update  430  fights   1808  recent win 0.000  loss_v 0.000  ent 1.309
+update  440  fights   1838  recent win 0.000  loss_v 0.000  ent 1.266
+update  450  fights   1867  recent win 0.000  loss_v 0.000  ent 1.332
+update  460  fights   1896  recent win 0.000  loss_v 0.000  ent 1.270
+update  470  fights   1926  recent win 0.000  loss_v 0.000  ent 1.186
+update  480  fights   1958  recent win 0.000  loss_v 0.000  ent 1.281
+update  490  fights   1988  recent win 0.000  loss_v 0.000  ent 1.373
+update  500  fights   2014  recent win 0.000  loss_v 0.000  ent 1.383
+update  510  fights   2047  recent win 0.000  loss_v 0.001  ent 1.166
+update  520  fights   2068  recent win 0.000  loss_v 0.000  ent 1.135
+update  530  fights   2096  recent win 0.000  loss_v 0.000  ent 1.113
+update  540  fights   2121  recent win 0.000  loss_v 0.000  ent 1.323
+update  550  fights   2150  recent win 0.000  loss_v 0.000  ent 1.349
+update  560  fights   2178  recent win 0.003  loss_v 0.003  ent 1.384
+update  570  fights   2203  recent win 0.005  loss_v 0.000  ent 1.414
+update  580  fights   2237  recent win 0.005  loss_v 0.001  ent 1.449
+update  590  fights   2274  recent win 0.005  loss_v 0.000  ent 1.384
+update  600  fights   2313  recent win 0.005  loss_v 0.000  ent 1.394
+update  610  fights   2347  recent win 0.005  loss_v 0.000  ent 1.415
+update  620  fights   2382  recent win 0.005  loss_v 0.001  ent 1.285
+update  630  fights   2415  recent win 0.005  loss_v 0.000  ent 1.323
+update  640  fights   2447  recent win 0.005  loss_v 0.000  ent 1.329
+update  650  fights   2477  recent win 0.005  loss_v 0.000  ent 1.263
+update  660  fights   2505  recent win 0.005  loss_v 0.000  ent 1.251
+update  670  fights   2533  recent win 0.005  loss_v 0.000  ent 1.314
+update  680  fights   2561  recent win 0.005  loss_v 0.000  ent 1.357
+update  690  fights   2594  recent win 0.000  loss_v 0.000  ent 1.369
+update  700  fights   2632  recent win 0.000  loss_v 0.000  ent 1.230
+update  710  fights   2666  recent win 0.000  loss_v 0.000  ent 1.302
+update  720  fights   2699  recent win 0.003  loss_v 0.001  ent 1.467
+update  730  fights   2731  recent win 0.003  loss_v 0.000  ent 1.331
+update  740  fights   2762  recent win 0.003  loss_v 0.001  ent 1.240
+update  750  fights   2792  recent win 0.003  loss_v 0.003  ent 1.333
+update  760  fights   2828  recent win 0.005  loss_v 0.000  ent 1.346
+update  770  fights   2864  recent win 0.005  loss_v 0.000  ent 1.209
+update  780  fights   2899  recent win 0.005  loss_v 0.000  ent 0.992
+update  790  fights   2930  recent win 0.005  loss_v 0.000  ent 1.125
+update  800  fights   2957  recent win 0.005  loss_v 0.000  ent 1.209
+update  810  fights   2986  recent win 0.005  loss_v 0.000  ent 1.244
+update  820  fights   3009  recent win 0.005  loss_v 0.000  ent 1.289
+update  830  fights   3045  recent win 0.007  loss_v 0.000  ent 1.205
+update  840  fights   3071  recent win 0.005  loss_v 0.000  ent 1.223
+update  850  fights   3103  recent win 0.005  loss_v 0.000  ent 1.118
+update  860  fights   3134  recent win 0.005  loss_v 0.000  ent 1.121
+update  870  fights   3164  recent win 0.020  loss_v 0.001  ent 1.165
+update  880  fights   3194  recent win 0.030  loss_v 0.002  ent 1.222
+update  890  fights   3222  recent win 0.030  loss_v 0.000  ent 1.334
+update  900  fights   3258  recent win 0.035  loss_v 0.000  ent 1.376
+update  910  fights   3299  recent win 0.037  loss_v 0.006  ent 1.549
+update  920  fights   3336  recent win 0.052  loss_v 0.006  ent 1.661
+update  930  fights   3376  recent win 0.058  loss_v 0.002  ent 1.707
+update  940  fights   3417  recent win 0.080  loss_v 0.003  ent 1.580
+update  950  fights   3460  recent win 0.113  loss_v 0.003  ent 1.598
+update  960  fights   3492  recent win 0.113  loss_v 0.000  ent 1.355
+update  970  fights   3527  recent win 0.122  loss_v 0.011  ent 1.562
+update  980  fights   3562  recent win 0.120  loss_v 0.004  ent 1.660
+update  990  fights   3601  recent win 0.107  loss_v 0.000  ent 1.590
+update 1000  fights   3632  recent win 0.107  loss_v 0.000  ent 1.629
+update 1010  fights   3667  recent win 0.110  loss_v 0.004  ent 1.460
+update 1020  fights   3701  recent win 0.125  loss_v 0.001  ent 1.465
+update 1030  fights   3736  recent win 0.117  loss_v 0.001  ent 1.505
+update 1040  fights   3772  recent win 0.115  loss_v 0.000  ent 1.574
+update 1050  fights   3808  recent win 0.098  loss_v 0.000  ent 1.282
+update 1060  fights   3852  recent win 0.062  loss_v 0.000  ent 1.057
+update 1070  fights   3896  recent win 0.058  loss_v 0.000  ent 0.919
+update 1080  fights   3936  recent win 0.045  loss_v 0.003  ent 1.064
+update 1090  fights   3971  recent win 0.060  loss_v 0.001  ent 1.238
+update 1100  fights   3996  recent win 0.060  loss_v 0.001  ent 1.378
+update 1110  fights   4035  recent win 0.060  loss_v 0.000  ent 1.152
+update 1120  fights   4072  recent win 0.048  loss_v 0.000  ent 1.045
+update 1130  fights   4108  recent win 0.035  loss_v 0.000  ent 0.781
+update 1140  fights   4142  recent win 0.028  loss_v 0.001  ent 1.017
+update 1150  fights   4172  recent win 0.030  loss_v 0.003  ent 1.178
+update 1160  fights   4206  recent win 0.030  loss_v 0.000  ent 1.120
+update 1170  fights   4242  recent win 0.040  loss_v 0.000  ent 1.185
+update 1180  fights   4274  recent win 0.050  loss_v 0.001  ent 1.446
+update 1190  fights   4307  recent win 0.050  loss_v 0.000  ent 1.186
+update 1200  fights   4337  recent win 0.043  loss_v 0.000  ent 1.234
+update 1210  fights   4373  recent win 0.025  loss_v 0.001  ent 1.328
+update 1220  fights   4411  recent win 0.043  loss_v 0.000  ent 1.459
+update 1230  fights   4443  recent win 0.045  loss_v 0.000  ent 1.470
+update 1240  fights   4475  recent win 0.048  loss_v 0.002  ent 1.427
+update 1250  fights   4510  recent win 0.052  loss_v 0.000  ent 1.434
+update 1260  fights   4542  recent win 0.052  loss_v 0.000  ent 1.464
+update 1270  fights   4580  recent win 0.055  loss_v 0.003  ent 1.328
+update 1280  fights   4617  recent win 0.052  loss_v 0.000  ent 1.471
+update 1290  fights   4647  recent win 0.048  loss_v 0.001  ent 1.478
+update 1300  fights   4677  recent win 0.037  loss_v 0.000  ent 1.391
+update 1310  fights   4709  recent win 0.037  loss_v 0.000  ent 1.355
+update 1320  fights   4741  recent win 0.037  loss_v 0.000  ent 1.453
+update 1330  fights   4768  recent win 0.037  loss_v 0.000  ent 1.425
+update 1340  fights   4797  recent win 0.028  loss_v 0.002  ent 1.310
+update 1350  fights   4833  recent win 0.043  loss_v 0.001  ent 1.279
+update 1360  fights   4864  recent win 0.045  loss_v 0.000  ent 1.419
+update 1370  fights   4896  recent win 0.045  loss_v 0.010  ent 1.373
+update 1380  fights   4922  recent win 0.055  loss_v 0.000  ent 1.389
+update 1390  fights   4951  recent win 0.055  loss_v 0.000  ent 1.375
+update 1400  fights   4978  recent win 0.050  loss_v 0.000  ent 1.344
+update 1410  fights   5009  recent win 0.045  loss_v 0.000  ent 1.389
+update 1420  fights   5032  recent win 0.045  loss_v 0.000  ent 1.400
+update 1430  fights   5062  recent win 0.045  loss_v 0.000  ent 1.340
+update 1440  fights   5091  recent win 0.045  loss_v 0.000  ent 1.312
+update 1450  fights   5119  recent win 0.045  loss_v 0.000  ent 1.403
+update 1460  fights   5152  recent win 0.045  loss_v 0.000  ent 1.209
+update 1470  fights   5186  recent win 0.045  loss_v 0.000  ent 1.296
+update 1480  fights   5216  recent win 0.030  loss_v 0.000  ent 1.273
+update 1490  fights   5249  recent win 0.018  loss_v 0.000  ent 1.328
+trained in 1477s
+greedy=False
+  attempt  1: 5.0% [1%-17%]
+  attempt  2: 2.5% [0%-13%]
+  attempt  3: 5.0% [1%-17%]
+  attempt  4: 2.5% [0%-13%]
+  attempt  5: 5.0% [1%-17%]
+  attempt  6: 2.5% [0%-13%]
+  attempt  7: 5.0% [1%-17%]
+  attempt  8: 2.5% [0%-13%]
+  attempt  9: 2.5% [0%-13%]
+  attempt 10: 5.0% [1%-17%]
+  attempt 11: 2.5% [0%-13%]
+  attempt 12: 2.5% [0%-13%]
+greedy=True
+  attempt  1: 5.0% [1%-17%]
+  attempt  2: 2.5% [0%-13%]
+  attempt  3: 5.0% [1%-17%]
+  attempt  4: 5.0% [1%-17%]
+  attempt  5: 2.5% [0%-13%]
+  attempt  6: 5.0% [1%-17%]
+  attempt  7: 2.5% [0%-13%]
+  attempt  8: 5.0% [1%-17%]
+  attempt  9: 5.0% [1%-17%]
+  attempt 10: 2.5% [0%-13%]
+  attempt 11: 2.5% [0%-13%]
+  attempt 12: 7.5% [3%-20%]

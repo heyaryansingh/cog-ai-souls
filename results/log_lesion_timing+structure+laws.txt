@@ -1,0 +1,10 @@
+saved results/learn_train_mixture_lat4_b40_a6_lesion-timing+structure+laws.json  (247s)
+attempt  win%   [95% CI]     death%  boss-HP-left
+    1   12.5%  [5%-26%]  87.5%   0.28
+    2   20.0%  [10%-35%]  80.0%   0.27
+    3   15.0%  [7%-29%]  85.0%   0.26
+    4   17.5%  [9%-32%]  82.5%   0.23
+    5   17.5%  [9%-32%]  82.5%   0.26
+    6   17.5%  [9%-32%]  82.5%   0.26
+deaths-to-first-win: median 1.0 over 16/40 bosses that were beaten; never beaten: 24
+second-half win rate: 17.5% [12%-25%] n=120
