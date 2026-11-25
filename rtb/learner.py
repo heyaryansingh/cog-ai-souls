@@ -34,7 +34,8 @@ from .primitives import CUE_ID, GROUPS, PRIMITIVES
 GRID = np.exp(np.linspace(np.log(2.0), np.log(55.0), 120))     # candidate wind-up medians
 SPEED_GRID = np.linspace(0.6, 1.0, 41)
 LAW_BOOSTS = (1.5, 2.25, 3.0)
-P_NO_LAW = float(np.exp(-0.4))                                   # Poisson(0.8) split over 2 contexts
+P_NO_LAW = float(np.exp(-0.4))
+USE_REGROUP = False   # Entry 16: the regroup move did not help and diluted the proposal budget                                   # Poisson(0.8) split over 2 contexts
 
 
 # ----------------------------------------------------------------------------- helpers
@@ -295,6 +296,8 @@ def propose_structure(boss: Boss, stats, traces, theta: Theta, rng):
     for (k, p, D, c) in windups:
         if k > 0 and not c and pmf[p, k, min(D, D_MAX) - 1] < 0.01:
             outliers.setdefault(k, []).append(np.log(D / (boss.phase2_speed if p == 1 else 1.0)))
+    if USE_REGROUP and any(len(_phase_free_logD(windups, k, boss.phase2_speed)) >= 2 for k in range(1, boss.K)):
+        kinds += ["regroup", "regroup"]
     if outliers and n_att < 8:
         kinds += ["birth", "birth"]               # up-weighted: this is the move the trap needs
     # novel groups: cue groups seen in the logs that no move in the program can produce
@@ -315,6 +318,8 @@ def propose_structure(boss: Boss, stats, traces, theta: Theta, rng):
     if kind == "delete":
         k = unused[rng.integers(len(unused))]
         return _drop(boss, k), lp_move, f"delete {names[k]}"
+    if kind == "regroup":
+        return _regroup(boss, windups, theta, rng)
     if kind == "birth":
         ks = list(outliers)
         k = ks[rng.integers(len(ks))]
@@ -351,6 +356,68 @@ def propose_structure(boss: Boss, stats, traces, theta: Theta, rng):
     prim = next(p for p in PRIMITIVES.values() if p.group == g)
     mv = Move(prim, float(np.exp(theta.log_median[prim.name])), theta.within_sigma[prim.name])
     return _add(boss, mv), -lp_move + np.log(0.05), f"add novel {prim.name}"
+
+
+def _kmeans1d(x, c, iters=20):
+    x = np.sort(np.asarray(x))
+    cent = np.quantile(x, (np.arange(c) + 0.5) / c)
+    for _ in range(iters):
+        lab = np.argmin(np.abs(x[:, None] - cent[None]), axis=1)
+        for j in range(c):
+            if np.any(lab == j):
+                cent[j] = x[lab == j].mean()
+    lab = np.argmin(np.abs(x[:, None] - cent[None]), axis=1)
+    return cent, np.bincount(lab, minlength=c)
+
+
+def _regroup(boss: Boss, windups, theta: Theta, rng):
+    """Joint, data-driven structure move for one visual group: re-cluster all wind-ups currently
+    explained by that group's moves into c tempo clusters and rebuild the group as c moves.
+    Can add and remove several moves at once, so it escapes modes where one move's median has
+    stretched to cover two real moves (the structural trap of Entry 12)."""
+    groups = {}
+    for k in range(1, boss.K):
+        groups.setdefault(boss.moves[k].primitive.group, []).append(k)
+    cand = [g for g, ks in groups.items() if sum(len(_phase_free_logD(windups, k, boss.phase2_speed)) for k in ks) >= 2]
+    if not cand:
+        return None
+    g = cand[rng.integers(len(cand))]
+    ks = groups[g]
+    x = [v for k in ks for v in _phase_free_logD(windups, k, boss.phase2_speed)]
+    cmax = min(3, len(x) // 2 if len(x) >= 4 else 1) if len(x) >= 2 else 1
+    options = [c for c in range(1, max(cmax, 1) + 1) if c != len(ks)] or [len(ks)]
+    c = options[rng.integers(len(options))]
+    cent, sizes = _kmeans1d(x, c)
+    types = [boss.moves[k].primitive.name for k in ks]
+    keep = [i for i in range(boss.K) if i not in ks]
+    moves = [boss.moves[i] for i in keep]
+    K0 = len(keep)
+    new_moves = []
+    for j in range(c):
+        if g == "overhead":
+            name = "slam" if np.exp(cent[j]) < np.sqrt(14 * 26) else "delayed_slam"
+        else:
+            name = max(set(types), key=types.count)
+        p = PRIMITIVES[name]
+        new_moves.append(Move(p, float(np.exp(cent[j])), theta.within_sigma[name]))
+    moves += new_moves
+    K = len(moves)
+    pi = np.zeros((K, N_DIST_BINS, K))
+    old_rows = boss.pi[keep][:, :, keep]
+    grp_col = boss.pi[keep][:, :, ks].sum(axis=2)                 # mass the group received
+    frac = (sizes + 0.5) / (sizes + 0.5).sum()
+    pi[:K0, :, :K0] = old_rows
+    pi[:K0, :, K0:] = grp_col[:, :, None] * frac[None, None, :]
+    grp_row = boss.pi[ks][:, :, keep].mean(axis=0)
+    grp_row_g = boss.pi[ks][:, :, ks].sum(axis=2).mean(axis=0)
+    for j in range(c):
+        pi[K0 + j, :, :K0] = grp_row
+        pi[K0 + j, :, K0:] = grp_row_g[:, None] * frac[None, :]
+    pi = pi / pi.sum(axis=2, keepdims=True)
+    remap = {old: new for new, old in enumerate(keep)}
+    laws = [(lc, remap[tk], b) for (lc, tk, b) in boss.laws if tk in remap]
+    lp = (len(ks) - c) * np.log(len(theta.allowed))
+    return make_boss(boss, moves, pi, boss.phase2_speed, laws), lp, f"regroup {g} {len(ks)}->{c}"
 
 
 # ----------------------------------------------------------------------------- SMC

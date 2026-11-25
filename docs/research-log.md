@@ -354,6 +354,25 @@ Unlike latency 0 (Entry 3), more rollouts seem to help under latency, presumably
 2. They **cost the early fights**: attempt 2 drops from 33% to 3%. Deliberately rolling into attacks to probe the window gets the agent killed, and Entry 10 already showed the i-frame window is worth almost nothing for winning.
 3. **Lesson:** an entropy bonus values *information*, not *value of information*. The right quantity is VOI: the expected improvement in the decisions the belief feeds, which here is small for i-frames and large for stamina. This is a clean metareasoning point for the paper, and it argues for VOI-based scouting (estimated by planning under posterior samples of the rules), not an IG bonus. Added to the agenda.
 
+## 2026-11-25 · Entry 16: the "trap" is Occam on one fight, not a search failure
+
+**Regroup move** (Jain–Neal-flavoured joint split-merge). It re-clusters every wind-up of one visual group into c tempo clusters and rebuilds the group as c moves, adding or removing several at once. Accepted by exact evidence.
+
+| Bosses | SMC from prior | Net + SMC |
+|---|---|---|
+| T1 | −0.157 (was −0.118) | −0.201 |
+| T3 | −0.504 (was −0.452) | −0.264 |
+| OOD | −0.113 (was −0.118) | −0.237 (was −0.245) |
+
+It does not rescue net-seeded chains, and it *hurts* SMC from the prior on T1/T3, because it takes structure-proposal slots away from delete/add. **Disabled** (`USE_REGROUP = False`), with the code kept.
+
+**Reinterpretation.** After two failed "escape the trap" moves (birth, regroup), the evidence points elsewhere. With *one* fight, a compact program like the net's is a genuinely competitive explanation of what was seen: few wind-ups per move, so splitting is not yet supported by the evidence. The generic-prior chain wins on held-out fights *because it keeps unused, plausible moves alive*: delete is only probabilistically accepted. Those extra moves act as a hedge, covering behaviours the boss has but did not show in fight 1.
+
+That is "averaging beats committing" at the level of **structure**, not state. The posterior should keep, and the planner should prepare for, moves it has not yet seen. That leads to:
+- **Prediction:** an Occam-heavier learner (higher deletion pressure) does better on the observed fight and worse on held-out fights and win rate early on.
+- **Design rule:** keep a "dormant move" reservoir: unused library moves with low but non-zero transition mass, rather than deleting them.
+- **Test:** compare delete-prior strengths on early attempts (queued).
+
 ## Agenda (living)
 
 1. ~~Add reaction latency and reactive laws; re-measure at latency 4.~~ Done (Entry 5).
