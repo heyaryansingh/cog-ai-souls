@@ -1,0 +1,158 @@
+{
+ "args": {
+  "split": "T1",
+  "bosses": 2,
+  "attempts": 1,
+  "latency": 4,
+  "mode": "mixture",
+  "particles": 4,
+  "sweeps": 3,
+  "rollouts": 12,
+  "horizon": 45,
+  "procs": 2,
+  "tag": "_smoke",
+  "prior": "star",
+  "n_test": 80,
+  "self_model": "true"
+ },
+ "results": [
+  {
+   "boss": 0,
+   "attempt": 1,
+   "outcome": "death",
+   "boss_hp_frac": 0.19,
+   "hp": 0,
+   "ticks": 231,
+   "fight_s": 1.6980698108673096,
+   "learn_s": 0.6208906173706055,
+   "K_map": 8,
+   "reflex_frac": 0.0,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 7,
+   "accepted": [
+    "birth lunge@21",
+    "delete delayed_slam",
+    "birth slam@14",
+    "split slam",
+    "delete delayed_slam",
+    "delete delayed_slam",
+    "split slam",
+    "delete sweep"
+   ],
+   "map_describe": "belief: 8 moves, phase-2 speed x0.77\n  [0] idle          windup~ 17.6t (sd 0.35) active 0 rec 0\n  [1] slam          windup~ 15.3t (sd 0.10) active 3 rec 18\n  [2] sweep         windup~  6.6t (sd 0.10) active 4 rec 12\n  [3] lunge         windup~  8.0t (sd 0.10) active 4 rec 16\n  [4] feint         windup~ 10.3t (sd 0.10) active 2 rec 6\n  [5] jab           windup~  4.9t (sd 0.10) active 2 rec 6\n  [6] aoe           windup~ 18.1t (sd 0.10) active 4 rec 24\n  [7] lunge         windup~ 21.3t (sd 0.10) active 4 rec 16\n  law: if player heals -> move [6] x4.5",
+   "map_moves": [
+    [
+     "idle",
+     17.557316897478316
+    ],
+    [
+     "slam",
+     15.275026920717925
+    ],
+    [
+     "sweep",
+     6.624071364503757
+    ],
+    [
+     "lunge",
+     8.049921248387482
+    ],
+    [
+     "feint",
+     10.34305243107954
+    ],
+    [
+     "jab",
+     4.876154332082853
+    ],
+    [
+     "aoe",
+     18.0531662123354
+    ],
+    [
+     "lunge",
+     21.33657845461202
+    ]
+   ],
+   "map_laws": [
+    [
+     1,
+     6,
+     1.5
+    ]
+   ],
+   "true_describe": "T1-0: 7 moves, phase-2 speed x0.79\n  [0] idle          windup~ 13.4t (sd 0.35) active 0 rec 0\n  [1] feint         windup~ 10.5t (sd 0.10) active 2 rec 6\n  [2] lunge         windup~ 22.5t (sd 0.10) active 4 rec 16\n  [3] delayed_slam  windup~ 27.3t (sd 0.18) active 3 rec 20\n  [4] sweep         windup~  6.6t (sd 0.10) active 4 rec 12\n  [5] slam          windup~  9.2t (sd 0.10) active 3 rec 18\n  [6] slam          windup~ 20.7t (sd 0.10) active 3 rec 18\n  law: if player heals -> move [6] x9.7"
+  },
+  {
+   "boss": 1,
+   "attempt": 1,
+   "outcome": "win",
+   "boss_hp_frac": 0.0,
+   "hp": 19.0,
+   "ticks": 425,
+   "fight_s": 5.32196044921875,
+   "learn_s": 0.9971468448638916,
+   "K_map": 7,
+   "reflex_frac": 0.0,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 6,
+   "accepted": [
+    "retype lunge->feint",
+    "delete sweep",
+    "split slam",
+    "delete aoe",
+    "delete jab",
+    "split slam",
+    "delete aoe",
+    "split slam"
+   ],
+   "map_describe": "belief: 7 moves, phase-2 speed x0.84\n  [0] idle          windup~ 12.2t (sd 0.35) active 0 rec 0\n  [1] slam          windup~ 21.9t (sd 0.10) active 3 rec 18\n  [2] delayed_slam  windup~ 20.8t (sd 0.18) active 3 rec 20\n  [3] feint         windup~ 10.9t (sd 0.10) active 2 rec 6\n  [4] feint         windup~  9.0t (sd 0.10) active 2 rec 6\n  [5] jab           windup~  5.8t (sd 0.10) active 2 rec 6\n  [6] aoe           windup~ 12.9t (sd 0.10) active 4 rec 24",
+   "map_moves": [
+    [
+     "idle",
+     12.224190873792757
+    ],
+    [
+     "slam",
+     21.939160721019327
+    ],
+    [
+     "delayed_slam",
+     20.750546747836683
+    ],
+    [
+     "feint",
+     10.935513766886201
+    ],
+    [
+     "feint",
+     8.998550590029417
+    ],
+    [
+     "jab",
+     5.763002912596746
+    ],
+    [
+     "aoe",
+     12.924405873426762
+    ]
+   ],
+   "map_laws": [],
+   "true_describe": "T1-1: 6 moves, phase-2 speed x0.83\n  [0] idle          windup~  7.4t (sd 0.35) active 0 rec 0\n  [1] delayed_slam  windup~ 18.5t (sd 0.18) active 3 rec 20\n  [2] slam          windup~ 19.1t (sd 0.10) active 3 rec 18\n  [3] slam          windup~ 24.6t (sd 0.10) active 3 rec 18\n  [4] feint         windup~  9.8t (sd 0.10) active 2 rec 6\n  [5] delayed_slam  windup~ 22.7t (sd 0.18) active 3 rec 20"
+  }
+ ]
+}

@@ -250,6 +250,9 @@ class MixturePlanner(OraclePlanner):
         self._last = obs
 
     def act(self, obs, env: MiniSouls) -> int:
+        return self.actions[int(np.argmax(self.q_values(obs, env)))]
+
+    def q_values(self, obs, env: MiniSouls) -> np.ndarray:
         import copy
         lw = self.prior_logw + np.array([f.log_evidence for f in self.filters])
         w = np.exp(lw - lw.max())
@@ -266,13 +269,9 @@ class MixturePlanner(OraclePlanner):
             n_i = int((which == i).sum())
             states += f.sample_states(n_i, self.rng)
             models += [self.bosses[i]] * n_i
-        best, best_v = IDLE, -np.inf
         seeds = self.rng.integers(1 << 30, size=self.n)
-        for a in self.actions:
-            v = np.mean([self._rollout(env, s, a, int(sd), m) for s, m, sd in zip(states, models, seeds)])
-            if v > best_v:
-                best, best_v = a, v
-        return best
+        return np.array([np.mean([self._rollout(env, s, a, int(sd), m) for s, m, sd in zip(states, models, seeds)])
+                         for a in self.actions])
 
 
 class OnlineMixturePlanner(MixturePlanner):

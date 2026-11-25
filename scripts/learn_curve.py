@@ -64,6 +64,7 @@ def run_boss(args):
             net = load_reflex(os.environ["RTB_REFLEX"])
             pol = MixtureReflexPolicy(bosses, weights, net=net, gate=float(os.environ.get("RTB_GATE", 0)),
                                       surprise=int(os.environ.get("RTB_SURPRISE", 0)),
+                                      blend=float(os.environ.get("RTB_BLEND", 0)),
                                       mode="map" if mode in ("oracle", "frozen", "map") else "mixture",
                                       n_rollouts=n_rollouts, horizon=horizon, seed=seed)
         if self_model != "true":           # believed body rules (T4); "true" = agent knows its body
@@ -133,6 +134,7 @@ def main():
     pr += "_reflex" if os.environ.get("RTB_REFLEX") else ""
     pr += f"_surp{os.environ['RTB_SURPRISE']}" if os.environ.get("RTB_SURPRISE") else ""
     pr += f"_ra{os.environ['RTB_REFLEX_ATTEMPTS']}" if os.environ.get("RTB_REFLEX_ATTEMPTS") else ""
+    pr += f"_blend{os.environ['RTB_BLEND']}" if os.environ.get("RTB_BLEND") else ""
     name = f"results/learn_{a.split}_{a.mode}{pr}_lat{a.latency}_b{a.bosses}_a{a.attempts}{a.tag}.json"
     json.dump({"args": vars(a), "results": flat}, open(name, "w"), indent=1)
     print(f"saved {name}  ({time.time() - t0:.0f}s)")

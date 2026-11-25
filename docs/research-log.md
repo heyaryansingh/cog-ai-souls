@@ -676,6 +676,36 @@ On held-out bosses more rollouts buy nothing, and the reflex equals the planners
 - This is the dual-process story in miniature: habits for the unfamiliar, deliberation for the familiar. Note this is the *opposite* of the classic "habits for the familiar" arbitration (Daw et al. 2005). Here the habit is the robust generic prior, and the model becomes trustworthy only after learning.
 - **Next (running):** arbitrate on *model adequacy*, not action uncertainty. Plan while the mixture explains the cue stream; act on reflex while the last 40 ticks hold ≥ 4 cues the mixture found implausible (predictive p < 0.01). One noisy cue is common, a run of them is an unmodelled move. Also: reflex on attempt 1 only, and the same tests on T1 (no novel move, only timing misfit).
 
+## 2026-11-25 · Entry 30: the reflex over the learned model dominates on T1; arbitration tests
+
+All runs are 80 bosses, latency 4, paired by seed with the matching planner run. Learned model means the slow mind's mixture.
+
+**T1 (new bosses, timings differ from the prior):**
+
+| Attempt | Planner (E22 baseline) | Reflex | Only reflex won / only planner won |
+|---|---|---|---|
+| 1 | 8.8% | **30.0%** | 17 / 0, p < 10⁻⁴ |
+| 2 | 22.5% | **42.5%** | 22 / 6, p = 0.004 |
+| 3 | 30.0% | **46.2%** | 16 / 3, p = 0.004 |
+
+The true-program planner on T1 bosses gets 48.8% (E29). **By attempt 3 the reflex acting on a learned model is within 3 points of the planner given the true program.**
+
+**T3 (novel grab move), arbitration variants** (win %; superset seed in all):
+
+| Attempt | Planner | Reflex | Reflex on attempt 1 only | Surprise gate (≥ 4 odd cues / 40 ticks) |
+|---|---|---|---|---|
+| 1 | 11% | 41% | 41% | 19% (reflex on 50% of decisions) |
+| 2 | 50% | 52% | 55% | 55% |
+| 3 | 62% | 48% | 62% | 70% |
+| 4 | 81% | 48% | 66% | 65% |
+| Mean, attempts 1–4 | 51.2% | 47.5% | **56.2%** | 52.2% |
+
+**Findings:**
+- **The reflex is robust to model error; the planner exploits a correct model.** T1's learned timing models stay imperfect over 3 fights, and the reflex wins everywhere. T3's learned models become nearly right (grab is found in 74–78 of 80), and planning wins late.
+- **The surprise gate catches only one kind of model error.** It detects unmodelled cue *types* (grab) but not timing misfit, so it fires too rarely to help on T1 (15% vs reflex 30%). On T3 it hands over control too late in the first fight.
+- The planner's 81% at T3 attempt 4 looks high next to its own attempt 3 (62%) and both hybrids (65–66%). Part of the late gap is probably seed luck.
+- **Next (running): habit as a prior for deliberation.** Act by argmax_a Q(a) + λ·log π_reflex(a), as in the AlphaZero / PUCT idea, with λ = 3 and 10. It keeps planning's exploitation but breaks ties toward robust habits.
+
 ## Agenda (living)
 
 Done: latency + laws (E5); M2 slow mind (E6); RL² baseline (E7, E13); empirical Bayes (E7); T4 self-model (E8, E10); T2/T3 generalization (E10–11); M3 intuition net + amortization gap (E12, E18); active scouting (E15).

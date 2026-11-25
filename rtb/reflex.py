@@ -168,13 +168,14 @@ class ReflexPolicy(OraclePlanner):
 class MixtureReflexPolicy(MixturePlanner):
     """Reflex over the slow mind's program mixture (features averaged over programs)."""
 
-    def __init__(self, bosses, weights, net=None, gate=0.0, surprise=0, window=40, **kw):
+    def __init__(self, bosses, weights, net=None, gate=0.0, surprise=0, window=40, blend=0.0, **kw):
         """surprise > 0: model-adequacy gate. Plan with the model while it explains the cue stream;
         act on reflex while the last `window` ticks hold >= `surprise` cues the mixture found
         implausible (predictive p < 0.01). One noisy cue is common; a run of them is an unmodelled move."""
         super().__init__(bosses, weights, **kw)
         self.net, self.gate, self.planned, self.decisions = net, gate, 0, 0
         self.surprise, self.window = surprise, window
+        self.blend = blend      # > 0: habit as a prior for deliberation, argmax_a Q(a) + blend * log pi_reflex(a)
         from collections import deque
         self._odd = deque(maxlen=window)
         self.reflexed = 0
@@ -202,6 +203,9 @@ class MixtureReflexPolicy(MixturePlanner):
         x = mixture_features(self.filters, lw, obs, env, self.projected)
         with torch.no_grad():
             p = torch.softmax(self.net(torch.from_numpy(x)[None]), -1)[0].numpy()
+        if self.blend > 0:
+            q = self.q_values(obs, env)
+            return self.actions[int(np.argmax(q + self.blend * np.log(np.maximum(p[list(self.actions)], 1e-6))))]
         if self.gate > 0 and p.max() < self.gate:
             self.planned += 1
             return super().act(obs, env)
