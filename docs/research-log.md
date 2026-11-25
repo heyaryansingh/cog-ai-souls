@@ -315,7 +315,7 @@ Unlike latency 0 (Entry 3), more rollouts seem to help under latency, presumably
 **Prequential weighting (idea (a) from Entry 12): negative.** Fitting on the first half of the fight and weighing by the conditional evidence of the second half was no better than net-only: OOD −0.255 vs −0.247, T3 −0.250. Half a fight is too little data to fit, so the score is noisy. Dropped.
 
 **RL² fairness run.** Same architecture, 8,000 updates (~29k training fights, 2.4 h):
-- greedy: 13.1% [10–17] over all 480 evaluation fights;
+- greedy: 13.3% [11–17] over all 480 evaluation fights;
 - sampled: about 7%;
 - no improvement across attempts (attempt 1: 20%; attempt 12: 15%).
 

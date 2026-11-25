@@ -369,6 +369,18 @@ class SlowMind:
         """weigh_after_move: rejuvenate first, then weight each particle by its evidence on all
         logs. Not a valid SMC weight (it favours fitted particles), but symmetric across particles
         seeded from different proposals, so a bad proposal cannot win by being resampled first."""
+        if weigh_after_move == "prequential":
+            # fit on the first half of the new fight, score on how well it then predicts the second half
+            half = trace[: len(trace) // 2]
+            saved = self.traces
+            self.traces = saved + [half]
+            fitted = [self._rejuvenate(b)[0] for b in self.particles]
+            self.traces = saved + [trace]
+            self.logw = np.array([evidence(b, self.traces) - evidence(b, saved + [half]) for b in fitted])
+            self.particles = [self._rejuvenate(b, 1)[0] for b in fitted]
+            self.history.append({"n_fights": len(self.traces), "resampled": False, "ess": self.ess(),
+                                 "accepted": [], "K": [b.K for b in self.particles]})
+            return
         if weigh_after_move:
             self.traces.append(trace)
             accepted = []
