@@ -338,6 +338,22 @@ Unlike latency 0 (Entry 3), more rollouts seem to help under latency, presumably
   - The trap is a *mode*: escaping it needs a joint move (birth + reassign wind-ups + re-fit), e.g. a split-merge Gibbs step with restricted reassignment (Jain–Neal style). Added to the agenda.
 - **Re-check:** the main train-40 learning curve is being re-run with birth enabled, to confirm it does not hurt.
 
+## 2026-11-25 · Entry 15: active self-identification costs more than it is worth (information ≠ value)
+
+**Birth-move check.** The train-40 × 12 curve re-run with the birth proposal gives attempts 2–3 at 30.0% and attempts 4–12 at 37.2% [32–42]. These are identical to Entry 6, so birth stays in.
+
+**Active self-identification** (T4, 30 bosses × 8). Planner rollouts that start with a roll get a bonus of 15 × (expected bits about the i-frame window) from the first impact landing mid-roll.
+
+| T4 self-model | Correct i-frame window identified (of 30), at attempt 2 / 4 / 8 | Attempts 1–2 wins | Attempts 5–8 wins |
+|---|---|---|---|
+| Learned, passive | 0 / 5 / 11 | 3.3%, 33.3% | 48.3% |
+| **Learned, active** | **4 / 10 / 11** | 0.0%, 3.3% | 46.7% |
+
+**Findings:**
+1. Information-seeking rolls **double the speed of self-identification** (10 vs 5 bosses with the correct window by attempt 4).
+2. They **cost the early fights**: attempt 2 drops from 33% to 3%. Deliberately rolling into attacks to probe the window gets the agent killed, and Entry 10 already showed the i-frame window is worth almost nothing for winning.
+3. **Lesson:** an entropy bonus values *information*, not *value of information*. The right quantity is VOI: the expected improvement in the decisions the belief feeds, which here is small for i-frames and large for stamina. This is a clean metareasoning point for the paper, and it argues for VOI-based scouting (estimated by planning under posterior samples of the rules), not an IG bonus. Added to the agenda.
+
 ## Agenda (living)
 
 1. ~~Add reaction latency and reactive laws; re-measure at latency 4.~~ Done (Entry 5).
