@@ -43,6 +43,7 @@ class BossFilter:
                 self.cueW[k, d - 1] = windup_cue(m.primitive, d, boss.tell_ticks)
         self.cueA = np.array([active_cue(m.primitive) for m in boss.moves])
         self.eps = boss.cue_noise
+        self.phantom = np.array([m.primitive.name == "phantom" for m in boss.moves])   # wildcard emitters
         # masks for valid active/recovery slots
         self.maskA = np.arange(self.Amax)[None, :] < self.a[:, None]
         self.maskR = np.arange(self.Rmax)[None, :] < self.r[:, None]
@@ -61,6 +62,11 @@ class BossFilter:
         lw = np.where(self.cueW == cue, 1 - e + e / V, e / V)                # (K, D)
         la = np.where(self.cueA == cue, 1 - e + e / V, e / V)[:, None]       # (K, 1)
         lr = (1 - e + e / V) if cue == RECOVER_CUE else e / V
+        if self.phantom.any():
+            lw = lw.copy()
+            lw[self.phantom, self.boss.tell_ticks:] = 1.0 / V
+            la = la.copy()
+            la[self.phantom] = 1.0 / V
         return lw, la, lr
 
     def update(self, cue: int) -> float:

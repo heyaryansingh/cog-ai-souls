@@ -56,6 +56,12 @@ def run_boss(args):
         bosses, weights = ([boss], [1.0]) if mode == "oracle" else (sm.particles, sm.weights)
         pol = MixturePlanner(bosses, weights, mode="map" if mode in ("oracle", "frozen", "map") else "mixture", n_rollouts=n_rollouts, horizon=horizon,
                              seed=seed)
+        if os.environ.get("RTB_PHANTOM"):     # R10: CRP phantom move at planning time
+            from rtb.phantom import count_moves, phantom_mass, with_phantom
+            pm = phantom_mass(count_moves(sm.traces), float(os.environ["RTB_PHANTOM"]))
+            bosses = [with_phantom(b, pm) for b in bosses]
+            pol = MixturePlanner(bosses, weights, mode="map" if mode in ("oracle", "frozen", "map") else "mixture",
+                                 n_rollouts=n_rollouts, horizon=horizon, seed=seed)
         if mode in ("online", "online_netsup"):
             pol = OnlineMixturePlanner(sm, every=200, n_rollouts=n_rollouts, horizon=horizon, seed=seed)
         if os.environ.get("RTB_REFLEX") and a < int(os.environ.get("RTB_REFLEX_ATTEMPTS", 99)):   # Entry 28: act with the distilled reflex over the mixture belief
@@ -137,6 +143,7 @@ def main():
     pr += f"_surp{os.environ['RTB_SURPRISE']}" if os.environ.get("RTB_SURPRISE") else ""
     pr += f"_ra{os.environ['RTB_REFLEX_ATTEMPTS']}" if os.environ.get("RTB_REFLEX_ATTEMPTS") else ""
     pr += f"_blend{os.environ['RTB_BLEND']}" if os.environ.get("RTB_BLEND") else ""
+    pr += f"_phantom{os.environ['RTB_PHANTOM']}" if os.environ.get("RTB_PHANTOM") else ""
     name = f"results/learn_{a.split}_{a.mode}{pr}_lat{a.latency}_b{a.bosses}_a{a.attempts}{a.tag}.json"
     json.dump({"args": vars(a), "results": flat}, open(name, "w"), indent=1)
     print(f"saved {name}  ({time.time() - t0:.0f}s)")

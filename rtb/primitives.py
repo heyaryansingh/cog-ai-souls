@@ -53,6 +53,8 @@ def windup_cue(prim: Primitive, elapsed: int, tell_ticks: int) -> int:
 
 
 def active_cue(prim: Primitive) -> int:
+    if prim.name == "phantom":     # rtb/phantom.py: a wildcard move; the filter overrides its emissions
+        return CUE_ID["tell"]
     if prim.feint:
         return CUE_ID["a_feint"]
     if prim.group == "idle":       # idle has no active window; never emitted
