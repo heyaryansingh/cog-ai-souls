@@ -193,28 +193,32 @@ class OraclePlanner:
         k, j = np.unravel_index(i - nW - nA, f.R.shape)
         return (int(k), 2, int(j) + 1, 0)
 
-    def act(self, obs, env: MiniSouls) -> int:
-        # The filter's belief is over the state that will emit the NEXT cue, i.e. env.bs now.
-        f = self.filter
+    def projected(self, f):
+        """The filter's belief is over the state that will emit the NEXT cue, i.e. env.bs now. With
+        perception latency the perceived stream lags reality: push the belief forward blind."""
         if self.latency and self._last is not None:
-            # perceived stream lags reality: push the belief forward without observations
             import copy
             f = copy.copy(f)
             f.W, f.A, f.R = f.W.copy(), f.A.copy(), f.R.copy()
             for _ in range(self.latency):
                 f.predict(self._last["dist"], self._last["phase"], self._last["ctx"])
+        return f
+
+    def act(self, obs, env: MiniSouls) -> int:
+        q = self.q_values(obs, env)
+        return self.actions[int(np.argmax(q))]
+
+    def q_values(self, obs, env: MiniSouls) -> np.ndarray:
+        """Mean imagined return of each candidate first action (in self.actions order)."""
+        f = self.projected(self.filter)
         states = f.sample_states(self.n, self.rng)
         if self.state_map:
             flat = np.concatenate([f.W.ravel(), f.A.ravel(), f.R.ravel()])
             i = int(np.argmax(flat))
             states = [self._state_from_index(f, i)] * self.n
-        best, best_v = IDLE, -np.inf
         seeds = self.rng.integers(1 << 30, size=self.n)
-        for a in self.actions:
-            v = np.mean([self._rollout(env, s, a, int(sd)) for s, sd in zip(states, seeds)])
-            if v > best_v:
-                best, best_v = a, v
-        return best
+        return np.array([np.mean([self._rollout(env, s, a, int(sd)) for s, sd in zip(states, seeds)])
+                         for a in self.actions])
 
 
 class MixturePlanner(OraclePlanner):

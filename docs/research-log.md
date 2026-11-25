@@ -590,6 +590,25 @@ State-averaging lesion. The true-program oracle plans from the single most proba
 - Compare program averaging, which costs 2.5 points or less (E6, E26).
 - **Synthesis:** in this domain, averaging pays at the level of *what is happening right now*: which move is winding up and how far along it is. It barely pays at the level of *what kind of boss this is*, because evidence about the boss accumulates fast across fights, while state evidence is renewed every few ticks and stays ambiguous. This is the project's version of "averaging beats committing", now localized.
 
+## 2026-11-25 · Entry 27b: review follow-up, does within-fight learning hurt late attempts on T3?
+
+This follows the external review point that E23's attempt 4 dropped from 81% to 64%. Paired by boss and seed, net superset alone vs net superset + within-fight learning, 80 T3 bosses:
+
+| Attempt | Only superset won | Only +online won | Sign test p | MAP K minus true K (superset / +online) |
+|---|---|---|---|---|
+| 1 | 1 | 4 | 0.38 | 2.41 / 2.31 |
+| 2 | 6 | 7 | 1.00 | 2.08 / 1.75 |
+| 3 | 7 | 15 | 0.13 | 1.31 / 1.38 |
+| 4 | 17 | 3 | **0.003** | 1.05 / 0.81 |
+
+Per boss over attempts 2–4 (Wilcoxon on win counts), p = 0.67: superset better on 20 bosses, +online better on 15.
+
+**Findings:**
+- The attempt-4 drop is significant on its own (p = 0.003, still p < 0.05 with a Bonferroni correction over 4 attempts), but attempt 3 leans the other way. The boss-clustered test over attempts 2–4 shows no difference.
+- **Spurious extra moves do not explain it.** With within-fight learning the MAP program has *fewer* surplus moves at attempt 4 (0.81 vs 1.05).
+- **Status:** an unexplained late-attempt cost, so E23's conclusion stands as "does not stack" rather than "harms". It is on the agenda as a diagnostic: log particle sets after each mid-fight refresh, and add a sweeps = 0 refresh control (rebuild filters without re-learning).
+- **Labelling (review point 3):** E22 (pre-registered replication, n = 80, p = 0.013) is the confirmatory within-fight result. The pooled 10.7% → 20.7% table mixes E9 training bosses and test bosses and was assembled after E10's null, so it is exploratory.
+
 ## Agenda (living)
 
 Done: latency + laws (E5); M2 slow mind (E6); RL² baseline (E7, E13); empirical Bayes (E7); T4 self-model (E8, E10); T2/T3 generalization (E10–11); M3 intuition net + amortization gap (E12, E18); active scouting (E15).
@@ -602,3 +621,11 @@ Next, in priority order:
 5. **Multi-hit combo primitive** (realism audit, E4), then re-check the ladder.
 6. **Human comparison:** the playable version is built (E21). Next, collect human ledgers.
 7. SoulsGym validation, once the game is available on the laptop.
+
+**From the external review (Nov 25, 18:25), added to the queue:**
+- R1. *E25 confound.* The humble variants changed only the imagined player, so rollouts stopped modelling the executed policy (strategy fusion). Re-run with the commitment roll in both the real and imagined agent, imagined rolls scored as expected success over the wind-up pmf; latency 4, n = 80, paired against 41.2%. Note: the DAgger reflex (E28) is a second route around this, since it is trained to imitate its own execution.
+- R2. *Within-fight late-attempt cost* (E27b): particle logging and a sweeps = 0 refresh control; asynchronous refresh.
+- R3. *Block realism:* 55 of 109 hits landed while blocking (E24). Compare chip damage and stamina drain with real shields: a 100% physical shield takes no chip, and its real cost is guard break.
+- R4. *Superset controls:* a no-net full-library seed; hold one primitive out of the net's training library for a true novelty test; check prior/q importance weights on net-seeded particles.
+- R5. *Statistics:* boss-clustered tests (per-boss Wilcoxon or mixed effects) for every close call; survival analysis and counterbalanced order for the human study.
+- R6. ~~Verify that RTB_DELETE_BIAS reaches the sampler.~~ Done: it is added to the delete proposal's log prior (learner.py:325), which enters the MH acceptance (learner.py:521). With -inf, deletes are never accepted.
