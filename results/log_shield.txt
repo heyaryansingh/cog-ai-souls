@@ -1,0 +1,4 @@
+rules=default latency=4: win 41.2% [31%-52%]  death 58.8%  boss-HP-left 0.15  hp-left  16.8  s/fight 3.4  n=80
+rules=default latency=0: win 68.8% [58%-78%]  death 31.2%  boss-HP-left 0.07  hp-left  24.4  s/fight 4.1  n=80
+rules=shield latency=4: win 78.8% [69%-86%]  death 21.2%  boss-HP-left 0.04  hp-left  41.3  s/fight 5.7  n=80
+rules=shield latency=0: win 92.5% [85%-97%]  death  7.5%  boss-HP-left 0.01  hp-left  50.3  s/fight 6.0  n=80

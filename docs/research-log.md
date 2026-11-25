@@ -758,6 +758,21 @@ Per attempt, blend λ = 3: T1 26 / 33 / 46%; T3 28 / 65 / 69 / 73%.
 - The original reflex avoided it because teacher and student shared the *same* belief, just with different compute.
 - **Lesson:** the reflex's robustness under a wrong model is not a product of being trained under model error. It comes from being trained on *many bosses' worth* of belief-to-action mappings. A proper fix would train the student on the teacher's Q-values *under the student's own belief* (the planner run on the learned mixture with high compute) or use the A2D-style objective. That is the compute-matched planner (R9, in P1), whose results come first.
 
+## 2026-11-25 · Entry 33: shield realism check (review R3); blocking is the difficulty knob
+
+The variant is a 100%-physical shield. Blocked hits do no chip damage, but a block that runs out of stamina is a guard break: full damage plus a 30-tick (1.5 s) stagger. True-program planner, 40 train bosses × 2, the same seeds as E24/E27 (the default rows reproduce E27 exactly, so evaluation is deterministic):
+
+| Rules | Latency 4 | Latency 0 |
+|---|---|---|
+| Default (25% chip, no stagger) | 41.2% | 68.8% |
+| Full shield + guard-break stagger | **78.8%** | 92.5% |
+
+**Findings:**
+- **With a perfect shield the game gets easy and stops being about prediction.** The latency cost shrinks from 28 points to 14, because blocking needs no timing. Guard breaks rarely happen at our stamina-drain rate (0.5 × damage).
+- **Our default corresponds to a medium shield or partly elemental damage.** Both are common in the games: few boss attacks are purely physical, and most bosses carry elemental or unblockable moves. It is the regime where reading the boss matters.
+- **Scope statement for the paper:** the results are conditional on imperfect blocking. A souls-like where turtling with a 100% shield works is a different, easier problem.
+- **Possible next step:** a guard-break-calibrated variant, with stamina damage per attack type so heavy attacks break guard in 2–3 hits, as against real greatshield/boss data. Low priority.
+
 ## 2026-11-25 · Pre-registration P1 (written before any run on these bosses)
 
 This responds to review point 2: E30–31 picked winners from several variants after seeing results. Here they are re-tested on fresh bosses.
@@ -783,6 +798,12 @@ This responds to review point 2: E30–31 picked winners from several variants a
 - H5: (e) > (a) on T3.
 
 **Secondary (descriptive only):** per-attempt win rates and fight-level sign tests.
+
+**Amendment A1 (Nov 25, 21:10, after review; the P1 runs had started and some output files exist on disk, but none has been opened or summarized):**
+- **Multiple comparisons:** H1–H5 are tested with a Holm–Bonferroni correction (family of 5, α = 0.05).
+- **Effect sizes:** each difference is reported with a per-boss bootstrap 95% CI (10,000 resamples of bosses) on the mean win-rate difference.
+- **Leakage check (done before viewing results):** every split-seed-1 T1/T3 boss program (moves, timings, transition matrix, phase-2 speed, laws) was hashed against all split-seed-0 bosses, including the 40 training bosses the reflex and net learned from. There were 0 duplicates in T1, 0 in T3 and 0 within either split.
+
 
 ## Agenda (living)
 
@@ -810,3 +831,7 @@ Next, in priority order:
 - R8. *Pre-registered replication* of the E30–31 winners on fresh bosses with boss-clustered tests: registered as P1 above.
 - R9. *Compute-matched planner* (48 rollouts over the learned mixture): included in P1.
 - R10. *Phantom attacks.* Rollouts include a generic in-reach hit whose hazard grows with the posterior's model inadequacy, so caution comes from calibrated uncertainty in one planner instead of a separate habit. If this closes the attempt-1 gap alone, it is the stronger result.
+
+**From the third external review (Nov 25, 21:02):**
+- R11. *Uncertainty-scaled λ* (Daw, Niv & Dayan 2005; Kim et al. 2019): λ_t follows the slow mind's running log-predictive score, including timing surprise. Test against λ = 3 on split-seed-0 bosses only, keeping P1 clean.
+- R12. *Fit the architecture to people:* score per-decision action likelihoods on human logs from the playable game (two-step-task-style fits). Test whether a person's fitted habit weight falls across attempts on a new boss. This needs Aryan's ledgers or logs, and the playable game needs per-decision logging (state + action) added.
