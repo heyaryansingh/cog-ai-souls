@@ -561,11 +561,27 @@ Raising the latency-4 ceiling properly needs a better continuation policy, not a
 
 Defaults are unchanged (`humble=False`).
 
+## 2026-11-25 · Entry 26: averaging over programs vs committing, at 16 particles
+
+Train 40 × 6 attempts with 16 particles (4 in all earlier runs):
+
+| Planner over the particle set | Attempts 2–3 | Attempts 4–6 | Paired, attempts 2–6 (only mixture won / only MAP won) |
+|---|---|---|---|
+| Bayesian model averaging (mixture) | 31.2% | 32.5% | 35 |
+| MAP lesion (best particle only) | 27.5% | 30.8% | 30 |
+
+**Findings:**
+- Even with 16 particles, averaging over boss programs gives only a small, non-significant edge (+2.5 points; 35 vs 30 discordant fights).
+- 16 particles are not better than 4 (Entry 19 full system, attempts 3–6: 33.8%).
+- **Conclusion for the paper:** across-program uncertainty collapses within a few fights, so committing to the best program costs little. The "averaging beats committing" effect in this domain lives in *within-fight state* uncertainty (the exact filter's belief over the current move and wind-up), which every condition uses.
+- A cleaner test would remove state averaging: plan from the filter's MAP state only. Added to the agenda.
+
 ## Agenda (living)
 
 Done: latency + laws (E5); M2 slow mind (E6); RL² baseline (E7, E13); empirical Bayes (E7); T4 self-model (E8, E10); T2/T3 generalization (E10–11); M3 intuition net + amortization gap (E12, E18); active scouting (E15).
 
 Next, in priority order:
+0. **State-averaging lesion:** plan from the MAP filter state only, to measure the value of averaging over state (E26).
 1. **Linear opponent-model planner baseline** (FightingICE-style: per-move frequency counts with no timing model). This shows how much the *timing/HSMM* structure buys over a simpler opponent model.
 2. **VOI-based scouting** in place of the IG bonus (E15): plan under posterior samples of rules or program and measure the value of resolving each uncertainty.
 3. **Replications at n ≥ 80 per cell**: net-superset done (E20, p = 0.007). Within-fight learning is done too (E22, p = 0.013).
