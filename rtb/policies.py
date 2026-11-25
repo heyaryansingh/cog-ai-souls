@@ -99,11 +99,15 @@ class OraclePlanner:
     """
 
     def __init__(self, n_rollouts=12, horizon=30, seed=0, actions=(IDLE, APPROACH, RETREAT, LIGHT, HEAVY, DODGE, BLOCK, HEAL),
-                 model_boss=None):
-        """model_boss: the boss program the agent BELIEVES in. None = the true one (oracle).
+                 model_boss=None, utility="linear"):
+        """utility: "linear" = env reward (boss damage - 2 x player damage, +-100 win/death);
+        "concave" = boss damage + value(hp_end) - value(hp_start), with value concave in HP, so losing
+        HP when low is worse and heals are worth more when low.
+        model_boss: the boss program the agent BELIEVES in. None = the true one (oracle).
         Passing a wrong program shows how much a learner has to gain by inferring the boss."""
         self.n, self.h = n_rollouts, horizon
         self.model_boss = model_boss
+        self.utility = utility
         self.rng = np.random.default_rng(seed)
         self.actions = actions
 
@@ -128,12 +132,17 @@ class OraclePlanner:
             D = j + int(sim.rng.choice(len(tail), p=tail / tail.sum())) if tail.sum() > 0 else j
         sim.bs.k, sim.bs.stage, sim.bs.j, sim.bs.D, sim.bs.p0, sim.bs.hit_done = k, stage, j, D, p0, False
         total, a = 0.0, first
+        hp0, boss0 = sim.player.hp, sim.boss_hp
         for _ in range(self.h):
             _, r, done, _ = sim.step(a)
             total += r
             if done:
                 break
             a = oracle_continuation(sim) if sim.player_free() else IDLE
+        if self.utility == "concave":
+            v = lambda h: 60.0 * np.log1p(max(h, 0.0) / 20.0)
+            total = (boss0 - max(sim.boss_hp, 0.0)) + v(sim.player.hp) - v(hp0)
+            total += 150.0 if sim.outcome == "win" else (-150.0 if sim.outcome == "death" else 0.0)
         return total
 
     def act(self, obs, env: MiniSouls) -> int:
