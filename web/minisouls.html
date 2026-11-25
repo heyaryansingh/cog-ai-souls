@@ -67,7 +67,7 @@ textarea{width:100%;min-height:90px;font-family:var(--mono);font-size:.75rem;bac
   <section style="display:grid;gap:8px">
     <h3 style="font-family:var(--display);margin:0;letter-spacing:.05em">Your ledger</h3>
     <div class="tablewrap"><table><thead><tr><th>Boss</th><th>Attempts</th><th>Wins</th><th>First win on attempt</th><th>Agent's first win (of 12)</th></tr></thead><tbody id="ledger"></tbody></table></div>
-    <p class="note">The agent column is the slow-mind learner at a 200 ms reaction delay, fighting each boss 12 times (research log, Entry 14). Your records stay in this browser. To share them, copy the results below.</p>
+    <p class="note">Each fight also records your moment-to-moment inputs (what you pressed on each free tick, and what the boss showed), so we can fit models of how people learn bosses. The agent column is the slow-mind learner at a 200 ms reaction delay, fighting each boss 12 times (research log, Entry 14). Your records stay in this browser. To share them, copy the results below.</p>
     <div class="bar"><button id="copy">Copy results</button><button id="reset">Clear my results</button><span id="copied" class="note"></span></div>
     <textarea id="out" readonly aria-label="Results JSON"></textarea>
   </section>
@@ -213,15 +213,19 @@ function drawLedger(){ const tb=document.getElementById("ledger"); tb.innerHTML=
   DATA.bosses.forEach((b,i)=>{ const L=LED[i]||{fights:[]}; const att=L.fights.length, wins=L.fights.filter(f=>f.outcome==="win").length;
     const fw=L.fights.findIndex(f=>f.outcome==="win"); const tr=document.createElement("tr");
     [b.name, att, wins, fw>=0? fw+1 : "–", b.agent_first_win ?? "not beaten"].forEach(v=>{ const td=document.createElement("td"); td.textContent=v; tr.appendChild(td); }); tb.appendChild(tr); });
-  document.getElementById("out").value = JSON.stringify({study:"MiniSouls human baseline", ticks_per_second:20, ledger:LED}, null, 0); }
+  document.getElementById("out").value = JSON.stringify({study:"MiniSouls human baseline", version:2, ticks_per_second:20,
+    log_format:{trace:"per tick [cue index into CUES, distance x100, phase, boss-visible player context]", decisions:"per free tick [t, hp, stamina, flasks, boss hp, chosen action 0-7]", cues:CUES}, ledger:LED}, null, 0); }
 let running=false, timer=null;
 const ov=document.getElementById("ov");
-function startFight(){ const i=+sel.value; newFight(DATA.bosses[i]); G.idx=i; pending=null; running=true; ov.hidden=true; sel.disabled=true;
+function startFight(){ const i=+sel.value; newFight(DATA.bosses[i]); G.idx=i; G.tr=[]; G.dec=[]; pending=null; running=true; ov.hidden=true; sel.disabled=true;
   clearInterval(timer); timer=setInterval(tick, 50); }
-function tick(){ let a=IDLE; if(G.ti===0){ if(pending!==null){ a=pending; pending=null; } else if(held.size){ a=[...held].pop(); } }
+function tick(){ let a=IDLE; const free=G.ti===0; if(free){ if(pending!==null){ a=pending; pending=null; } else if(held.size){ a=[...held].pop(); } }
+  if(free){ G.dec.push([G.t, Math.round(G.hp*10)/10, Math.round(G.st*10)/10, G.heals, Math.round(G.bossHp), a]); }   // decision log (R12)
   step(a); render();
+  G.tr.push([CUES.indexOf(G.cue), Math.round(G.dist*100), phase(), ctxOf(G.last)]);
   if(G.done){ clearInterval(timer); running=false; sel.disabled=false; const L=LED[G.idx]||(LED[G.idx]={fights:[]});
-    L.fights.push({outcome:G.outcome, ticks:G.t, boss_hp_frac:+(Math.max(0,G.bossHp)/G.boss.maxhp).toFixed(3), when:new Date().toISOString()}); save(); drawLedger();
+    L.fights.push({outcome:G.outcome, ticks:G.t, boss_hp_frac:+(Math.max(0,G.bossHp)/G.boss.maxhp).toFixed(3), when:new Date().toISOString(),
+                   trace:G.tr, decisions:G.dec}); save(); drawLedger();
     document.getElementById("ovTitle").textContent = G.outcome==="win" ? "Victory" : G.outcome==="death" ? "You died" : "Time up";
     document.getElementById("ovText").textContent = `Attempt ${L.fights.length} on ${G.boss.name}. Boss HP left ${Math.round(100*Math.max(0,G.bossHp)/G.boss.maxhp)}%. Press Enter or Start to try again.`;
     ov.hidden=false; } }

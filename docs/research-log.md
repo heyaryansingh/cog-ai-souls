@@ -834,4 +834,4 @@ Next, in priority order:
 
 **From the third external review (Nov 25, 21:02):**
 - R11. *Uncertainty-scaled λ* (Daw, Niv & Dayan 2005; Kim et al. 2019): λ_t follows the slow mind's running log-predictive score, including timing surprise. Test against λ = 3 on split-seed-0 bosses only, keeping P1 clean.
-- R12. *Fit the architecture to people:* score per-decision action likelihoods on human logs from the playable game (two-step-task-style fits). Test whether a person's fitted habit weight falls across attempts on a new boss. This needs Aryan's ledgers or logs, and the playable game needs per-decision logging (state + action) added.
+- R12. *Fit the architecture to people:* score per-decision action likelihoods on human logs from the playable game (two-step-task-style fits). Test whether a person's fitted habit weight falls across attempts on a new boss. This needs Aryan's ledgers or logs. **Logging done (v2 of the game):** each fight now stores the per-tick boss cue, distance, phase and context, plus the body state and chosen action on every free tick, all in the copied results JSON. The fitting script comes next, once data arrives.
