@@ -35,6 +35,8 @@ GRID = np.exp(np.linspace(np.log(2.0), np.log(55.0), 120))     # candidate wind-
 SPEED_GRID = np.linspace(0.6, 1.0, 41)
 LAW_BOOSTS = (1.5, 2.25, 3.0)
 P_NO_LAW = float(np.exp(-0.4))
+import os as _os
+DELETE_BIAS = float(_os.environ.get("RTB_DELETE_BIAS", "0"))   # extra log-prior for deleting a move; -inf = never delete (dormant reservoir)
 USE_REGROUP = False   # Entry 16: the regroup move did not help and diluted the proposal budget                                   # Poisson(0.8) split over 2 contexts
 
 
@@ -317,7 +319,7 @@ def propose_structure(boss: Boss, stats, traces, theta: Theta, rng):
     lp_move = np.log(len(theta.allowed))          # one fewer move of 1-in-|allowed| type
     if kind == "delete":
         k = unused[rng.integers(len(unused))]
-        return _drop(boss, k), lp_move, f"delete {names[k]}"
+        return _drop(boss, k), lp_move + DELETE_BIAS, f"delete {names[k]}"
     if kind == "regroup":
         return _regroup(boss, windups, theta, rng)
     if kind == "birth":

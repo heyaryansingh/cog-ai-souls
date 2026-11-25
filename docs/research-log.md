@@ -373,6 +373,28 @@ That is "averaging beats committing" at the level of **structure**, not state. T
 - **Design rule:** keep a "dormant move" reservoir: unused library moves with low but non-zero transition mass, rather than deleting them.
 - **Test:** compare delete-prior strengths on early attempts (queued).
 
+## 2026-11-25 · Entry 17: the hedging prediction is falsified
+
+Test of Entry 16's prediction (train 40 × 4 attempts, same seeds):
+
+| Deletion prior | Attempt 1 | Attempt 2 | Attempt 3 | Attempt 4 | Attempts 2–4 | Program size error at attempt 4 (moves) |
+|---|---|---|---|---|---|---|
+| Default (log 6 per move) | 12% | 30% | 30% | 45% | 35.0% [27–44] | +0.42 |
+| +3 extra toward deletion | 12% | 30% | 30% | 45% | 35.0% [27–44] | +0.42 |
+| Never delete (dormant reservoir) | 12% | 18% | 32% | 40% | 30.0% [23–39] | +2.40 |
+
+**Findings:**
+- Deletion of unused moves is already *saturated* at the default prior: the +3 run is identical down to every fight, so every proposed delete was already accepted.
+- Keeping all unused moves alive makes the program 2.4 moves too large and **hurts** early learning (attempt 2: 18% vs 30%).
+- So the hedging explanation of Entry 16 is wrong for acting. Dormant moves dilute the transition model and make the planner over-prepare for attacks that never come.
+- The OOD gap between net-seeded and prior-seeded chains (Entry 12) therefore remains *unexplained*. Remaining candidates:
+  - (i) the net's proposed *medians*: no rejuvenation of medians happens before selection beyond 3 Gibbs sweeps;
+  - (ii) idle-median or transition initialisation;
+  - (iii) phase-2 speed.
+
+  Next diagnostic: swap one component at a time between net and prior initialisations.
+- Program-size numbers are reported as MAP move count minus true move count.
+
 ## Agenda (living)
 
 1. ~~Add reaction latency and reactive laws; re-measure at latency 4.~~ Done (Entry 5).
