@@ -1,0 +1,34 @@
+{
+ "knight": {
+  "nmi_segment": 0.62374880156884,
+  "nmi_move": 0.5077182465641119,
+  "boundary_f1": 0.7672374781061444,
+  "n_true_segments": 15.75,
+  "n_used": 22.75,
+  "T": 2400.0
+ },
+ "beast": {
+  "nmi_segment": 0.6086383348491433,
+  "nmi_move": 0.3993158327462897,
+  "boundary_f1": 0.7760059760100539,
+  "n_true_segments": 13.25,
+  "n_used": 22.25,
+  "T": 2312.75
+ },
+ "caster": {
+  "nmi_segment": 0.6531849855704418,
+  "nmi_move": 0.5098113985861115,
+  "boundary_f1": 0.7768812660161473,
+  "n_true_segments": 12.75,
+  "n_used": 22.0,
+  "T": 2253.25
+ },
+ "giant": {
+  "nmi_segment": 0.5890263109204685,
+  "nmi_move": 0.5165924223638729,
+  "boundary_f1": 0.61014182157699,
+  "n_true_segments": 15.75,
+  "n_used": 22.75,
+  "T": 2197.75
+ }
+}

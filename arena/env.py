@@ -10,8 +10,9 @@ Player actions: a = move_dir * 7 + button (63 total)
             (directions in the lock-on frame; forward = toward the boss)
   button   0 none, 1 roll, 2 light, 3 heavy, 4 guard (first ticks parry), 5 jump, 6 heal
 
-Observation (default ~85 floats, egocentric lock-on frame): boss keypoints (17 x 3, noisy, occasional
-dropout), boss facing, 4 nearest projectiles, own body state, boss bars. Boss-related inputs can be
+Observation (88 floats, egocentric lock-on frame): boss keypoints (17 x 3, noisy, occasional
+dropout), boss facing, 4 nearest projectiles, boss bars, 3 audio events (grunt, whoosh, impact),
+own body state. Boss-related inputs can be
 delayed by `latency` ticks (perception delay); the body state is always current.
 """
 from __future__ import annotations
@@ -152,6 +153,7 @@ class Arena:
         self.recent = deque(maxlen=20)        # player's recent buttons (for boss input reading)
         self.events = []                      # (kind, details) for learners: hits taken/landed, parries...
         self._obs_q = deque()
+        self.audio = np.zeros(3)
         obs = self._observe()
         return obs
 
@@ -167,6 +169,7 @@ class Arena:
         c.recent = deque(self.recent, maxlen=20)
         c.events = []
         c._obs_q = deque()
+        c.audio = np.zeros(3)
         return c
 
     @property
@@ -182,6 +185,7 @@ class Arena:
         d, btn = divmod(int(action), N_BUTTONS)
         p, B, b = self.player, self.body, self.boss
         hp0, bhp0 = p.hp, b.hp
+        self.audio = np.zeros(3)        # grunt (move start, sometimes), whoosh (strike start), impact
         to_boss = _ang(b.pos - p.pos)
         # ---- player
         if p.stagger > 0:
@@ -292,6 +296,8 @@ class Arena:
 
     def _start_move(self, i: int):
         b = self.boss
+        if self.rng.random() < 0.6:
+            self.audio[0] = 1.0
         b.move, b.seg = i, -1
         self._next_segment()
 
@@ -321,6 +327,8 @@ class Arena:
         else:
             b.seg_len = s.ticks
         b.t, b.pose0, b.hit_done = 0, b.pose.copy(), False
+        if s.kind == "strike":
+            self.audio[1] = 1.0
         if s.leap:
             b.leap_target = self.player.pos.copy()
 
@@ -377,6 +385,7 @@ class Arena:
                 b.pos = b.pos + (s.travel / b.seg_len) * np.array([np.cos(b.facing), np.sin(b.facing)])
         if s.kind == "strike" and s.hitbox is not None and b.t - 1 == s.impact and not b.hit_done:
             b.hit_done = True
+            self.audio[2] = 1.0
             if s.hitbox.shape == "projectile":
                 from .skeleton import J
                 hand = self._kp_world()[J["l_hand"]][:2]
@@ -482,7 +491,7 @@ class Arena:
             vel = _rot(pr.hb.speed * np.array([np.cos(pr.ang), np.sin(pr.ang)]), -lock)
             proj[i] = [rp[0], rp[1], vel[0] * 10, vel[1] * 10]
         return np.concatenate([kp_obs.ravel(), [np.cos(face), np.sin(face)], proj.ravel(),
-                               [b.hp / self.spec.stats["hp"], b.posture / self.spec.stats["posture"]]])
+                               [b.hp / self.spec.stats["hp"], b.posture / self.spec.stats["posture"]], self.audio])
 
     def _body_part(self):
         p, B = self.player, self.body
@@ -504,4 +513,4 @@ class Arena:
         return {"move": b.move, "seg": b.seg, "t": b.t, "seg_len": b.seg_len, "stagger": b.stagger}
 
 
-OBS_DIM = N_JOINTS * 3 + 2 + 16 + 2 + 7 + N_BUTTONS
+OBS_DIM = N_JOINTS * 3 + 2 + 16 + 2 + 3 + 7 + N_BUTTONS
