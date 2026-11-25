@@ -298,6 +298,29 @@ Unlike latency 0 (Entry 3), more rollouts seem to help under latency, presumably
 - (b) A **birth move guided by residuals**: propose a new copy where the filter's surprise (per-tick −log z) is concentrated.
 - (c) The amortization gap as the paper's E6 figure: net vs SMC across a novelty axis (structural vs parametric). This matches the plan's prediction that amortization fails under novelty; but the *direction* depends on the kind of novelty, which the plan did not anticipate.
 
+## 2026-11-25 · Entry 13: net-seeded learning in play, RL² fairness run, a negative result
+
+**Net-seeded slow mind in actual fights** (`learn_curve.py --mode netmix`).
+- After fight 1, half the particles are seeded from the intuition net's proposal and half from the generic prior; weighing happens after rejuvenation.
+
+| Bosses | Condition | Attempt 2 | Attempt 3 | Attempt 4 | Mean, attempts 2–4 |
+|---|---|---|---|---|---|
+| T3 (30) | slow mind | 40.0% | 46.7% | 66.7% | 51.1% |
+| T3 (30) | + net seed | 43.3% | 66.7% | 73.3% | **61.1%** |
+| train (40) | slow mind | 30.0% | 30.0% | 42.5% | 34.2% |
+| train (40) | + net seed | 27.5% | 37.5% | 27.5% | 30.8% |
+
+- This matches the evidence-level result of Entry 12: amortized intuition speeds up learning when the novelty is a *move the net has seen in pretraining but the prior excludes*, and does nothing in distribution. The effect is small relative to the CIs (n = 90 fights per T3 condition); it needs a larger replication before it becomes a claim.
+
+**Prequential weighting (idea (a) from Entry 12): negative.** Fitting on the first half of the fight and weighing by the conditional evidence of the second half was no better than net-only: OOD −0.255 vs −0.247, T3 −0.250. Half a fight is too little data to fit, so the score is noisy. Dropped.
+
+**RL² fairness run.** Same architecture, 8,000 updates (~29k training fights, 2.4 h):
+- greedy: 13.1% [10–17] over all 480 evaluation fights;
+- sampled: about 7%;
+- no improvement across attempts (attempt 1: 20%; attempt 12: 15%).
+
+5× more training took RL² from about 4% to about 13%, which is *the frozen generic-prior planner's level* (12.8%), but it shows **no in-context adaptation** across attempts. The slow mind, with zero pretraining, reaches 37% after 3–4 fights. Next RL steps, if pursued: longer trials (12 fights) and a larger GRU. Model-free meta-RL is known to need far more tasks (Algorithm Distillation used >1000 tasks and millions of steps).
+
 ## Agenda (living)
 
 1. ~~Add reaction latency and reactive laws; re-measure at latency 4.~~ Done (Entry 5).

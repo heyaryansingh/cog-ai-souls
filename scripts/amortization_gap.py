@@ -49,9 +49,9 @@ def job(args):
     out["prior"] = (evidence(prior, test) - ev_true) / ticks
     t = time.time(); netb = propose(net, obs[0], boss); out["t_net"] = time.time() - t
     out["net"] = (evidence(netb, test) - ev_true) / ticks
-    for name, init in (("smc", None), ("net+smc", netb), ("mix+smc", [netb, None]), ("mix2+smc", [netb, None])):
+    for name, init in (("smc", None), ("net+smc", netb), ("mix+smc", [netb, None]), ("mix2+smc", [netb, None]), ("mix3+smc", [netb, None])):
         t = time.time(); sm = SlowMind(boss, n_particles=4, sweeps=3, seed=i, init=init)
-        sm.update(obs[0], weigh_after_move=name == "mix2+smc")
+        sm.update(obs[0], weigh_after_move={"mix2+smc": True, "mix3+smc": "prequential"}.get(name, False))
         out["t_" + name] = time.time() - t
         out[name] = (evidence(sm.map_particle(), test) - ev_true) / ticks
     return out
@@ -66,5 +66,5 @@ if __name__ == "__main__":
     for s in ("T1", "T3", "OOD"):
         rs = [r for r in res if r["split"] == s]
         row = "  ".join(f"{k} {np.mean([r[k] for r in rs]):+.3f} [{np.std([r[k] for r in rs])/np.sqrt(len(rs)):.3f}]"
-                        for k in ("prior", "net", "smc", "net+smc", "mix+smc", "mix2+smc"))
+                        for k in ("prior", "net", "smc", "net+smc", "mix+smc", "mix2+smc", "mix3+smc"))
         print(f"{s:4s} {row}   time net {np.mean([r['t_net'] for r in rs]):.3f}s smc {np.mean([r['t_smc'] for r in rs]):.2f}s")

@@ -53,7 +53,7 @@ def run_boss(args):
     for a in range(attempts):
         seed = 5000 + 101 * idx + a
         bosses, weights = ([boss], [1.0]) if mode == "oracle" else (sm.particles, sm.weights)
-        pol = MixturePlanner(bosses, weights, mode="map" if mode in ("oracle", "frozen") else mode, n_rollouts=n_rollouts, horizon=horizon,
+        pol = MixturePlanner(bosses, weights, mode="map" if mode in ("oracle", "frozen", "map") else "mixture", n_rollouts=n_rollouts, horizon=horizon,
                              seed=seed)
         if mode == "online":
             pol = OnlineMixturePlanner(sm, every=200, n_rollouts=n_rollouts, horizon=horizon, seed=seed)
@@ -64,7 +64,16 @@ def run_boss(args):
             rb.update(r["events"], true_rules=rules if self_model != "iframes" else None,
                       learn_iframes=self_model != "proprio")
         t0 = time.time()
-        if mode not in ("oracle", "frozen"):      # control conditions: no learning
+        if mode in ("net", "netmix") and a == 0:   # M3: seed the slow mind with the intuition net's proposal
+            import torch
+            from rtb.intuition import IntuitionNet, propose
+            torch.set_num_threads(1)
+            net = IntuitionNet(); net.load_state_dict(torch.load("checkpoints/intuition.pt")); net.eval()
+            nb = propose(net, r["trace"], boss, theta)
+            sm = SlowMind(boss, theta=theta, n_particles=n_particles, sweeps=sweeps, seed=idx,
+                          init=nb if mode == "net" else [nb, None])
+            sm.update(r["trace"], weigh_after_move=True)
+        elif mode not in ("oracle", "frozen"):      # control conditions: no learning
             sm.update(r["trace"])
         out.append({"boss": idx, "attempt": a + 1, "outcome": r["outcome"], "boss_hp_frac": r["boss_hp_frac"],
                     "hp": r["hp"], "ticks": r["ticks"], "fight_s": r["seconds"], "learn_s": time.time() - t0,
