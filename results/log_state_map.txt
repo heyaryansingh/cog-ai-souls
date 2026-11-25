@@ -1,0 +1,2 @@
+state_map latency=4: win 35.0% [25%-46%]  death 65.0%  boss-HP-left 0.18  hp-left  16.2  s/fight 3.0  n=80
+state_map latency=0: win 61.3% [50%-71%]  death 38.8%  boss-HP-left 0.10  hp-left  25.2  s/fight 3.2  n=80

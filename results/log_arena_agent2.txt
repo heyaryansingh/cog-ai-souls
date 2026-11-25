@@ -1,0 +1,3 @@
+prior built
+learn win by attempt [np.float64(0.25), np.float64(0.29), np.float64(0.33), np.float64(0.38), np.float64(0.29), np.float64(0.29)] boss-hp-left 0.47 s/fight 1.6
+frozen_prior win by attempt [np.float64(0.42), np.float64(0.46), np.float64(0.5), np.float64(0.5), np.float64(0.42), np.float64(0.46)] boss-hp-left 0.26 s/fight 1.0

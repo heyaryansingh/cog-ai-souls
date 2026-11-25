@@ -383,17 +383,27 @@ class Arena:
                 b.pos = b.pos + step * np.array([np.cos(b.facing), np.sin(b.facing)])
             else:
                 b.pos = b.pos + (s.travel / b.seg_len) * np.array([np.cos(b.facing), np.sin(b.facing)])
-        if s.kind == "strike" and s.hitbox is not None and b.t - 1 == s.impact and not b.hit_done:
-            b.hit_done = True
-            self.audio[2] = 1.0
-            if s.hitbox.shape == "projectile":
+        i_act = b.t - 1 - s.impact
+        if s.kind == "strike" and s.hitbox is not None and 0 <= i_act < s.active and not b.hit_done:
+            if i_act == 0:
+                self.audio[2] = 1.0
+            hb = s.hitbox
+            if hb.shape == "projectile":
+                b.hit_done = True
                 from .skeleton import J
                 hand = self._kp_world()[J["l_hand"]][:2]
-                self.projectiles.append(Projectile(hand.copy(), _ang(p.pos - hand), s.hitbox, s.hitbox.life))
-            elif self._in_hitbox(s.hitbox):
-                self._take_hit(s.hitbox, m.name)
-            elif np.linalg.norm(rel) < 6.0:
-                self.events.append(("miss", self.t, m.name, b.seg, self._local(p.pos)))
+                self.projectiles.append(Projectile(hand.copy(), _ang(p.pos - hand), hb, hb.life))
+            else:
+                if s.active > 1 and hb.shape == "arc" and hb.a1 - hb.a0 < 2 * np.pi - 1e-6:
+                    f0, f1 = i_act / s.active, (i_act + 1) / s.active
+                    hb = replace(hb, a0=hb.a0 + (hb.a1 - hb.a0) * f0, a1=hb.a0 + (hb.a1 - hb.a0) * f1)
+                if self._in_hitbox(hb):
+                    b.hit_done = True
+                    self._take_hit(hb, m.name)
+                elif i_act == s.active - 1:
+                    b.hit_done = True
+                    if np.linalg.norm(rel) < 6.0:
+                        self.events.append(("miss", self.t, m.name, b.seg, self._local(p.pos)))
         if b.t >= b.seg_len:
             self._next_segment()
 

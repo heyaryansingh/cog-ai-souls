@@ -1,0 +1,304 @@
+"""Arena3D environment: 3D mocap boss vs. a humanoid player; harm by per-substep 3D contact.
+
+Frame = 30 ms (mocap rate). Each frame is checked at `substeps` interpolated poses, so a fast blade
+cannot tunnel through a limb. A hit needs the blade (or a fast-moving boss limb) to touch a player body
+capsule while moving; damage scales with contact speed and the body part struck. Rolling gives i-frames,
+a raised shield blocks contact geometrically (the blade must touch the shield first).
+
+Observations are what a player has: rendered pixels from a lock-on camera behind the player, three sound
+events (move-start grunt, swing whoosh, impact), and proprioception. Ground-truth boss keypoints are in
+`info` for scoring perception, not for the agent.
+"""
+from __future__ import annotations
+
+import mujoco
+import numpy as np
+
+from . import mocap
+from .boss import BossRunner, BossSpec, _qz, heading
+from .world import build_world
+
+NONE, ROLL, LIGHT, GUARD, HEAL = range(5)
+N_BUTTONS = 5
+N_ACTIONS = 9 * N_BUTTONS          # 9 directions (0 = none, 1..8 lock-on frame, 1 = toward boss) x buttons
+KP_BODIES = ["root", "lfemur", "ltibia", "lfoot", "rfemur", "rtibia", "rfoot", "lowerback", "thorax", "head",
+             "lhumerus", "lradius", "lhand", "rhumerus", "rradius", "rhand"]
+PART_MULT = {"head": 1.5, "upperneck": 1.4, "lowerneck": 1.4, "thorax": 1.1, "upperback": 1.1, "lowerback": 1.0,
+             "root": 1.0}
+
+# player clips (found automatically in the library, see scripts/arena3d_demo.py)
+WALK = ("CMU_143_40", 39, 129)
+IDLE = ("CMU_143_40", 39)
+CROUCH = ("CMU_139_17", 121)
+
+
+class Arena3D:
+    def __init__(self, spec: BossSpec, units, clips, seed=0, substeps=4, render=False, width=96, height=96,
+                 max_frames=6000, player_strike=None):
+        self.spec, self.U, self.C = spec, units, clips
+        self.m, _ = build_world(spec.scale, spec.weapon, width, height)
+        self.d = mujoco.MjData(self.m)
+        self.rng = np.random.default_rng(seed)
+        self.sub, self.max_frames = substeps, max_frames
+        self.renderer = mujoco.Renderer(self.m, height, width) if render else None
+        self.cam = mujoco.MjvCamera()
+        m = self.m
+        self.blade = m.geom("b_blade").id if spec.weapon != "fist" else -1
+        self.pblade = m.geom("p_blade").id
+        self.shield = m.geom("p_shield").id
+        self.p_geoms = {i for i in range(m.ngeom) if m.geom(i).name.startswith("p_") and i not in (self.pblade, self.shield)}
+        self.b_geoms = {i for i in range(m.ngeom) if m.geom(i).name.startswith("b_") and i != self.blade}
+        self.tip = m.site("b_tip").id if self.blade >= 0 else m.body("b_rhand").id
+        self.kp_b = [m.body("b_" + n).id for n in KP_BODIES]
+        self.player_strike = player_strike
+        self.walk = clips[WALK[0]]
+        self.reset()
+
+    # ------------------------------------------------------------------------------------------------
+    def reset(self):
+        self.boss = BossRunner(self.spec, self.U, self.C, self.rng)
+        self.boss.reset(np.array([0.0, 5.0 + self.spec.scale]), -np.pi / 2)
+        self.p_xy, self.p_yaw = np.array([0.0, 0.0]), np.pi / 2
+        self.hp, self.stamina, self.flasks = 100.0, 100.0, 3
+        self.boss_hp, self.phase = self.spec.hp, False
+        self.t, self.walk_phase = 0, 0.0
+        self.act, self.act_t, self.act_dir = NONE, 0, np.zeros(2)
+        self.hit_lock = {}                       # (source, move instance) -> frames
+        self.move_serial = 0
+        self.p_serial = 0
+        self.near = []                           # per boss strike: min blade-player distance (diagnostic)
+        self.prev_unit = None
+        self.audio = np.zeros(3, np.float32)
+        self.prev_tip = None
+        qb = self.boss.step(self.p_xy, False)
+        self.d.qpos[:63] = qb
+        self.d.qpos[63:] = self._player_q()
+        mujoco.mj_fwdPosition(self.m, self.d)
+        self.prev_qpos = self.d.qpos.copy()
+        return self.observe()
+
+    # --- player body -----------------------------------------------------------------------------
+    def _player_q(self):
+        if self.act == ROLL:
+            c, t = self.C[CROUCH[0]], CROUCH[1]
+        elif self.act == LIGHT and self.player_strike is not None:
+            u = self.player_strike
+            c, t = self.C[u.clip], u.start + min(self.act_t, u.length - 1)
+        elif np.linalg.norm(self.act_dir) > 0 and self.act in (NONE, GUARD):
+            c = self.walk
+            n = WALK[2] - WALK[1]
+            t = WALK[1] + int(self.walk_phase) % n
+        else:
+            c, t = self.C[IDLE[0]], IDLE[1]
+        j = c.joints[t].copy()
+        # yaw: undo the clip's own heading, face p_yaw
+        q = _qmul_np(_qz(self.p_yaw - heading(c.quat[t])), c.quat[t])
+        z = c.pos[t, 2]
+        if self.act == GUARD:
+            j = self._guard_pose(j)
+        return np.concatenate([[self.p_xy[0], self.p_xy[1], z], q / np.linalg.norm(q), j])
+
+    def _guard_pose(self, j):
+        # raise the left forearm across the chest (shield in front): set left shoulder / elbow joints
+        names = [self.m.joint(i).name for i in range(63 // 63 * 0, 0)]
+        jj = j.copy()
+        for nm, v in (("lhumerusrz", 0.9), ("lhumerusry", -0.4), ("lhumerusrx", -1.2), ("lradiusrx", 1.7)):
+            k = self._jidx(nm)
+            if k is not None:
+                jj[k] = v
+        return jj
+
+    def _jidx(self, name):
+        if not hasattr(self, "_jmap"):
+            self._jmap = {self.m.joint(i).name[2:]: self.m.jnt_qposadr[i] - 63 - 7
+                          for i in range(self.m.njnt) if self.m.joint(i).name.startswith("p_") and
+                          self.m.jnt_type[i] == mujoco.mjtJoint.mjJNT_HINGE}
+        return self._jmap.get(name)
+
+    def in_iframes(self):
+        return self.act == ROLL and 2 <= self.act_t <= 11
+
+    def player_free(self):
+        return self.act in (NONE, GUARD) or (self.act == ROLL and self.act_t >= 16) or \
+            (self.act == LIGHT and self.act_t >= 22) or (self.act == HEAL and self.act_t >= 40)
+
+    # --- step --------------------------------------------------------------------------------------
+    def step(self, a):
+        d_i, btn = divmod(int(a), N_BUTTONS)
+        to_b = self.boss.root - self.p_xy
+        face = np.arctan2(to_b[1], to_b[0])
+        if self.player_free():
+            if btn == ROLL and self.stamina >= 18:
+                self.act, self.act_t = ROLL, 0
+                self.stamina -= 18
+                dd = d_i if d_i else 5
+                ang = face + (dd - 1) * np.pi / 4
+                self.act_dir = np.array([np.cos(ang), np.sin(ang)])
+            elif btn == LIGHT and self.stamina >= 12:
+                self.act, self.act_t, self.stamina = LIGHT, 0, self.stamina - 12
+                self.act_dir = np.zeros(2)
+                self.p_serial += 1
+            elif btn == HEAL and self.flasks > 0:
+                self.act, self.act_t, self.flasks = HEAL, 0, self.flasks - 1
+                self.act_dir = np.zeros(2)
+            else:
+                self.act = GUARD if btn == GUARD else NONE
+                self.act_t = 0
+                if d_i:
+                    ang = face + (d_i - 1) * np.pi / 4
+                    self.act_dir = np.array([np.cos(ang), np.sin(ang)])
+                else:
+                    self.act_dir = np.zeros(2)
+        # player motion
+        spd = {NONE: 4.0, GUARD: 2.0, ROLL: 6.5 if self.act_t < 14 else 0.0, LIGHT: 0.0, HEAL: 0.8}[self.act] * 0.03
+        self.p_xy = self.p_xy + self.act_dir * spd
+        self.p_xy = np.clip(self.p_xy, -15, 15)
+        self.walk_phase += 1.2 if np.linalg.norm(self.act_dir) > 0 else 0
+        self.p_yaw = face
+        if self.act == HEAL and self.act_t == 25:
+            self.hp = min(100.0, self.hp + 40)
+        if self.act in (NONE, GUARD):
+            self.stamina = min(100.0, self.stamina + (0.6 if self.act == GUARD else 1.5))
+        # boss
+        unit_before = self.boss.unit
+        qb = self.boss.step(self.p_xy, self.phase)
+        self.audio[:] = 0
+        if self.boss.unit is not unit_before and self.boss.kind == "strike":
+            self.move_serial += 1
+            self.boss_serial = self.move_serial
+            if self.rng.random() < 0.6:
+                self.audio[0] = 1
+        q_new = np.concatenate([qb, self._player_q()])
+        reward, info = self._resolve(q_new)
+        self.act_t += 1
+        if self.act in (ROLL, LIGHT, HEAL) and self.player_free() and self.act != GUARD:
+            pass
+        if self.act == ROLL and self.act_t >= 20 or self.act == LIGHT and self.act_t >= 30 or \
+                self.act == HEAL and self.act_t >= 50:
+            self.act, self.act_t = NONE, 0
+        self.t += 1
+        if not self.phase and self.boss_hp < 0.5 * self.spec.hp and self.spec.phase2:
+            self.phase = True
+        done = self.hp <= 0 or self.boss_hp <= 0 or self.t >= self.max_frames
+        if done:
+            info["outcome"] = "win" if self.boss_hp <= 0 else ("death" if self.hp <= 0 else "timeout")
+            reward += 100.0 if self.boss_hp <= 0 else (-100.0 if self.hp <= 0 else -50.0)
+        return self.observe(), reward, done, info
+
+    def _resolve(self, q_new):
+        """Interpolate poses over substeps; detect blade/limb contacts; apply damage once per move."""
+        m, d = self.m, self.d
+        q_old = self.prev_qpos
+        reward, info = 0.0, {"hit": None, "blocked": False, "dodged": False}
+        tip_old = d.site_xpos[self.tip].copy() if self.blade >= 0 else d.xpos[self.tip].copy()
+        boss_serial = getattr(self, "boss_serial", -1)
+        for k in range(1, self.sub + 1):
+            w = k / self.sub
+            q = (1 - w) * q_old + w * q_new
+            for adr in (3, 66):                      # renormalise root quaternions
+                q[adr:adr + 4] /= np.linalg.norm(q[adr:adr + 4])
+            d.qpos[:] = q
+            mujoco.mj_fwdPosition(m, d)
+            tip = d.site_xpos[self.tip].copy() if self.blade >= 0 else d.xpos[self.tip].copy()
+            tip_v = min(np.linalg.norm(tip - tip_old) / (0.03 / self.sub), 25.0)
+            tip_old = tip
+            if tip_v > 5.0 and self.audio[1] == 0 and self.boss.kind == "strike":
+                self.audio[1] = 1
+            shield_touch, body_touch, pbl_touch = False, None, None
+            for c in d.contact[:d.ncon]:
+                g1, g2 = c.geom1, c.geom2
+                pair = {g1, g2}
+                if self.blade in pair:
+                    other = g2 if g1 == self.blade else g1
+                    if other == self.shield:
+                        shield_touch = True
+                    elif other in self.p_geoms:
+                        body_touch = other
+                if self.pblade in pair:
+                    other = g2 if g1 == self.pblade else g1
+                    if other in self.b_geoms:
+                        pbl_touch = other
+            if (shield_touch or body_touch is not None) and tip_v > 2.5 and ("b", boss_serial) not in self.hit_lock:
+                self.hit_lock[("b", boss_serial)] = 1
+                self.audio[2] = 1
+                if shield_touch and self.act == GUARD:
+                    self.stamina -= 25 + 2 * tip_v
+                    info["blocked"] = True
+                    if self.stamina < 0:
+                        self.stamina = 0
+                        self.hp -= 10
+                elif self.in_iframes():
+                    info["dodged"] = True
+                elif body_touch is not None:
+                    part = m.body(m.geom_bodyid[body_touch]).name[2:]
+                    dmg = (8 + 0.9 * tip_v) * PART_MULT.get(part, 0.8) * (self.spec.scale / 1.6) ** 0.5
+                    self.hp -= dmg
+                    reward -= dmg
+                    info["hit"] = (part, float(dmg))
+                    if self.act in (LIGHT, HEAL):
+                        self.act, self.act_t = NONE, 0       # interrupted
+            if pbl_touch is not None and self.act == LIGHT and ("p", self.p_serial) not in self.hit_lock:
+                self.hit_lock[("p", self.p_serial)] = 1
+                part = m.body(m.geom_bodyid[pbl_touch]).name[2:]
+                dmg = 40.0 * PART_MULT.get(part, 0.8)
+                self.boss_hp -= dmg
+                reward += dmg * 100.0 / self.spec.hp
+                info["boss_hit"] = (part, dmg)
+        self.prev_qpos = q_new.copy()
+        return reward, info
+
+    # --- observation -----------------------------------------------------------------------------
+    def observe(self):
+        body = np.array([self.hp / 100, self.stamina / 100, self.flasks / 3, self.act, self.act_t / 30,
+                         self.in_iframes()], np.float32)
+        obs = {"audio": self.audio.copy(), "body": body}
+        if self.renderer is not None:
+            obs["pixels"] = self.render()
+        return obs
+
+    def camera(self):
+        to_b = self.boss.root - self.p_xy
+        dist = np.linalg.norm(to_b)
+        az = np.degrees(np.arctan2(to_b[1], to_b[0]))
+        cam = self.cam
+        cam.type = mujoco.mjtCamera.mjCAMERA_FREE
+        mid = self.p_xy + to_b * 0.6
+        cam.lookat[:] = [mid[0], mid[1], 0.9 + 0.35 * self.spec.scale]
+        cam.distance = 4.2 + 0.6 * dist
+        cam.azimuth = az + 8          # slightly over the right shoulder, as in souls games
+        cam.elevation = -16
+        return cam
+
+    def render(self, renderer=None):
+        r = renderer or self.renderer
+        r.update_scene(self.d, self.camera())
+        return r.render()
+
+    def clone(self, seed=None):
+        """Independent copy for imagination (shares the model, copies data, boss state and RNG)."""
+        import copy
+        c = copy.copy(self)
+        c.d = copy.deepcopy(self.d)
+        c.renderer = None
+        c.boss = copy.copy(self.boss)
+        c.boss.rng = np.random.default_rng(seed) if seed is not None else copy.deepcopy(self.boss.rng)
+        c.rng = np.random.default_rng(None if seed is None else seed + 1)
+        for k in ("p_xy", "act_dir", "audio", "prev_qpos"):
+            setattr(c, k, np.array(getattr(self, k), copy=True))
+        c.boss.root = self.boss.root.copy()
+        c.boss.origin = getattr(self.boss, "origin", self.boss.root).copy()
+        c.boss.lunge_dir = getattr(self.boss, "lunge_dir", np.zeros(2)).copy()
+        c.hit_lock = dict(self.hit_lock)
+        return c
+
+    def truth(self):
+        """Ground truth for scoring: boss 3D keypoints, current unit, strike id, frame in unit."""
+        b = self.boss
+        return {"kp": self.d.xpos[self.kp_b].copy(), "tip": self.d.site_xpos[self.tip].copy() if self.blade >= 0 else None,
+                "unit": None if b.unit is None else (b.unit.clip, b.unit.start), "move": b.move_id,
+                "kind": b.kind if b.unit is not None else None, "f": getattr(b, "f", 0.0),
+                "hold": b.hold if b.unit is not None else 0}
+
+
+def _qmul_np(a, b):
+    return mocap._qmul(a, b)

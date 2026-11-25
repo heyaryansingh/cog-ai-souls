@@ -47,6 +47,8 @@ class Segment:
     leap: bool = False         # travel aims at the player's position at segment start
     hitbox: Hitbox | None = None
     impact: int = 0            # tick within a strike when the hitbox is applied (0-based)
+    active: int = 1            # >1: the hitbox is live for this many ticks from `impact` (one hit per strike);
+                               # arcs then sweep from a0 to a1 across the window (roll the way the swing travels)
 
 
 @dataclass(frozen=True)

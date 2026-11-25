@@ -1,0 +1,3 @@
+cheat win 0.50 {'knight': np.float64(0.33), 'beast': np.float64(0.33), 'caster': np.float64(0.33), 'giant': np.float64(1.0)} bossHP 0.24 s/fight 0
+cont win 0.67 {'knight': np.float64(0.67), 'beast': np.float64(1.0), 'caster': np.float64(0.0), 'giant': np.float64(1.0)} bossHP 0.19 s/fight 0
+planner win 0.58 {'knight': np.float64(0.67), 'beast': np.float64(0.67), 'caster': np.float64(0.0), 'giant': np.float64(1.0)} bossHP 0.26 s/fight 246

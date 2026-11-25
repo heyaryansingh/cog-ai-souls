@@ -1,0 +1,15 @@
+{
+ "oracle_dodger": {
+  "win": 0.0,
+  "boss_hp_left": 0.6485034396944148,
+  "outcomes": [
+   "timeout",
+   "timeout",
+   "timeout",
+   "timeout",
+   "timeout",
+   "timeout"
+  ],
+  "sec_per_fight": 14.825172384579977
+ }
+}

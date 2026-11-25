@@ -6,3 +6,4 @@ venv/
 runs/
 checkpoints/
 *.egg-info/
+data/mocap/
