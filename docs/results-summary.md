@@ -18,6 +18,8 @@ Further results for the slow mind:
 - The programs it recovers are readable: move count exact for 19/40 bosses and within one move for 34/40, and reactive laws such as "heal → slam" are discovered.
 - With zero pretraining it beats a model-free meta-learner given ~29k training fights.
 
+![Learning curves](figures/learning_curves.png)
+
 ## Generalization (Entry 11)
 
 | Split | What is new | Frozen | Slow mind | Oracle | Gap closed |
@@ -28,6 +30,8 @@ Further results for the slow mind:
 
 - **T3:** the novelty proposal adds grab to the program for 30/30 bosses, 25 of them after a single fight.
 - **T4:** a learned self-model recovers all of the loss caused by a wrong body model. The ablation shows the gain comes from proprioception (stamina, heal time), not i-frames.
+
+![Generalization](figures/generalization.png)
 
 ## Cognitive-science findings
 

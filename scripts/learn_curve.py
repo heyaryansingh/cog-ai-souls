@@ -55,7 +55,7 @@ def run_boss(args):
         bosses, weights = ([boss], [1.0]) if mode == "oracle" else (sm.particles, sm.weights)
         pol = MixturePlanner(bosses, weights, mode="map" if mode in ("oracle", "frozen", "map") else "mixture", n_rollouts=n_rollouts, horizon=horizon,
                              seed=seed)
-        if mode == "online":
+        if mode in ("online", "online_netsup"):
             pol = OnlineMixturePlanner(sm, every=200, n_rollouts=n_rollouts, horizon=horizon, seed=seed)
         if self_model != "true":           # believed body rules (T4); "true" = agent knows its body
             pol.believed_rules = rb.current
@@ -66,20 +66,20 @@ def run_boss(args):
             rb.update(r["events"], true_rules=rules if self_model != "iframes" else None,
                       learn_iframes=self_model != "proprio")
         t0 = time.time()
-        if mode in ("net", "netmix", "netsup") and a == 0:   # M3: seed the slow mind with the intuition net's proposal
+        if mode in ("net", "netmix", "netsup", "online_netsup") and a == 0:   # M3: seed the slow mind with the intuition net's proposal
             import torch
             from rtb.intuition import IntuitionNet, propose
             torch.set_num_threads(1)
             net = IntuitionNet(); net.load_state_dict(torch.load("checkpoints/intuition.pt")); net.eval()
             nb = propose(net, r["trace"], boss, theta)
-            if mode == "netsup":         # superset proposal: the net's moves + every library move it left out
+            if mode in ("netsup", "online_netsup"):         # superset proposal: the net's moves + every library move it left out
                 from rtb.learner import _add, initial_belief
                 have = {m.primitive.name for m in nb.moves}
                 for m in initial_belief(theta, boss.tell_ticks, boss.cue_noise, boss.dmg_scale).moves:
                     if m.primitive.name not in have:
                         nb = _add(nb, m)
             sm = SlowMind(boss, theta=theta, n_particles=n_particles, sweeps=sweeps, seed=idx,
-                          init=nb if mode in ("net", "netsup") else [nb, None])
+                          init=nb if mode in ("net", "netsup", "online_netsup") else [nb, None])
             sm.update(r["trace"], weigh_after_move=mode == "netmix")
         elif mode not in ("oracle", "frozen"):      # control conditions: no learning
             sm.update(r["trace"])
