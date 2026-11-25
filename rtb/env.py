@@ -113,6 +113,7 @@ class MiniSouls:
         self.done = False
         self.outcome = None
         self.last_action = IDLE
+        self.events = []          # own-body evidence: (dodge tick or 0, was hit) at each in-reach impact
         self.last_obs = self._observe(None)   # no cue yet: the first step emits the cue of s_0
         return self.last_obs
 
@@ -126,6 +127,7 @@ class MiniSouls:
         c.bs = replace(self.bs)
         c.done, c.outcome, c.last_obs = self.done, self.outcome, self.last_obs
         c.last_action = self.last_action
+        c.events = []
         return c
 
     def phase(self) -> int:
@@ -226,6 +228,9 @@ class MiniSouls:
             impact = prim.active if prim.lunge else 1
             if bs.j == impact and not prim.feint and prim.damage > 0:
                 bs.hit_done = True
+                if self.dist <= prim.reach:
+                    dt = self.player.t_in_action if self.player.action == DODGE else 0
+                    self.events.append((dt, not self.in_iframes()))
                 if self.dist <= prim.reach and not self.in_iframes():
                     p, R = self.player, self.R
                     dmg = prim.damage * self.boss.dmg_scale

@@ -399,3 +399,43 @@ class SlowMind:
 
     def map_particle(self) -> Boss:
         return self.particles[int(np.argmax(self.logw))]
+
+
+# ----------------------------------------------------------------------------- self-model (T4)
+class RulesBelief:
+    """Belief about the agent's own body rules.
+
+    Stamina cost, regen and heal duration are read off proprioception (the stamina bar and
+    the heal animation) after one fight, so they are set directly. The i-frame window
+    (start, length) is not directly visible: it is inferred on a grid from every in-reach
+    impact the agent experienced while rolling: a hit at roll tick tau rules tau out of
+    the window, a clean dodge rules it in. The prior favours the rules of the training world.
+    """
+
+    def __init__(self, base, p_base: float = 0.5, noise: float = 0.02):
+        self.base = base
+        self.starts = np.arange(0, 6)
+        self.lens = np.arange(1, 9)
+        S, L = np.meshgrid(self.starts, self.lens, indexing="ij")
+        self.S, self.L = S, L
+        n = S.size
+        prior = np.full(S.shape, (1 - p_base) / (n - 1))
+        prior[(S == base.iframe_start) & (L == base.iframe_len)] = p_base
+        self.logp = np.log(prior)
+        self.noise = noise
+        self.current = base
+
+    def update(self, events, true_rules=None):
+        for (tau, hit) in events:
+            if tau <= 0:
+                continue
+            inside = (self.S <= tau) & (tau < self.S + self.L)
+            p_hit = np.where(inside, self.noise, 1 - self.noise)
+            self.logp += np.log(p_hit if hit else 1 - p_hit)
+        i = np.unravel_index(np.argmax(self.logp), self.S.shape)
+        kw = dict(iframe_start=int(self.S[i]), iframe_len=int(self.L[i]))
+        if true_rules is not None:   # proprioceptive quantities: observed directly
+            kw.update(dodge_cost=true_rules.dodge_cost, stamina_regen=true_rules.stamina_regen,
+                      heal_ticks=true_rules.heal_ticks)
+        self.current = replace(self.base, **kw)
+        return self.current

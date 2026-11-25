@@ -42,4 +42,4 @@ def fight(boss, policy, rules: Rules = Rules(), seed=0, log_every: int = 0, max_
         if done:
             break
     return {"outcome": info["outcome"], "ticks": env.t, "boss_hp_frac": max(env.boss_hp, 0) / boss.max_hp,
-            "hp": max(env.player.hp, 0), "seconds": time.time() - t0, "decisions": decisions, "log": lines, "trace": trace}
+            "hp": max(env.player.hp, 0), "seconds": time.time() - t0, "decisions": decisions, "log": lines, "trace": trace, "events": list(env.events)}

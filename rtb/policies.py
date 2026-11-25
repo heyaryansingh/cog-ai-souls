@@ -128,6 +128,8 @@ class OraclePlanner:
         model = model or self.model
         if model is not env.boss:          # imagine with the believed program, not the real one
             sim.boss, sim._pmf = model, model.windup_pmf()
+        if getattr(self, "believed_rules", None) is not None:   # imagine with the believed body (self-model)
+            sim.R = self.believed_rules
         k, stage, j, p0 = state
         pmf = sim._pmf[p0, k]
         D = j
