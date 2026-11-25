@@ -168,13 +168,36 @@ class ReflexPolicy(OraclePlanner):
 class MixtureReflexPolicy(MixturePlanner):
     """Reflex over the slow mind's program mixture (features averaged over programs)."""
 
-    def __init__(self, bosses, weights, net=None, gate=0.0, **kw):
+    def __init__(self, bosses, weights, net=None, gate=0.0, surprise=0, window=40, **kw):
+        """surprise > 0: model-adequacy gate. Plan with the model while it explains the cue stream;
+        act on reflex while the last `window` ticks hold >= `surprise` cues the mixture found
+        implausible (predictive p < 0.01). One noisy cue is common; a run of them is an unmodelled move."""
         super().__init__(bosses, weights, **kw)
         self.net, self.gate, self.planned, self.decisions = net, gate, 0, 0
+        self.surprise, self.window = surprise, window
+        from collections import deque
+        self._odd = deque(maxlen=window)
+        self.reflexed = 0
+
+    def _mix_lev(self):
+        lw = self.prior_logw + np.array([f.log_evidence for f in self.filters])
+        m = lw.max()
+        return m + np.log(np.exp(lw - m).sum())
+
+    def observe(self, obs):
+        before = self._mix_lev() if self.surprise else 0.0
+        super().observe(obs)
+        if self.surprise:
+            self._odd.append(self._mix_lev() - before < np.log(0.01))
 
     def act(self, obs, env):
         import torch
         self.decisions += 1
+        if self.surprise:
+            if sum(self._odd) < self.surprise:
+                self.planned += 1
+                return super().act(obs, env)
+            self.reflexed += 1
         lw = self.prior_logw + np.array([f.log_evidence for f in self.filters])
         x = mixture_features(self.filters, lw, obs, env, self.projected)
         with torch.no_grad():
@@ -183,3 +206,26 @@ class MixtureReflexPolicy(MixturePlanner):
             self.planned += 1
             return super().act(obs, env)
         return int(np.argmax(p))
+
+
+def load_reflex(spec: str):
+    """'a.pt' or 'a.pt+b.pt+c.pt' (an ensemble: logits averaged as log-probs)."""
+    import torch
+    import torch.nn as nn
+    nets = []
+    for path in spec.split("+"):
+        n = make_net()
+        n.load_state_dict(torch.load(path))
+        n.eval()
+        nets.append(n)
+    if len(nets) == 1:
+        return nets[0]
+
+    class Ensemble(nn.Module):
+        def __init__(self, ms):
+            super().__init__()
+            self.ms = nn.ModuleList(ms)
+
+        def forward(self, x):
+            return torch.stack([torch.log_softmax(m(x), -1) for m in self.ms]).mean(0)
+    return Ensemble(nets).eval()

@@ -1,0 +1,3 @@
+planner:12                               win 46.2% [40%-53%]  s/fight 2.73  planned 0.00  n=240
+reflex:checkpoints/reflex48_it2.pt+checkpoints/reflex48_it4.pt+checkpoints/reflex48_it5.pt@gate0.5 win 52.1% [46%-58%]  s/fight 7.91  planned 0.79  n=240
+  reflex:checkpoints/reflex48_it2.pt+checkpoints/reflex48_it4.pt+checkpoints/reflex48_it5.pt@gate0.5 vs planner:12: only-reflex 41, only-base 27, sign p=0.1143

@@ -1,0 +1,9 @@
+planner:12                               win 46.2% [40%-53%]  s/fight 2.78  planned 0.00  n=240
+planner:48                               win 56.7% [50%-63%]  s/fight 9.98  planned 0.00  n=240
+reflex:checkpoints/reflex48_it2.pt       win 55.8% [50%-62%]  s/fight 0.07  planned 0.00  n=240
+reflex:checkpoints/reflex48_it4.pt       win 61.7% [55%-68%]  s/fight 0.06  planned 0.00  n=240
+reflex:checkpoints/reflex48_it5.pt       win 52.5% [46%-59%]  s/fight 0.06  planned 0.00  n=240
+  planner:48 vs planner:12: only-planner 57, only-base 32, sign p=0.0105
+  reflex:checkpoints/reflex48_it2.pt vs planner:12: only-reflex 54, only-base 31, sign p=0.0165
+  reflex:checkpoints/reflex48_it4.pt vs planner:12: only-reflex 63, only-base 26, sign p=0.0001
+  reflex:checkpoints/reflex48_it5.pt vs planner:12: only-reflex 52, only-base 37, sign p=0.1374

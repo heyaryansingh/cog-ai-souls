@@ -1,0 +1,237 @@
+{
+ "args": {
+  "split": "T3",
+  "bosses": 2,
+  "attempts": 2,
+  "latency": 4,
+  "mode": "mixture",
+  "particles": 4,
+  "sweeps": 3,
+  "rollouts": 12,
+  "horizon": 45,
+  "procs": 1,
+  "tag": "_smoke",
+  "prior": "star",
+  "n_test": 10,
+  "self_model": "true"
+ },
+ "results": [
+  {
+   "boss": 0,
+   "attempt": 1,
+   "outcome": "death",
+   "boss_hp_frac": 0.49,
+   "hp": 0,
+   "ticks": 162,
+   "fight_s": 0.11606359481811523,
+   "learn_s": 0.4808008670806885,
+   "K_map": 8,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 4,
+   "accepted": [
+    "split delayed_slam",
+    "retype delayed_slam->slam",
+    "delete sweep",
+    "add novel grab",
+    "retype lunge->feint",
+    "delete slam",
+    "birth aoe@9",
+    "delete sweep",
+    "retype slam->delayed_slam",
+    "merge delayed_slam",
+    "add novel grab"
+   ]
+  },
+  {
+   "boss": 0,
+   "attempt": 2,
+   "outcome": "win",
+   "boss_hp_frac": 0.0,
+   "hp": 58.0,
+   "ticks": 265,
+   "fight_s": 0.13597416877746582,
+   "learn_s": 1.089181661605835,
+   "K_map": 6,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 4,
+   "accepted": [
+    "merge feint",
+    "delete sweep",
+    "delete feint",
+    "delete feint",
+    "split grab",
+    "birth aoe@24",
+    "merge aoe",
+    "delete jab",
+    "birth aoe@24",
+    "delete feint"
+   ],
+   "map_describe": "belief: 6 moves, phase-2 speed x0.74\n  [0] idle          windup~  9.3t (sd 0.35) active 0 rec 0\n  [1] delayed_slam  windup~  9.3t (sd 0.18) active 3 rec 20\n  [2] feint         windup~  7.4t (sd 0.10) active 2 rec 6\n  [3] jab           windup~  5.9t (sd 0.10) active 2 rec 6\n  [4] aoe           windup~ 25.2t (sd 0.10) active 4 rec 24\n  [5] grab          windup~  9.0t (sd 0.10) active 3 rec 25\n  law: if player heals -> move [5] x9.5\n  law: if player attacks -> move [5] x20.1",
+   "map_moves": [
+    [
+     "idle",
+     9.252685385842879
+    ],
+    [
+     "delayed_slam",
+     9.252685385842879
+    ],
+    [
+     "feint",
+     7.404673840429483
+    ],
+    [
+     "jab",
+     5.925760187094702
+    ],
+    [
+     "aoe",
+     25.217159959384293
+    ],
+    [
+     "grab",
+     8.998550590029417
+    ]
+   ],
+   "map_laws": [
+    [
+     1,
+     5,
+     2.25
+    ],
+    [
+     2,
+     5,
+     3.0
+    ]
+   ],
+   "true_describe": "T3-0: 4 moves, phase-2 speed x0.78\n  [0] idle          windup~ 13.1t (sd 0.35) active 0 rec 0\n  [1] aoe           windup~ 23.9t (sd 0.10) active 4 rec 24\n  [2] slam          windup~  8.2t (sd 0.10) active 3 rec 18\n  [3] grab          windup~  8.5t (sd 0.10) active 3 rec 25"
+  },
+  {
+   "boss": 1,
+   "attempt": 1,
+   "outcome": "death",
+   "boss_hp_frac": 0.16,
+   "hp": 0,
+   "ticks": 309,
+   "fight_s": 0.1680150032043457,
+   "learn_s": 0.8125677108764648,
+   "K_map": 8,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 5,
+   "accepted": [
+    "add novel grab",
+    "delete feint",
+    "birth aoe@12",
+    "merge aoe",
+    "retype lunge->feint",
+    "birth aoe@12",
+    "delete feint",
+    "retype delayed_slam->slam",
+    "split aoe",
+    "delete jab"
+   ]
+  },
+  {
+   "boss": 1,
+   "attempt": 2,
+   "outcome": "death",
+   "boss_hp_frac": 0.19,
+   "hp": 0,
+   "ticks": 250,
+   "fight_s": 0.1000220775604248,
+   "learn_s": 1.3706958293914795,
+   "K_map": 9,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 5,
+   "accepted": [
+    "split grab",
+    "retype slam->delayed_slam",
+    "retype delayed_slam->slam",
+    "retype delayed_slam->slam",
+    "delete slam",
+    "delete lunge",
+    "delete sweep",
+    "delete jab",
+    "retype delayed_slam->slam",
+    "retype lunge->feint",
+    "delete sweep"
+   ],
+   "map_describe": "belief: 9 moves, phase-2 speed x0.84\n  [0] idle          windup~ 12.9t (sd 0.35) active 0 rec 0\n  [1] slam          windup~ 10.3t (sd 0.10) active 3 rec 18\n  [2] delayed_slam  windup~ 22.6t (sd 0.18) active 3 rec 20\n  [3] sweep         windup~ 10.6t (sd 0.10) active 4 rec 12\n  [4] lunge         windup~ 12.6t (sd 0.10) active 4 rec 16\n  [5] jab           windup~  6.1t (sd 0.10) active 2 rec 6\n  [6] aoe           windup~ 17.6t (sd 0.10) active 4 rec 24\n  [7] grab          windup~ 12.9t (sd 0.10) active 3 rec 25\n  [8] grab          windup~ 19.6t (sd 0.10) active 3 rec 25\n  law: if player attacks -> move [6] x4.5",
+   "map_moves": [
+    [
+     "idle",
+     12.924405873426762
+    ],
+    [
+     "slam",
+     10.34305243107954
+    ],
+    [
+     "delayed_slam",
+     22.558760963788732
+    ],
+    [
+     "sweep",
+     10.635158308727524
+    ],
+    [
+     "lunge",
+     12.56942338880893
+    ],
+    [
+     "jab",
+     6.093114011482317
+    ],
+    [
+     "aoe",
+     17.557316897478316
+    ],
+    [
+     "grab",
+     12.924405873426762
+    ],
+    [
+     "grab",
+     19.62632918412522
+    ]
+   ],
+   "map_laws": [
+    [
+     2,
+     6,
+     1.5
+    ]
+   ],
+   "true_describe": "T3-1: 5 moves, phase-2 speed x0.86\n  [0] idle          windup~ 15.5t (sd 0.35) active 0 rec 0\n  [1] grab          windup~ 13.1t (sd 0.10) active 3 rec 25\n  [2] lunge         windup~ 15.0t (sd 0.10) active 4 rec 16\n  [3] aoe           windup~ 17.8t (sd 0.10) active 4 rec 24\n  [4] aoe           windup~ 15.6t (sd 0.10) active 4 rec 24\n  law: if player heals -> move [3] x10.8"
+  }
+ ]
+}

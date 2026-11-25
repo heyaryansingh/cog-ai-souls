@@ -57,12 +57,13 @@ def run_boss(args):
                              seed=seed)
         if mode in ("online", "online_netsup"):
             pol = OnlineMixturePlanner(sm, every=200, n_rollouts=n_rollouts, horizon=horizon, seed=seed)
-        if os.environ.get("RTB_REFLEX"):   # Entry 28: act with the distilled reflex over the mixture belief
+        if os.environ.get("RTB_REFLEX") and a < int(os.environ.get("RTB_REFLEX_ATTEMPTS", 99)):   # Entry 28: act with the distilled reflex over the mixture belief
             import torch
-            from rtb.reflex import MixtureReflexPolicy, make_net
+            from rtb.reflex import MixtureReflexPolicy, load_reflex
             torch.set_num_threads(1)
-            net = make_net(); net.load_state_dict(torch.load(os.environ["RTB_REFLEX"])); net.eval()
+            net = load_reflex(os.environ["RTB_REFLEX"])
             pol = MixtureReflexPolicy(bosses, weights, net=net, gate=float(os.environ.get("RTB_GATE", 0)),
+                                      surprise=int(os.environ.get("RTB_SURPRISE", 0)),
                                       mode="map" if mode in ("oracle", "frozen", "map") else "mixture",
                                       n_rollouts=n_rollouts, horizon=horizon, seed=seed)
         if self_model != "true":           # believed body rules (T4); "true" = agent knows its body
@@ -93,7 +94,7 @@ def run_boss(args):
             sm.update(r["trace"])
         out.append({"boss": idx, "attempt": a + 1, "outcome": r["outcome"], "boss_hp_frac": r["boss_hp_frac"],
                     "hp": r["hp"], "ticks": r["ticks"], "fight_s": r["seconds"], "learn_s": time.time() - t0,
-                    "K_map": sm.map_particle().K, "iframes": [rb.current.iframe_start, rb.current.iframe_len], "true_iframes": [rules.iframe_start, rules.iframe_len], "K_true": boss.K,
+                    "K_map": sm.map_particle().K, "reflex_frac": getattr(pol, "reflexed", 0) / max(getattr(pol, "decisions", 1), 1), "iframes": [rb.current.iframe_start, rb.current.iframe_len], "true_iframes": [rules.iframe_start, rules.iframe_len], "K_true": boss.K,
                     "accepted": sm.history[-1]["accepted"] if sm.history else []})
     mp = sm.map_particle()
     out[-1]["map_describe"] = mp.describe()
@@ -130,6 +131,8 @@ def main():
     pr = "" if a.prior == "star" else "_" + os.path.basename(a.prior).replace(".json", "")
     pr += "" if a.self_model == "true" else f"_self-{a.self_model}"
     pr += "_reflex" if os.environ.get("RTB_REFLEX") else ""
+    pr += f"_surp{os.environ['RTB_SURPRISE']}" if os.environ.get("RTB_SURPRISE") else ""
+    pr += f"_ra{os.environ['RTB_REFLEX_ATTEMPTS']}" if os.environ.get("RTB_REFLEX_ATTEMPTS") else ""
     name = f"results/learn_{a.split}_{a.mode}{pr}_lat{a.latency}_b{a.bosses}_a{a.attempts}{a.tag}.json"
     json.dump({"args": vars(a), "results": flat}, open(name, "w"), indent=1)
     print(f"saved {name}  ({time.time() - t0:.0f}s)")

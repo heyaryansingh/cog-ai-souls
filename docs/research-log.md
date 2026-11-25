@@ -609,6 +609,73 @@ Per boss over attempts 2–4 (Wilcoxon on win counts), p = 0.67: superset better
 - **Status:** an unexplained late-attempt cost, so E23's conclusion stands as "does not stack" rather than "harms". It is on the agenda as a diagnostic: log particle sets after each mid-fight refresh, and add a sweeps = 0 refresh control (rebuild filters without re-learning).
 - **Labelling (review point 3):** E22 (pre-registered replication, n = 80, p = 0.013) is the confirmatory within-fight result. The pooled 10.7% → 20.7% table mixes E9 training bosses and test bosses and was assembled after E10's null, so it is exploratory.
 
+## 2026-11-25 · Entry 28: a distilled reflex matches the 48-rollout planner at 1/160 of the compute
+
+**Idea ("fast hands, learned").** The planner simulates 8 actions × n rollouts × 30 ticks for every decision. The reflex (`rtb/reflex.py`) is a 2×128 MLP over a *boss-agnostic summary of the belief*:
+- **threat clock:** P(the next in-reach impact lands in t ticks), for t = 1..20 and 21+;
+- **attack clock:** the same, ignoring reach;
+- **punish clock:** P(the boss stays helpless for t more ticks);
+- **scalars:** unread wind-up mass, idle mass, expected threat damage, unblockable share, reach margin, and the body state.
+
+Because the inputs are a function of the filter's belief, not of a boss identity, one reflex can act on any boss program, including programs the slow mind learns at test time.
+
+**Training.** DAgger (Ross et al. 2011). The teacher is the true-program planner with 48 rollouts, at latency 4, on the 40 training bosses, with training seeds disjoint from evaluation seeds. Each iteration runs 160 fights in which the current reflex acts (the teacher acts with probability β = 1, 0.5, 0.25, 0, …). Every decision is labelled with the teacher's 8 Q-values, the data are aggregated, and the reflex is refit with soft targets softmax(Q/2). Six iterations produced 93k labelled decisions in 40 minutes.
+
+DAgger curve (n = 80 per point): reflex 31% → 51% → 61% → 49% → 61% → 53%. The β = 1 (pure behavioural cloning) reflex is the worst, as DAgger theory predicts.
+
+**Paired evaluation.** 40 train bosses × 6 new seeds = 240 fights, true program, latency 4:
+
+| Agent | Win | s / fight | vs 12-rollout planner (only A won / only B won) |
+|---|---|---|---|
+| Planner, 12 rollouts (all earlier experiments) | 46.2% [40–53] | 2.78 | – |
+| Planner, 48 rollouts (teacher) | 56.7% [50–63] | 9.98 | 57 / 32, p = 0.011 |
+| Reflex, DAgger iteration 2 | 55.8% [50–62] | 0.07 | 54 / 31, p = 0.017 |
+| Reflex, iteration 4 | 61.7% [55–68] | 0.06 | 63 / 26, p = 0.0001 |
+| Reflex, iteration 5 | 52.5% [46–59] | 0.06 | 52 / 37, p = 0.14 |
+
+**Findings:**
+- **The reflex reaches teacher quality.** The mean over the three checkpoints is 56.7%, identical to the teacher, at about 1/160 of the compute per fight.
+- Planning noise is a real cost. Quadrupling rollouts gains 10 points (p = 0.011), so the 12-rollout planner used in every earlier experiment was leaving wins on the table. A reflex trained on noisy labels effectively averages Q over many similar belief states.
+- **Checkpoint variance is large** (52–62%). Picking iteration 4 would be selection on the evaluation set, so the honest claim is "matches the teacher". Next: an ensemble of checkpoints, a metareasoning gate (plan only when the reflex is unsure), held-out T1 bosses, and the reflex acting over the *learned* mixture on T3. T3 includes grab, which the reflex never saw in training.
+- **Relation to R1 (E25 confound):** the reflex is trained on its own state distribution, so it sidesteps the "rollouts don't model the executed policy" issue on the acting side. The planner's rollouts still use the optimistic continuation.
+
+## 2026-11-25 · Entry 29: where the reflex wins, and where it loses
+
+The ensemble (iterations 2 + 4 + 5, log-probs averaged) was evaluated in four settings, all at latency 4.
+
+**1. Ensemble, train bosses, true program, 240 fights** (same seeds as E28):
+
+| Agent | Win | vs 12-rollout planner (only A / only B) |
+|---|---|---|
+| Ensemble reflex | 60.8% [55–67] | 63 / 28, p = 0.0003 |
+
+**2. Gate on action uncertainty (plan when the reflex's top probability is below 0.5): it fails.** The reflex is "unsure" on 79% of decisions, which then go to the 48-rollout planner, and the hybrid gets 52.1%. The reflex's soft targets are deliberately flat between near-tied actions, so its confidence does not measure how hard a decision is.
+
+**3. Held-out T1 bosses** (80 new bosses × 2 seeds, true program):
+
+| Agent | Win |
+|---|---|
+| Planner, 12 rollouts | 48.8% [41–56] |
+| Planner, 48 rollouts | 45.0% [37–53] |
+| Ensemble reflex | 48.1% [41–56] (27 / 28 vs planner-12) |
+
+On held-out bosses more rollouts buy nothing, and the reflex equals the planners at 1/33 of the compute. The train-boss gains in E28 were partly specific to those bosses (more rollouts help there, p = 0.011, but not here). **Honest claim: the reflex reproduces planner quality on unseen bosses, it does not exceed it.**
+
+**4. Reflex acting over the *learned* mixture on T3** (net superset seed, 80 bosses × 4 attempts, paired with E20/E23's planner run):
+
+| Attempt | Planner | Reflex | Only reflex won / only planner won | Deaths (planner / reflex) |
+|---|---|---|---|---|
+| 1 | 11% | **41%** | 27 / 3, p < 10⁻⁵ | 71 / 47 |
+| 2 | 50% | 52% | 19 / 17 | 40 / 38 |
+| 3 | 62% | 48% | 12 / 24, p = 0.065 | 30 / 42 |
+| 4 | **81%** | 48% | 4 / 31, p < 10⁻⁵ | 15 / 42 |
+
+**Findings:**
+- **A clean crossover.** When the model is wrong (attempt 1: the prior has no grab), the reflex nearly quadruples wins. Once the slow mind has learned the boss, the planner exploits the model and the reflex plateaus near 48%.
+- **Interpretation:** the planner trusts its model completely, because rollouts never imagine an unmodelled move. The reflex was trained on the teacher's choices *across* many bosses and belief states, so it encodes generic defensive habits (stamina reserve, spacing) that are robust to model error. It cannot exploit a specific boss the way search can.
+- This is the dual-process story in miniature: habits for the unfamiliar, deliberation for the familiar. Note this is the *opposite* of the classic "habits for the familiar" arbitration (Daw et al. 2005). Here the habit is the robust generic prior, and the model becomes trustworthy only after learning.
+- **Next (running):** arbitrate on *model adequacy*, not action uncertainty. Plan while the mixture explains the cue stream; act on reflex while the last 40 ticks hold ≥ 4 cues the mixture found implausible (predictive p < 0.01). One noisy cue is common, a run of them is an unmodelled move. Also: reflex on attempt 1 only, and the same tests on T1 (no novel move, only timing misfit).
+
 ## Agenda (living)
 
 Done: latency + laws (E5); M2 slow mind (E6); RL² baseline (E7, E13); empirical Bayes (E7); T4 self-model (E8, E10); T2/T3 generalization (E10–11); M3 intuition net + amortization gap (E12, E18); active scouting (E15).
