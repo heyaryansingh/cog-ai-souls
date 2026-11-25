@@ -518,6 +518,29 @@ The E10 null now looks like a small-sample miss.
 - The gap to the oracle on attempt 1 (11–15% vs 75%) is the clearest picture of what an unseen move costs, and of why first-encounter performance needs prior knowledge, not just fast learning.
 - Best configuration for the paper: slow mind + net superset seed, with within-fight learning reported separately (E22: it doubles first-encounter wins on T1).
 
+## 2026-11-25 · Entry 24: why the latency-4 ceiling is low, and a failed fix
+
+**Death taxonomy at latency 4** (`scripts/death_taxonomy.py 4`): true-program oracle, 16 bosses, 109 hits taken.
+
+| What the player was doing when hit | Hits |
+|---|---|
+| Blocking | 55 |
+| Idle, no defensive action | 22 |
+| Healing | 18 |
+| Heavy attack | 8 |
+| Light attack | 2 |
+| Mistimed dodge | **2** |
+
+At latency 4 the planner almost never rolls. It hedges by blocking, which costs 25% chip damage plus a stamina drain, so a fight becomes a slow bleed. The 80% "belief > 0.5" share means the agent usually knows *which* move is coming; it cannot time it.
+
+**Failed fix, the "humble" imagined player.**
+- Hypothesis: rollouts use a continuation player that knows the exact remaining wind-up, so imagined rolls always succeed. That should bias the planner, though if anything it would favour rolls. The humble player in imagination instead (i) cannot read the move during the tell + latency and (ii) predicts the wind-up end by its conditional median.
+- Result at latency 4: **23.8% wins vs 41.2%**, with a quarter of fights timing out. The humble imagined player never attacks during uncertainty, so the planner learns that "nothing good happens" and turtles.
+- Reverted to the default (`humble=False`).
+- **Lesson:** the planner's optimism about its own future is *useful*, because it keeps the agent aggressive. A properly belief-consistent rollout needs a belief-aware *policy*, e.g. the planner itself recursively or a distilled reflex policy, not a timid heuristic.
+
+**Next ceiling idea:** a predictive commitment roll. Roll at the predicted impact minus the i-frame start, using the conditional wind-up distribution: choose the roll tick that maximizes P(impact ∈ i-frames). With 4 i-frame ticks and wind-up sd of about 10%, this should beat blocking on most moves.
+
 ## Agenda (living)
 
 Done: latency + laws (E5); M2 slow mind (E6); RL² baseline (E7, E13); empirical Bayes (E7); T4 self-model (E8, E10); T2/T3 generalization (E10–11); M3 intuition net + amortization gap (E12, E18); active scouting (E15).

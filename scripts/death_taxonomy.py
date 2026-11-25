@@ -8,11 +8,13 @@ from rtb.boss import make_splits
 from rtb.env import MiniSouls, ACTION_NAMES, ACTIVE
 from rtb.policies import OraclePlanner
 
+from collections import deque
+LAT = int(sys.argv[1]) if len(sys.argv) > 1 else 0
 splits = make_splits(0)
 cats, deaths = Counter(), Counter()
 for i, boss in enumerate(splits["train"][:16]):
     env = MiniSouls(boss, seed=1000 + 37 * i); obs = env.reset()
-    pol = OraclePlanner(12, 45, seed=i); pol.reset(env)
+    pol = OraclePlanner(12, 45, seed=i); pol.reset(env); pol.latency = LAT; pend = deque()
     while True:
         a = pol.act(obs, env) if obs["free"] else 0
         hp, st = env.player.hp, env.player.stamina
@@ -20,7 +22,8 @@ for i, boss in enumerate(splits["train"][:16]):
         belief_true = pol.filter.move_marginal()[k]
         pa = ACTION_NAMES[a] if obs["free"] else ACTION_NAMES[env.player.action]
         tia = env.player.t_in_action
-        obs, _, done, _ = env.step(a); pol.observe(obs)
+        obs, _, done, _ = env.step(a); pend.append(obs)
+        if len(pend) > LAT: pol.observe(pend.popleft())
         if env.player.hp < hp:
             prim = boss.moves[k].primitive.name
             if pa == "dodge":

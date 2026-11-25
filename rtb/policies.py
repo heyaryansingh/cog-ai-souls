@@ -38,7 +38,16 @@ class DodgeEverything:
         return LIGHT
 
 
-def oracle_continuation(env: MiniSouls) -> int:
+def _cond_median_D(env, bs):
+    """Median remaining wind-up length given j ticks elapsed: what an observer could predict."""
+    tail = env._pmf[bs.p0, bs.k][bs.j - 1:]
+    if tail.sum() <= 0:
+        return bs.j
+    c = np.cumsum(tail) / tail.sum()
+    return bs.j + int(np.searchsorted(c, 0.5))
+
+
+def oracle_continuation(env: MiniSouls, humble: bool = False, latency: int = 0) -> int:
     """Rollout policy inside a *sampled* world where the boss state is known. Used only in
     imagination by the planners (and, with the true state, as a 'cheat' upper bound).
 
@@ -47,6 +56,13 @@ def oracle_continuation(env: MiniSouls) -> int:
     reserve, otherwise close distance when stamina allows."""
     R, bs, boss, p = env.R, env.bs, env.boss, env.player
     m = boss.moves[bs.k]
+    D = bs.D
+    if humble and bs.stage == WINDUP:
+        # an imagined player with the agent's own limits: it cannot read the move before the tell
+        # (plus perception delay) is over, and it predicts the wind-up end, it does not know it
+        if bs.j <= boss.tell_ticks + latency and m.primitive.name != "idle":
+            return IDLE if env.dist <= 4.0 else APPROACH
+        D = _cond_median_D(env, bs)
     prim = m.primitive
     impact = prim.active if prim.lunge else 1
     reach = prim.reach + prim.lunge
@@ -54,7 +70,7 @@ def oracle_continuation(env: MiniSouls) -> int:
     can_dodge = p.stamina >= R.dodge_cost
     if bs.stage in (WINDUP, ACTIVE) and threat:
         if bs.stage == WINDUP:
-            tti = (bs.D - bs.j + 1) + impact      # dodge tick that would meet the impact
+            tti = (D - bs.j + 1) + impact      # dodge tick that would meet the impact
         else:
             tti = impact - bs.j + 1
         if can_dodge and R.iframe_start <= tti <= R.iframe_start + R.iframe_len - 1:
@@ -70,7 +86,7 @@ def oracle_continuation(env: MiniSouls) -> int:
     if bs.stage == RECOVERY:
         safe_ticks = m.recovery - bs.j
     elif bs.stage == WINDUP and (prim.damage == 0 or prim.feint or env.dist > reach + 1.0):
-        safe_ticks = bs.D - bs.j + (m.active + m.recovery if (prim.feint or prim.damage == 0) else 0)
+        safe_ticks = D - bs.j + (m.active + m.recovery if (prim.feint or prim.damage == 0) else 0)
     if p.hp < 45 and p.heals > 0 and (safe_ticks >= R.heal_ticks or env.dist > 5.0):
         return HEAL
     if env.dist <= R.light_reach and safe_ticks > 0:
@@ -99,13 +115,14 @@ class OraclePlanner:
     """
 
     def __init__(self, n_rollouts=12, horizon=30, seed=0, actions=(IDLE, APPROACH, RETREAT, LIGHT, HEAVY, DODGE, BLOCK, HEAL),
-                 model_boss=None, utility="linear"):
+                 model_boss=None, utility="linear", humble=False):
         """utility: "linear" = env reward (boss damage - 2 x player damage, +-100 win/death);
         "concave" = boss damage + value(hp_end) - value(hp_start), with value concave in HP, so losing
         HP when low is worse and heals are worth more when low.
         model_boss: the boss program the agent BELIEVES in. None = the true one (oracle).
         Passing a wrong program shows how much a learner has to gain by inferring the boss."""
         self.n, self.h = n_rollouts, horizon
+        self.humble = humble
         self.model_boss = model_boss
         self.utility = utility
         self.latency = 0          # set by run.fight; belief is then projected `latency` ticks ahead
@@ -144,7 +161,7 @@ class OraclePlanner:
             total += r
             if done:
                 break
-            a = oracle_continuation(sim) if sim.player_free() else IDLE
+            a = oracle_continuation(sim, self.humble, self.latency) if sim.player_free() else IDLE
         rb = getattr(self, "rules_belief", None)
         if rb is not None and first == DODGE and self.info_weight > 0:
             # active self-identification: value the information a roll-timed impact gives about i-frames
