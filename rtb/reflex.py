@@ -182,6 +182,7 @@ class MixtureReflexPolicy(MixturePlanner):
         self._lp = deque(maxlen=100)     # per-tick mixture log predictive of the cue (model-adequacy signal)
         self.attempt = 0                 # set by the caller (fights already seen on this boss)
         self.metagate, self.meta_cost = None, 0.0
+        self.blend_adapt = None   # R11: (lam_lo, lam_hi, a, b): lambda_t rises with model inadequacy u_t
 
     def _mix_lev(self):
         lw = self.prior_logw + np.array([f.log_evidence for f in self.filters])
@@ -230,6 +231,15 @@ class MixtureReflexPolicy(MixturePlanner):
                 return super().act(obs, env)
             self.reflexed += 1
             return int(np.argmax(p))
+        if self.blend_adapt is not None:
+            lo, hi, a_, b_ = self.blend_adapt
+            if len(self._lp) >= 20:
+                u = float(np.clip((-np.mean(self._lp) - a_) / (b_ - a_), 0.0, 1.0))
+            else:
+                u = 1.0 if self.attempt == 0 else 0.5
+            self.lam_trace = getattr(self, "lam_trace", []) + [u]
+            q = self.q_values(obs, env)
+            return self.actions[int(np.argmax(q + (lo + (hi - lo) * u) * np.log(np.maximum(p[list(self.actions)], 1e-6))))]
         if self.blend > 0:
             q = self.q_values(obs, env)
             return self.actions[int(np.argmax(q + self.blend * np.log(np.maximum(p[list(self.actions)], 1e-6))))]

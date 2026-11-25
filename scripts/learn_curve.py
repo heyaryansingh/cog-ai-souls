@@ -80,6 +80,8 @@ def run_boss(args):
             pol.metagate, pol.meta_cost = g, float(os.environ.get("RTB_METACOST", 0))
         if hasattr(pol, "attempt"):
             pol.attempt = a
+        if os.environ.get("RTB_BLEND_ADAPT") and hasattr(pol, "blend_adapt"):   # R11
+            pol.blend_adapt = tuple(float(v) for v in os.environ["RTB_BLEND_ADAPT"].split(","))
         if self_model != "true":           # believed body rules (T4); "true" = agent knows its body
             pol.believed_rules = rb.current
         if self_model == "active":         # learned self-model + information-seeking rolls
@@ -108,7 +110,8 @@ def run_boss(args):
             sm.update(r["trace"])
         out.append({"boss": idx, "attempt": a + 1, "outcome": r["outcome"], "boss_hp_frac": r["boss_hp_frac"],
                     "hp": r["hp"], "ticks": r["ticks"], "fight_s": r["seconds"], "learn_s": time.time() - t0,
-                    "K_map": sm.map_particle().K, "reflex_frac": getattr(pol, "reflexed", 0) / max(getattr(pol, "decisions", 1), 1), "iframes": [rb.current.iframe_start, rb.current.iframe_len], "true_iframes": [rules.iframe_start, rules.iframe_len], "K_true": boss.K,
+                    "K_map": sm.map_particle().K, "reflex_frac": getattr(pol, "reflexed", 0) / max(getattr(pol, "decisions", 1), 1),
+                    "u_mean": float(np.mean(pol.lam_trace)) if getattr(pol, "lam_trace", None) else None, "iframes": [rb.current.iframe_start, rb.current.iframe_len], "true_iframes": [rules.iframe_start, rules.iframe_len], "K_true": boss.K,
                     "accepted": sm.history[-1]["accepted"] if sm.history else []})
     mp = sm.map_particle()
     out[-1]["map_describe"] = mp.describe()
@@ -151,6 +154,7 @@ def main():
     pr += f"_blend{os.environ['RTB_BLEND']}" if os.environ.get("RTB_BLEND") else ""
     pr += f"_phantom{os.environ['RTB_PHANTOM']}" if os.environ.get("RTB_PHANTOM") else ""
     pr += f"_meta{os.environ.get('RTB_METACOST', 0)}" if os.environ.get("RTB_METAGATE") else ""
+    pr += "_adapt" + os.environ["RTB_BLEND_ADAPT"].replace(",", "_") if os.environ.get("RTB_BLEND_ADAPT") else ""
     name = f"results/learn_{a.split}_{a.mode}{pr}_lat{a.latency}_b{a.bosses}_a{a.attempts}{a.tag}.json"
     json.dump({"args": vars(a), "results": flat}, open(name, "w"), indent=1)
     print(f"saved {name}  ({time.time() - t0:.0f}s)")
