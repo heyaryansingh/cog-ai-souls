@@ -37,6 +37,7 @@ LAW_BOOSTS = (1.5, 2.25, 3.0)
 P_NO_LAW = float(np.exp(-0.4))
 import os as _os
 DELETE_BIAS = float(_os.environ.get("RTB_DELETE_BIAS", "0"))   # extra log-prior for deleting a move; -inf = never delete (dormant reservoir)
+LESION = set(filter(None, _os.environ.get("RTB_LESION", "").split(",")))   # ablations: timing, structure, transitions, laws
 USE_REGROUP = False   # Entry 16: the regroup move did not help and diluted the proposal budget                                   # Poisson(0.8) split over 2 contexts
 
 
@@ -191,7 +192,7 @@ def gibbs_params(boss: Boss, stats, theta: Theta, rng) -> Boss:
     moves = list(boss.moves)
     speed = boss.phase2_speed
     # wind-up medians
-    for k, m in enumerate(moves):
+    for k, m in (enumerate(moves) if "timing" not in LESION else []):
         name = m.primitive.name
         lp = -0.5 * ((np.log(GRID) - theta.log_median[name]) / theta.log_median_sd[name]) ** 2
         for ph, sc in ((0, 1.0), (1, speed)):
@@ -205,7 +206,8 @@ def gibbs_params(boss: Boss, stats, theta: Theta, rng) -> Boss:
     for (k, p, D, c) in windups:
         if p == 1:
             lp = lp + _ll_grid([D], [c], moves[k].sigma, 1.0, grid=moves[k].median * SPEED_GRID)
-    speed = float(SPEED_GRID[rng.choice(len(SPEED_GRID), p=np.exp(lp - logsumexp(lp)))])
+    if "timing" not in LESION:
+        speed = float(SPEED_GRID[rng.choice(len(SPEED_GRID), p=np.exp(lp - logsumexp(lp)))])
     # transition rows (contexts carrying a law are left to the law step)
     law_ctx = {l[0] for l in boss.laws}
     counts = np.zeros((K, N_DIST_BINS, K))
@@ -216,12 +218,12 @@ def gibbs_params(boss: Boss, stats, theta: Theta, rng) -> Boss:
     for b in range(N_DIST_BINS):
         prior = theta.dirichlet_alpha * K * reach_pref(moves, b, theta.reach_bias) + 1e-3
         for k in range(K):
-            pi[k, b] = rng.dirichlet(prior + counts[k, b])
+            pi[k, b] = rng.dirichlet(prior + counts[k, b]) if "transitions" not in LESION else prior / prior.sum()
     nb = make_boss(boss, moves, pi, speed, ())
     # reactive laws, one context at a time, by enumeration
     laws = []
     attack = [k for k, m in enumerate(moves) if m.primitive.damage > 0]
-    for c in (1, 2):
+    for c in ((1, 2) if "laws" not in LESION else ()):
         tc = [(kp, b, kn) for (kp, b, cc, kn) in trans if cc == c]
         opts, lps = [None], [np.log(P_NO_LAW) + sum(np.log(nb.trans(b, 0)[kp, kn]) for kp, b, kn in tc)]
         for tk in attack:
@@ -511,7 +513,7 @@ class SlowMind:
             paths = [ffbs(boss, tr, self.rng) for tr in self.traces]
             ev = sum(p[1] for p in paths)
             stats = [path_stats(p, tr) for (p, _), tr in zip(paths, self.traces)]
-            prop = propose_structure(boss, stats, self.traces, self.theta, self.rng)
+            prop = None if "structure" in LESION else propose_structure(boss, stats, self.traces, self.theta, self.rng)
             if prop is not None:
                 nb, lprior, label = prop
                 ev_new = evidence(nb, self.traces)
