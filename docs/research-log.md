@@ -212,6 +212,38 @@ T4 bosses come from the training distribution, but the *player rules* change, as
 
 **Interpretation for the paper:** this is the cleanest demonstration of the "slow mind / fast hands" split. Fast hands (the exact filter) track state at 20 Hz. The slow mind revises the *program* on a slower clock, and running that clock inside the fight, not only between deaths, is what lets the agent beat a quarter of bosses on sight.
 
+## 2026-11-25 · Entry 10: generalization splits and the self-model ablation
+
+All runs: 30 held-out bosses × 8 attempts, latency 4.
+
+**T3, a never-seen move (grab: unblockable, its own visual group, absent from the prior's move set).**
+- Slow mind: 16.7% on attempt 1, rising to **71.7%** [63–79] on attempts 5–8.
+- True-program oracle: 80.0% [72–86].
+- Grab was added to the program by the novelty proposal for **30/30 bosses**: 25 after the first fight, the rest by attempt 4.
+- The CRP-style "explain an unexplained cue group with a new move" step works as designed. (T3 bosses are easier than training bosses for everyone, since the oracle is at 80%: grab has 1.5 reach and is avoidable by spacing.)
+
+**T2, unseen move combinations.** Slow mind 13.3% → 25.8% [19–34] on attempts 5–8, with 12/30 never beaten. Oracle and frozen controls for T2 are queued; T2 can't be read without them.
+
+**T4 self-model ablation** (re-run with the i-frame identifiability fix):
+
+| Learned part of the body model | Attempts 5–8 | Never beaten |
+|---|---|---|
+| Nothing (training rules) | 20.0% [14–28] (Entry 8) | 14/30 |
+| i-frames only | 15.8% [10–23] | 15/30 |
+| Proprioception only (dodge cost, regen, heal time) | 46.7% [38–56] | 6/30 |
+| Both | 48.3% [40–57] | 6/30 |
+
+**Finding:** the whole T4 benefit comes from proprioceptive quantities. Learned i-frames add nothing; alone they slightly hurt, since an agent that thinks rolls are safer but has the wrong stamina budget over-rolls. The i-frame window is rarely probed at discriminating ticks. That itself suggests an **active-learning experiment**: deliberately roll early or late against weak attacks to identify the window (information-gain scouting, from the plan).
+
+**Within-fight learning, replication on T1** (30 bosses × 4 attempts, same seeds):
+
+| Condition | Attempt 1 | Attempts 2–3 |
+|---|---|---|
+| Between-fight only | 13.3% | 15.0% |
+| + within-fight | 13.3% | 31.7% |
+
+The attempt-1 doubling from Entry 9 did **not** replicate. The benefit appears in attempts 2–3 instead. Pooled over both experiments (210 fights per condition in attempts 1–3): 26.2% vs 20.0%. **Revised claim:** within-fight learning gives a modest speed-up of early learning, and its timing is not robust. It stays an option, not a headline.
+
 ## Agenda (living)
 
 1. ~~Add reaction latency and reactive laws; re-measure at latency 4.~~ Done (Entry 5).
