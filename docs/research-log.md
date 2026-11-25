@@ -737,6 +737,32 @@ Per attempt, blend λ = 3: T1 26 / 33 / 46%; T3 28 / 65 / 69 / 73%.
 
 **Next: privileged-teacher DAgger** ("learning by cheating"). The teacher plans with the *true* program, while the student sees belief features computed from the slow mind's *learned* mixture during learning attempts. The student then learns directly how to act well when its model is wrong, which is the regime where all the remaining gap lives.
 
+## 2026-11-25 · Pre-registration P1 (written before any run on these bosses)
+
+This responds to review point 2: E30–31 picked winners from several variants after seeing results. Here they are re-tested on fresh bosses.
+
+**Bosses and seeds.** Split seed 1 (`RTB_SPLIT_SEED=1`) gives new T1 and T3 sets, never used before; the reflex and intuition net were trained on split-seed-0 training bosses. Fight seeds are offset by 100000. n = 80 bosses per split; T1 gets 3 attempts (mixture slow mind), T3 gets 4 attempts (net superset seed).
+
+**Reflex.** The E29 ensemble (`reflex48_it2+it4+it5`), frozen before this registration. The privileged-teacher reflex (E32, still training) is *not* part of P1.
+
+**Conditions:**
+- (a) planner, 12 rollouts;
+- (b) planner, 48 rollouts (compute-matched to the reflex's teacher, review point 3);
+- (c) reflex;
+- (d) blend λ = 3;
+- (e) T3 only: reflex on attempt 1, then planner.
+
+**Primary outcome.** Per-boss total wins over all attempts, compared with a one-sided Wilcoxon signed-rank test (boss-clustered), α = 0.05.
+
+**Hypotheses:**
+- H1: (d) > (a) on T1.
+- H2: (d) > (a) on T3.
+- H3: (d) > (b) on T3, so the gain is not just "better teacher".
+- H4: (c) > (b) on T1.
+- H5: (e) > (a) on T3.
+
+**Secondary (descriptive only):** per-attempt win rates and fight-level sign tests.
+
 ## Agenda (living)
 
 Done: latency + laws (E5); M2 slow mind (E6); RL² baseline (E7, E13); empirical Bayes (E7); T4 self-model (E8, E10); T2/T3 generalization (E10–11); M3 intuition net + amortization gap (E12, E18); active scouting (E15).
@@ -757,3 +783,9 @@ Next, in priority order:
 - R4. *Superset controls:* a no-net full-library seed; hold one primitive out of the net's training library for a true novelty test; check prior/q importance weights on net-seeded particles.
 - R5. *Statistics:* boss-clustered tests (per-boss Wilcoxon or mixed effects) for every close call; survival analysis and counterbalanced order for the human study.
 - R6. ~~Verify that RTB_DELETE_BIAS reaches the sampler.~~ Done: it is added to the delete proposal's log prior (learner.py:325), which enters the MH acceptance (learner.py:521). With -inf, deletes are never accepted.
+
+**From the second external review (Nov 25, 20:12):**
+- R7. *Learned metacontrol gate.* On learned-model states in simulation, label the regret of planner vs reflex against the true-program teacher's Q. Fit a small regressor on belief features plus a running log-predictive score (including timing surprise). Plan only when the predicted gain beats the cost (Hamrick et al. 2017; Lee, Shimojo & O'Doherty 2014). Train on training bosses, test on T1/T3.
+- R8. *Pre-registered replication* of the E30–31 winners on fresh bosses with boss-clustered tests: registered as P1 above.
+- R9. *Compute-matched planner* (48 rollouts over the learned mixture): included in P1.
+- R10. *Phantom attacks.* Rollouts include a generic in-reach hit whose hazard grows with the posterior's model inadequacy, so caution comes from calibrated uncertainty in one planner instead of a separate habit. If this closes the attempt-1 gap alone, it is the stronger result.

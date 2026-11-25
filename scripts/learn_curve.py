@@ -44,14 +44,15 @@ def load_prior(prior: str):
 
 def run_boss(args):
     split, idx, attempts, latency, mode, n_particles, sweeps, n_rollouts, horizon, prior, n_test, self_model = args
-    boss = make_splits(0, n_test=n_test)[split][idx]
+    ss = int(os.environ.get("RTB_SPLIT_SEED", 0))      # fresh boss sets for pre-registered replications
+    boss = make_splits(ss, n_test=n_test)[split][idx]
     theta = load_prior(prior)
     rb = RulesBelief(Rules())
     rules = T4_RULES if split == "T4" else Rules()
     sm = SlowMind(boss, theta=theta, n_particles=n_particles, sweeps=sweeps, seed=idx)
     out = []
     for a in range(attempts):
-        seed = 5000 + 101 * idx + a
+        seed = 5000 + 101 * idx + a + 100_000 * ss
         bosses, weights = ([boss], [1.0]) if mode == "oracle" else (sm.particles, sm.weights)
         pol = MixturePlanner(bosses, weights, mode="map" if mode in ("oracle", "frozen", "map") else "mixture", n_rollouts=n_rollouts, horizon=horizon,
                              seed=seed)
@@ -132,6 +133,7 @@ def main():
     pr = "" if a.prior == "star" else "_" + os.path.basename(a.prior).replace(".json", "")
     pr += "" if a.self_model == "true" else f"_self-{a.self_model}"
     pr += "_reflex" if os.environ.get("RTB_REFLEX") else ""
+    pr += f"_ss{os.environ['RTB_SPLIT_SEED']}" if os.environ.get("RTB_SPLIT_SEED") else ""
     pr += f"_surp{os.environ['RTB_SURPRISE']}" if os.environ.get("RTB_SURPRISE") else ""
     pr += f"_ra{os.environ['RTB_REFLEX_ATTEMPTS']}" if os.environ.get("RTB_REFLEX_ATTEMPTS") else ""
     pr += f"_blend{os.environ['RTB_BLEND']}" if os.environ.get("RTB_BLEND") else ""
