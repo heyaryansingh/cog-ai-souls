@@ -7,10 +7,17 @@ from .env import ACTION_NAMES, MiniSouls, Rules
 from .primitives import CUES
 
 
-def fight(boss, policy, rules: Rules = Rules(), seed=0, log_every: int = 0, max_ticks=3600):
+def fight(boss, policy, rules: Rules = Rules(), seed=0, log_every: int = 0, max_ticks=3600,
+          latency: int = 0):
+    """latency: the agent perceives boss cues `latency` ticks late (human visual-motor delay is
+    ~4-5 ticks at 20 Hz). Its own body state is always current."""
+    from collections import deque
     env = MiniSouls(boss, rules, seed=seed, max_ticks=max_ticks)
     obs = env.reset()
     policy.reset(env)
+    if hasattr(policy, "latency"):
+        policy.latency = latency
+    pending = deque()
     lines, t0 = [], time.time()
     decisions = 0
     while True:
@@ -20,8 +27,12 @@ def fight(boss, policy, rules: Rules = Rules(), seed=0, log_every: int = 0, max_
         else:
             a = 0
         obs, _, done, info = env.step(a)
-        if hasattr(policy, "observe"):
-            policy.observe(obs)
+        pending.append(obs)
+        if hasattr(policy, "observe") and len(pending) > latency:
+            policy.observe(pending.popleft())
+        if latency:   # what the agent sees now: its own state, the boss cue from `latency` ticks ago
+            seen = pending[0] if len(pending) >= latency else None
+            obs = dict(obs, cue=seen["cue"] if seen else None)
         if log_every and env.t % log_every == 0:
             lines.append(f"t={env.t:4d} cue={CUES[obs['cue']]:10s} dist={obs['dist']:.2f} "
                          f"hp={obs['hp']:5.1f} st={obs['stamina']:5.1f} boss={obs['boss_hp']:5.1f} "

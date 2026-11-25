@@ -7,7 +7,7 @@ Hidden state at tick t:
 
 Per environment step the filter does
     update(cue_t)              p(s_t | y_1..t)       (emission of the state that produced cue_t)
-    predict(dist_t, phase_t)   p(s_t+1 | y_1..t)     (transition, next move chosen with this tick's bin/phase)
+    predict(dist_t, phase_t, ctx_t)  p(s_t+1 | y_1..t)  (transition: next move chosen with this tick's bin/phase/player context)
 
 and accumulates log p(y_1..t | boss), the marginal likelihood used to weight hypotheses.
 The state space is at most 2*K*D_MAX + K*(A_max + R_max) (~1k), so this is exact and cheap.
@@ -79,7 +79,7 @@ class BossFilter:
         return float(np.log(z))
 
     # ------------------------------------------------------------- predict
-    def predict(self, dist: float, phase: int):
+    def predict(self, dist: float, phase: int, ctx: int = 0):
         K, a, r = self.K, self.a, self.r
         W, A, R = self.W, self.A, self.R
         nW = np.zeros_like(W)
@@ -107,13 +107,13 @@ class BossFilter:
         last_R = R[np.arange(K), np.maximum(r - 1, 0)] * (r > 0)
         ends += last_R
         # new move
-        nW[phase, :, 0] += ends @ self.boss.pi[:, dist_bin(dist), :]
+        nW[phase, :, 0] += ends @ self.boss.trans(dist_bin(dist), ctx)
         self.W, self.A, self.R = nW, nA, nR
 
     def step(self, obs: dict):
         """Convenience: update on this tick's cue, then predict the next tick's state."""
         lp = self.update(obs["cue"])
-        self.predict(obs["dist"], obs["phase"])
+        self.predict(obs["dist"], obs["phase"], obs.get("ctx", 0))
         return lp
 
     # ------------------------------------------------------------- queries

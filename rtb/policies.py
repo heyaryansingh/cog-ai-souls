@@ -108,6 +108,8 @@ class OraclePlanner:
         self.n, self.h = n_rollouts, horizon
         self.model_boss = model_boss
         self.utility = utility
+        self.latency = 0          # set by run.fight; belief is then projected `latency` ticks ahead
+        self._last = None
         self.rng = np.random.default_rng(seed)
         self.actions = actions
 
@@ -118,7 +120,8 @@ class OraclePlanner:
     def observe(self, obs):
         """Call after every env step (also while the player is busy)."""
         self.filter.update(obs["cue"])
-        self.filter.predict(obs["dist"], obs["phase"])
+        self.filter.predict(obs["dist"], obs["phase"], obs["ctx"])
+        self._last = obs
 
     def _rollout(self, env: MiniSouls, state, first: int, seed: int) -> float:
         sim = env.clone(seed)
@@ -147,7 +150,15 @@ class OraclePlanner:
 
     def act(self, obs, env: MiniSouls) -> int:
         # The filter's belief is over the state that will emit the NEXT cue, i.e. env.bs now.
-        states = self.filter.sample_states(self.n, self.rng)
+        f = self.filter
+        if self.latency and self._last is not None:
+            # perceived stream lags reality: push the belief forward without observations
+            import copy
+            f = copy.copy(f)
+            f.W, f.A, f.R = f.W.copy(), f.A.copy(), f.R.copy()
+            for _ in range(self.latency):
+                f.predict(self._last["dist"], self._last["phase"], self._last["ctx"])
+        states = f.sample_states(self.n, self.rng)
         best, best_v = IDLE, -np.inf
         seeds = self.rng.integers(1 << 30, size=self.n)
         for a in self.actions:

@@ -16,7 +16,7 @@ from dataclasses import dataclass, replace
 
 import numpy as np
 
-from .boss import Boss, dist_bin
+from .boss import Boss, ctx_of, dist_bin
 from .primitives import N_CUES, RECOVER_CUE, active_cue, windup_cue
 
 # Player actions
@@ -112,6 +112,7 @@ class MiniSouls:
         self.bs = BossState(k=0, stage=WINDUP, j=1, D=self._sample_D(0, 0), p0=0)
         self.done = False
         self.outcome = None
+        self.last_action = IDLE
         self.last_obs = self._observe(None)   # no cue yet: the first step emits the cue of s_0
         return self.last_obs
 
@@ -124,6 +125,7 @@ class MiniSouls:
         c.player = replace(self.player)
         c.bs = replace(self.bs)
         c.done, c.outcome, c.last_obs = self.done, self.outcome, self.last_obs
+        c.last_action = self.last_action
         return c
 
     def phase(self) -> int:
@@ -156,6 +158,7 @@ class MiniSouls:
             p.stamina -= action_cost(action, R)
         p.t_in_action += 1
         a, ti = p.action, p.t_in_action
+        self.last_action = a
         if a == APPROACH:
             self.dist -= R.move_speed
         elif a == RETREAT:
@@ -254,12 +257,12 @@ class MiniSouls:
             return
         # move finished: choose next move with this tick's distance bin and phase
         ph = self.phase()
-        k2 = int(self.rng.choice(self.boss.K, p=self.boss.pi[bs.k, dist_bin(self.dist)]))
+        k2 = int(self.rng.choice(self.boss.K, p=self.boss.trans(dist_bin(self.dist), ctx_of(self.last_action))[bs.k]))
         self.bs = BossState(k=k2, stage=WINDUP, j=1, D=self._sample_D(ph, k2), p0=ph)
 
     def _observe(self, cue: int) -> dict:
         p = self.player
-        return {"t": self.t, "cue": cue, "dist": self.dist, "phase": self.phase(),
+        return {"t": self.t, "cue": cue, "dist": self.dist, "phase": self.phase(), "ctx": ctx_of(self.last_action),
                 "boss_hp": self.boss_hp, "hp": p.hp, "stamina": p.stamina, "heals": p.heals,
                 "free": p.t_in_action == 0}
 

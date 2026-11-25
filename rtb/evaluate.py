@@ -51,9 +51,11 @@ def make_agent(name: str, boss, seed: int, **kw):
 
 def _job(args):
     split_seed, split, idx, agent, kw, seed = args
+    kw = dict(kw)
+    latency = kw.pop("latency", 0)
     boss = _splits(split_seed)[split][idx]
     rules = T4_RULES if split == "T4" else Rules()
-    r = fight(boss, make_agent(agent, boss, seed, **kw), rules=rules, seed=seed)
+    r = fight(boss, make_agent(agent, boss, seed, **kw), rules=rules, seed=seed, latency=latency)
     r.pop("log", None)
     r.update(split=split, boss=idx, agent=agent, seed=seed)
     return r

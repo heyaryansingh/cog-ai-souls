@@ -27,12 +27,22 @@ import numpy as np
 from .primitives import PRIMITIVES, ATTACK_PRIMITIVES, HELD_OUT_PRIMITIVE, Primitive
 
 D_MAX = 60            # longest wind-up the model represents (3 s)
+N_CTX = 3             # player-action context seen by the boss: 0 neutral, 1 healing, 2 attacking
 NEAR_FAR_SPLIT = 2.8  # distance bins: near (< split) / far
 N_DIST_BINS = 2
 
 
 def dist_bin(dist: float) -> int:
     return 0 if dist < NEAR_FAR_SPLIT else 1
+
+
+def ctx_of(action: int) -> int:
+    """Context a reactive boss reads from the player's action on the tick a move ends."""
+    if action == 7:          # HEAL
+        return 1
+    if action in (3, 4):     # LIGHT, HEAVY
+        return 2
+    return 0
 
 
 def discretised_lognormal(median: float, sigma: float, d_max: int = D_MAX) -> np.ndarray:
@@ -59,6 +69,8 @@ class Theta:
     dirichlet_alpha: float = 0.6      # concentration of transition rows
     reach_bias: float = 2.0           # how strongly near/far bins favour in-reach moves
     phase2_speed: tuple = (0.75, 0.9)
+    law_rate: float = 0.8              # expected number of reactive laws per boss (Poisson)
+    law_boost: tuple = (1.5, 3.0)      # range of log-boosts (x4.5 to x20 more likely)
     allowed: tuple = tuple(p for p in ATTACK_PRIMITIVES if p != HELD_OUT_PRIMITIVE)
 
 
@@ -106,14 +118,29 @@ class Move:
 class Boss:
     """One boss = one sample from the generative program. Move 0 is always 'idle'."""
     moves: list
-    pi: np.ndarray                   # (K, N_DIST_BINS, K) next-move probabilities
+    pi: np.ndarray                   # (K, N_DIST_BINS, K) base next-move probabilities
     phase2_speed: float
     tell_ticks: int = 3              # ticks of generic 'tell' cue before the group is readable
     cue_noise: float = 0.03          # probability a cue token is replaced by a random one
     max_hp: float = 200.0
     dmg_scale: float = 1.0           # multiplies every attack's damage (difficulty knob)
+    laws: tuple = ()                 # reactive laws: (ctx, target move k, log-boost)
     name: str = "boss"
     _pmf: np.ndarray = field(default=None, repr=False)
+    _trans: dict = field(default=None, repr=False)
+
+    def trans(self, b: int, c: int = 0) -> np.ndarray:
+        """(K, K) next-move matrix for distance bin b and player context c (laws applied)."""
+        if self._trans is None:
+            self._trans = {}
+        key = (b, c)
+        if key not in self._trans:
+            m = self.pi[:, b, :].copy()
+            for (lc, tk, boost) in self.laws:
+                if lc == c:
+                    m[:, tk] *= np.exp(boost)
+            self._trans[key] = m / m.sum(axis=1, keepdims=True)
+        return self._trans[key]
 
     @property
     def K(self) -> int:
@@ -134,6 +161,8 @@ class Boss:
         for k, m in enumerate(self.moves):
             lines.append(f"  [{k}] {m.primitive.name:13s} windup~{m.median:5.1f}t (sd {m.sigma:.2f}) "
                          f"active {m.active} rec {m.recovery}")
+        for (c, tk, boost) in self.laws:
+            lines.append(f"  law: if player {['neutral','heals','attacks'][c]} -> move [{tk}] x{np.exp(boost):.1f}")
         return "\n".join(lines)
 
 
@@ -168,7 +197,20 @@ def sample_boss(theta: Theta, rng: np.random.Generator, primitives: list | None 
             pref /= pref.sum()
             pi[k, b] = rng.dirichlet(theta.dirichlet_alpha * K * pref + 1e-3)
     speed = float(rng.uniform(*theta.phase2_speed))
-    return Boss(moves, pi, speed, tell_ticks=tell_ticks, cue_noise=cue_noise, name=name, dmg_scale=dmg_scale)
+    # Reactive laws: the boss reads the player. Heals get punished by a fast in-reach attack,
+    # attacks get answered by a quick counter. Each boss has its own (possibly no) laws.
+    laws = []
+    attack_ks = [k for k, m in enumerate(moves) if m.primitive.damage > 0]
+    for _ in range(int(rng.poisson(theta.law_rate))):
+        if not attack_ks:
+            break
+        c = int(rng.integers(1, N_CTX))
+        tk = int(rng.choice(attack_ks))
+        if any(l[0] == c for l in laws):
+            continue
+        laws.append((c, tk, float(rng.uniform(*theta.law_boost))))
+    return Boss(moves, pi, speed, tell_ticks=tell_ticks, cue_noise=cue_noise, name=name,
+                dmg_scale=dmg_scale, laws=tuple(laws))
 
 
 # Default difficulty, chosen on 25 Nov 2026 so that boss-specific knowledge matters: with these

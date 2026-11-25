@@ -22,7 +22,8 @@ def tiny_boss(seed=0) -> Boss:
     moves = [Move(p, p.windup_median, 0.3) for p in prims]
     K = len(moves)
     pi = rng.dirichlet(np.ones(K), size=(K, 2))
-    b = Boss(moves, pi, phase2_speed=0.8, tell_ticks=1, cue_noise=0.1)
+    b = Boss(moves, pi, phase2_speed=0.8, tell_ticks=1, cue_noise=0.1,
+             laws=((1, 1, 1.5), (2, 2, 2.0)))
     pmf = np.zeros((2, K, D_MAX))
     for p in range(2):
         for k in range(K):
@@ -41,7 +42,7 @@ def true_cue(boss, k, stage, j):
     return RECOVER_CUE
 
 
-def brute_force(boss, cues, dists, phases):
+def brute_force(boss, cues, dists, phases, ctxs):
     """Posterior over (k, stage, j) of the state that emitted the last cue."""
     pmf = boss.windup_pmf()
     e, V = boss.cue_noise, N_CUES
@@ -77,7 +78,7 @@ def brute_force(boss, cues, dists, phases):
         b, ph = dist_bin(dists[t]), phases[t]
         for k2 in range(boss.K):
             for D2 in range(1, D_MAX + 1):
-                w = boss.pi[k, b, k2] * pmf[ph, k2, D2 - 1]
+                w = boss.trans(b, ctxs[t])[k, k2] * pmf[ph, k2, D2 - 1]
                 if w > 0:
                     walk(t + 1, k2, 0, 1, D2, prob * w)
 
@@ -118,13 +119,14 @@ def test_filter_matches_brute_force():
                 cues[t] = true_cue(boss, k, int(rng.integers(0, 3)) if k else 0, 1)
         dists = list(rng.uniform(1, 5, size=T))
         phases = [0] * (T // 2) + [1] * (T - T // 2)
-        bf, logz = brute_force(boss, cues, dists, phases)
+        ctxs = list(rng.integers(0, 3, size=T))
+        bf, logz = brute_force(boss, cues, dists, phases, ctxs)
 
         f = BossFilter(boss)
         for t in range(T):
             f.update(cues[t])
             if t < T - 1:
-                f.predict(dists[t], phases[t])
+                f.predict(dists[t], phases[t], ctxs[t])
         fm = filter_marginal(f)
         keys = set(bf) | set(fm)
         tv = 0.5 * sum(abs(bf.get(k, 0) - fm.get(k, 0)) for k in keys)
@@ -146,7 +148,7 @@ def test_filter_tracks_real_fights():
             f.update(obs["cue"])
             mass = {0: f.W[:, k].sum(), 1: f.A[k].sum(), 2: f.R[k].sum()}[s]
             hits.append(mass)
-            f.predict(obs["dist"], obs["phase"])
+            f.predict(obs["dist"], obs["phase"], obs["ctx"])
             if done:
                 break
     assert np.mean(hits) > 0.6, np.mean(hits)

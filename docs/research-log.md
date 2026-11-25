@@ -62,10 +62,33 @@ Prompted by advisor review. Simplifications compared with real souls-like fights
 
 **Real-game validation path.** Run the *inference* side, the boss model plus the filter, read-only on SoulsGym's ground-truth state for Iudex Gundyr (Dark Souls III, Windows only, needs the purchased game). The test is whether the HSMM boss model predicts real attack timings and whether the slow mind recovers Gundyr's moveset from a few logged fights. This needs the game on the Windows laptop; it is noted as a later milestone.
 
+## 2026-11-25 · Entry 5: reactive laws and reaction latency
+
+- **Built:** two realism fixes from the Entry 4 audit.
+  - **Reactive boss laws.** The boss's next-move distribution now also depends on what the player just did (context: heal, attack, other). Each boss draws Poisson(0.8) laws such as "if the player heals, boost the grab/slam row by ×1.5–3". The exact filter conditions on context, and still matches brute force to 1e-9 with laws present.
+  - **Perception latency.** The agent sees cues `latency` ticks late. The planner predicts its belief forward by `latency` steps before acting.
+- **Ladder** (`scripts/ladder.py`, 40 bosses × 2 attempts = 80 fights each):
+
+| Agent | Latency 0 | Latency 4 (~200 ms) |
+|---|---|---|
+| State cheat | 100% | 100% (cheat reads true state, so it ignores latency: not a fair ceiling at latency 4) |
+| Oracle planner | 68.8% [58–78] | **41.2%** [31–52] |
+| Prior-model planner | 43.8% | 16.2% |
+| Generic-model planner | 33.8% | 15.0% |
+
+**Findings:**
+1. **Human-like latency costs every inference agent about 25–30 points.** The 6-tick tell minus a 4-tick delay leaves about 2 ticks of readable group before the decision.
+2. **The value of knowing the boss grows under latency.** Oracle/prior is 1.6× at latency 0 and 2.5× at latency 4. When you cannot react, you must *predict*, and prediction needs a model of this boss. This is the strongest argument yet for the slow mind.
+3. Laws barely moved the latency-0 numbers (72.5 → 68.8, within CI). They matter for transfer and for interpretability, not raw win rate.
+
+**Decisions:**
+- Latency 4 is the headline setting from now on. Latency 0 is reported as a secondary row.
+- **M2 target:** close the 41% (oracle) vs 16% (prior) gap from deaths alone, at latency 4.
+
 ## Agenda (living)
 
-1. **Now:** add reaction latency and reactive laws to the environment; re-measure the ladder at latency 4.
-2. **M2:** the slow mind. Resample-move SMC over boss programs from fight logs:
+1. ~~Add reaction latency and reactive laws; re-measure at latency 4.~~ Done (Entry 5).
+2. **Now, M2:** the slow mind. Resample-move SMC over boss programs from fight logs:
    - FFBS with censoring at death;
    - conjugate wind-up and transition updates;
    - split/merge with a CRP;
