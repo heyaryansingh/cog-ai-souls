@@ -737,6 +737,27 @@ Per attempt, blend λ = 3: T1 26 / 33 / 46%; T3 28 / 65 / 69 / 73%.
 
 **Next: privileged-teacher DAgger** ("learning by cheating"). The teacher plans with the *true* program, while the student sees belief features computed from the slow mind's *learned* mixture during learning attempts. The student then learns directly how to act well when its model is wrong, which is the regime where all the remaining gap lives.
 
+## 2026-11-25 · Entry 32: privileged-teacher DAgger fails, an imitation gap (negative)
+
+**Setup.** The teacher was the 48-rollout planner with the *true* program. The student saw belief features from the slow mind's *learned* mixture (the prior on attempt 1, then posteriors), across 40 training bosses × 3 attempts. DAgger started from reflex48_it4 and ran 5 iterations, producing 44k labels.
+
+**DAgger rollouts.** Attempt-1 wins with the student mostly in control fell as β → 0: 52% → 45% → 25% → 15% → 27%. Imitation agreement stayed at 37–47%, and the teacher-Q regret of the student's choices *rose* (3.3 → 4.1).
+
+**Evaluation** (ensemble of iterations 2–4; 80 bosses, paired with E29–31). Mean win rate over attempts:
+
+| | T1 | T3 |
+|---|---|---|
+| Original reflex (true-program features in training) | **39.6%** | 47.2% |
+| Privileged reflex | 32.9% (p = 0.044 vs original, per-boss Wilcoxon) | 48.7% |
+| Blend λ = 3, original reflex | 35.0% | **58.4%** |
+| Blend λ = 3, privileged reflex | 30.0% | 56.2% |
+
+**Findings:**
+- **Negative: the privileged student is worse on T1 and no better on T3.**
+- **Diagnosis: the imitation gap.** The teacher's best action depends on things the student cannot infer from its belief, chiefly the true wind-up timing. Identical-looking student beliefs therefore get contradictory labels, and the student learns their average, which is no good action. This is the known failure of "learning by cheating" in POMDPs (Warrington et al. 2021; Weihs et al. 2021).
+- The original reflex avoided it because teacher and student shared the *same* belief, just with different compute.
+- **Lesson:** the reflex's robustness under a wrong model is not a product of being trained under model error. It comes from being trained on *many bosses' worth* of belief-to-action mappings. A proper fix would train the student on the teacher's Q-values *under the student's own belief* (the planner run on the learned mixture with high compute) or use the A2D-style objective. That is the compute-matched planner (R9, in P1), whose results come first.
+
 ## 2026-11-25 · Pre-registration P1 (written before any run on these bosses)
 
 This responds to review point 2: E30–31 picked winners from several variants after seeing results. Here they are re-tested on fresh bosses.

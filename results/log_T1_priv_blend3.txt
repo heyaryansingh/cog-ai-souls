@@ -1,0 +1,7 @@
+saved results/learn_T1_mixture_reflex_blend3_lat4_b80_a3_n80_priv.json  (241s)
+attempt  win%   [95% CI]     death%  boss-HP-left
+    1   20.0%  [13%-30%]  80.0%   0.24
+    2   37.5%  [28%-48%]  62.5%   0.17
+    3   32.5%  [23%-43%]  67.5%   0.18
+deaths-to-first-win: median 1.0 over 43/80 bosses that were beaten; never beaten: 37
+second-half win rate: 35.0% [28%-43%] n=160
