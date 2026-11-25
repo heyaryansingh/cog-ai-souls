@@ -1,0 +1,7616 @@
+{
+ "args": {
+  "split": "train",
+  "bosses": 40,
+  "attempts": 6,
+  "latency": 4,
+  "mode": "mixture",
+  "particles": 4,
+  "sweeps": 3,
+  "rollouts": 12,
+  "horizon": 45,
+  "procs": 4,
+  "tag": "_lesion-laws",
+  "prior": "star",
+  "n_test": 10,
+  "self_model": "true"
+ },
+ "results": [
+  {
+   "boss": 0,
+   "attempt": 1,
+   "outcome": "death",
+   "boss_hp_frac": 0.22,
+   "hp": 0,
+   "ticks": 447,
+   "fight_s": 3.7264795303344727,
+   "learn_s": 1.211897611618042,
+   "K_map": 7,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 7,
+   "accepted": [
+    "split slam",
+    "delete jab",
+    "delete aoe",
+    "birth slam@10",
+    "delete jab",
+    "birth delayed_slam@45",
+    "merge delayed_slam",
+    "delete aoe",
+    "split feint"
+   ]
+  },
+  {
+   "boss": 0,
+   "attempt": 2,
+   "outcome": "death",
+   "boss_hp_frac": 0.25,
+   "hp": 0,
+   "ticks": 221,
+   "fight_s": 1.519479513168335,
+   "learn_s": 1.4540245532989502,
+   "K_map": 8,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 7,
+   "accepted": [
+    "delete sweep",
+    "merge feint",
+    "delete jab",
+    "delete aoe",
+    "merge feint",
+    "birth delayed_slam@47"
+   ]
+  },
+  {
+   "boss": 0,
+   "attempt": 3,
+   "outcome": "death",
+   "boss_hp_frac": 0.58,
+   "hp": 0,
+   "ticks": 249,
+   "fight_s": 2.795985698699951,
+   "learn_s": 2.042876720428467,
+   "K_map": 8,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 7,
+   "accepted": [
+    "merge delayed_slam",
+    "merge delayed_slam",
+    "split slam",
+    "merge delayed_slam",
+    "delete jab",
+    "merge delayed_slam"
+   ]
+  },
+  {
+   "boss": 0,
+   "attempt": 4,
+   "outcome": "win",
+   "boss_hp_frac": 0.0,
+   "hp": 16.0,
+   "ticks": 284,
+   "fight_s": 2.587293863296509,
+   "learn_s": 2.035313844680786,
+   "K_map": 7,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 7,
+   "accepted": [
+    "delete aoe"
+   ]
+  },
+  {
+   "boss": 0,
+   "attempt": 5,
+   "outcome": "death",
+   "boss_hp_frac": 0.28,
+   "hp": 0,
+   "ticks": 323,
+   "fight_s": 3.683378219604492,
+   "learn_s": 2.5161592960357666,
+   "K_map": 6,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 7,
+   "accepted": [
+    "split lunge"
+   ]
+  },
+  {
+   "boss": 0,
+   "attempt": 6,
+   "outcome": "death",
+   "boss_hp_frac": 0.37,
+   "hp": 0,
+   "ticks": 222,
+   "fight_s": 1.430164098739624,
+   "learn_s": 3.1675803661346436,
+   "K_map": 6,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 7,
+   "accepted": [
+    "birth delayed_slam@47",
+    "split delayed_slam",
+    "birth delayed_slam@46"
+   ],
+   "map_describe": "belief: 6 moves, phase-2 speed x0.80\n  [0] idle          windup~ 11.6t (sd 0.35) active 0 rec 0\n  [1] slam          windup~  9.5t (sd 0.10) active 3 rec 18\n  [2] delayed_slam  windup~ 30.6t (sd 0.18) active 3 rec 20\n  [3] sweep         windup~  6.8t (sd 0.10) active 4 rec 12\n  [4] lunge         windup~ 19.1t (sd 0.10) active 4 rec 16\n  [5] feint         windup~ 12.2t (sd 0.10) active 2 rec 6",
+   "map_moves": [
+    [
+     "idle",
+     11.561911934857719
+    ],
+    [
+     "slam",
+     9.513997392452346
+    ],
+    [
+     "delayed_slam",
+     30.6452241545621
+    ],
+    [
+     "sweep",
+     6.8111467170096605
+    ],
+    [
+     "lunge",
+     19.087271283441925
+    ],
+    [
+     "feint",
+     12.224190873792757
+    ]
+   ],
+   "map_laws": [],
+   "true_describe": "train00: 7 moves, phase-2 speed x0.80\n  [0] idle          windup~  9.9t (sd 0.35) active 0 rec 0\n  [1] feint         windup~ 11.3t (sd 0.10) active 2 rec 6\n  [2] lunge         windup~ 18.9t (sd 0.10) active 4 rec 16\n  [3] delayed_slam  windup~ 36.2t (sd 0.18) active 3 rec 20\n  [4] sweep         windup~  7.8t (sd 0.10) active 4 rec 12\n  [5] slam          windup~  9.0t (sd 0.10) active 3 rec 18\n  [6] slam          windup~ 11.3t (sd 0.10) active 3 rec 18\n  law: if player heals -> move [5] x14.7"
+  },
+  {
+   "boss": 1,
+   "attempt": 1,
+   "outcome": "death",
+   "boss_hp_frac": 0.22,
+   "hp": 0,
+   "ticks": 292,
+   "fight_s": 2.049001455307007,
+   "learn_s": 0.69814133644104,
+   "K_map": 7,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 6,
+   "accepted": [
+    "delete sweep",
+    "retype feint->lunge",
+    "delete feint",
+    "delete aoe",
+    "delete lunge",
+    "delete feint",
+    "delete sweep",
+    "delete aoe"
+   ]
+  },
+  {
+   "boss": 1,
+   "attempt": 2,
+   "outcome": "win",
+   "boss_hp_frac": 0.0,
+   "hp": 26.25,
+   "ticks": 390,
+   "fight_s": 3.2077319622039795,
+   "learn_s": 1.562035083770752,
+   "K_map": 5,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 6,
+   "accepted": [
+    "merge lunge",
+    "delete lunge",
+    "birth delayed_slam@37",
+    "merge lunge",
+    "birth delayed_slam@36",
+    "merge delayed_slam",
+    "retype lunge->feint"
+   ]
+  },
+  {
+   "boss": 1,
+   "attempt": 3,
+   "outcome": "death",
+   "boss_hp_frac": 0.19,
+   "hp": 0,
+   "ticks": 377,
+   "fight_s": 3.18756365776062,
+   "learn_s": 2.0751402378082275,
+   "K_map": 4,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 6,
+   "accepted": [
+    "delete aoe",
+    "delete aoe",
+    "delete aoe",
+    "split delayed_slam",
+    "birth delayed_slam@17",
+    "split delayed_slam"
+   ]
+  },
+  {
+   "boss": 1,
+   "attempt": 4,
+   "outcome": "death",
+   "boss_hp_frac": 0.28,
+   "hp": 0,
+   "ticks": 452,
+   "fight_s": 5.053940773010254,
+   "learn_s": 2.671952962875366,
+   "K_map": 5,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 6,
+   "accepted": [
+    "split slam",
+    "birth delayed_slam@27",
+    "birth delayed_slam@49",
+    "birth delayed_slam@35"
+   ]
+  },
+  {
+   "boss": 1,
+   "attempt": 5,
+   "outcome": "win",
+   "boss_hp_frac": 0.0,
+   "hp": 15.5,
+   "ticks": 379,
+   "fight_s": 2.8019962310791016,
+   "learn_s": 3.465348720550537,
+   "K_map": 7,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 6,
+   "accepted": [
+    "split delayed_slam",
+    "birth delayed_slam@35",
+    "delete delayed_slam",
+    "birth delayed_slam@54",
+    "merge delayed_slam"
+   ]
+  },
+  {
+   "boss": 1,
+   "attempt": 6,
+   "outcome": "death",
+   "boss_hp_frac": 0.1,
+   "hp": 0,
+   "ticks": 349,
+   "fight_s": 2.8240718841552734,
+   "learn_s": 3.8026673793792725,
+   "K_map": 7,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 6,
+   "accepted": [
+    "birth delayed_slam@55",
+    "birth delayed_slam@56"
+   ],
+   "map_describe": "belief: 7 moves, phase-2 speed x0.80\n  [0] idle          windup~ 25.2t (sd 0.35) active 0 rec 0\n  [1] slam          windup~  9.8t (sd 0.10) active 3 rec 18\n  [2] delayed_slam  windup~ 19.6t (sd 0.18) active 3 rec 20\n  [3] jab           windup~  5.6t (sd 0.10) active 2 rec 6\n  [4] delayed_slam  windup~ 34.3t (sd 0.18) active 3 rec 20\n  [5] delayed_slam  windup~ 46.5t (sd 0.18) active 3 rec 20\n  [6] delayed_slam  windup~ 44.0t (sd 0.18) active 3 rec 20",
+   "map_moves": [
+    [
+     "idle",
+     25.217159959384293
+    ],
+    [
+     "slam",
+     9.782689306834612
+    ],
+    [
+     "delayed_slam",
+     19.62632918412522
+    ],
+    [
+     "jab",
+     5.6047159388814105
+    ],
+    [
+     "delayed_slam",
+     34.256558715137466
+    ],
+    [
+     "delayed_slam",
+     46.53624027819799
+    ],
+    [
+     "delayed_slam",
+     44.01501231704555
+    ]
+   ],
+   "map_laws": [],
+   "true_describe": "train01: 6 moves, phase-2 speed x0.84\n  [0] idle          windup~ 18.3t (sd 0.35) active 0 rec 0\n  [1] delayed_slam  windup~ 45.4t (sd 0.18) active 3 rec 20\n  [2] slam          windup~  9.0t (sd 0.10) active 3 rec 18\n  [3] slam          windup~  9.3t (sd 0.10) active 3 rec 18\n  [4] feint         windup~  5.4t (sd 0.10) active 2 rec 6\n  [5] delayed_slam  windup~ 18.6t (sd 0.18) active 3 rec 20\n  law: if player heals -> move [3] x15.7\n  law: if player attacks -> move [2] x17.0"
+  },
+  {
+   "boss": 2,
+   "attempt": 1,
+   "outcome": "death",
+   "boss_hp_frac": 0.37,
+   "hp": 0,
+   "ticks": 250,
+   "fight_s": 2.1584887504577637,
+   "learn_s": 0.5804862976074219,
+   "K_map": 8,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 6,
+   "accepted": [
+    "split lunge",
+    "merge lunge",
+    "retype feint->lunge",
+    "merge lunge",
+    "split lunge",
+    "delete jab",
+    "delete delayed_slam"
+   ]
+  },
+  {
+   "boss": 2,
+   "attempt": 2,
+   "outcome": "death",
+   "boss_hp_frac": 0.4,
+   "hp": 0,
+   "ticks": 324,
+   "fight_s": 3.628995418548584,
+   "learn_s": 1.4922518730163574,
+   "K_map": 5,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 6,
+   "accepted": [
+    "delete feint",
+    "split lunge",
+    "delete feint",
+    "birth aoe@23",
+    "merge aoe",
+    "split aoe",
+    "delete feint"
+   ]
+  },
+  {
+   "boss": 2,
+   "attempt": 3,
+   "outcome": "death",
+   "boss_hp_frac": 0.46,
+   "hp": 0,
+   "ticks": 373,
+   "fight_s": 4.267589092254639,
+   "learn_s": 1.7491488456726074,
+   "K_map": 6,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 6,
+   "accepted": [
+    "birth lunge@13",
+    "split lunge",
+    "delete lunge",
+    "split slam"
+   ]
+  },
+  {
+   "boss": 2,
+   "attempt": 4,
+   "outcome": "death",
+   "boss_hp_frac": 0.25,
+   "hp": 0,
+   "ticks": 473,
+   "fight_s": 7.781343698501587,
+   "learn_s": 2.513162612915039,
+   "K_map": 5,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 6,
+   "accepted": [
+    "merge lunge",
+    "birth aoe@17",
+    "merge lunge"
+   ]
+  },
+  {
+   "boss": 2,
+   "attempt": 5,
+   "outcome": "death",
+   "boss_hp_frac": 0.43,
+   "hp": 0,
+   "ticks": 244,
+   "fight_s": 2.4689106941223145,
+   "learn_s": 3.212637424468994,
+   "K_map": 5,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 6,
+   "accepted": [
+    "merge lunge",
+    "merge lunge",
+    "merge aoe"
+   ]
+  },
+  {
+   "boss": 2,
+   "attempt": 6,
+   "outcome": "death",
+   "boss_hp_frac": 0.25,
+   "hp": 0,
+   "ticks": 315,
+   "fight_s": 3.547593832015991,
+   "learn_s": 3.3717408180236816,
+   "K_map": 5,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 6,
+   "accepted": [
+    "split slam"
+   ],
+   "map_describe": "belief: 5 moves, phase-2 speed x0.88\n  [0] idle          windup~  9.8t (sd 0.35) active 0 rec 0\n  [1] slam          windup~ 15.3t (sd 0.10) active 3 rec 18\n  [2] sweep         windup~  8.5t (sd 0.10) active 4 rec 12\n  [3] lunge         windup~ 16.1t (sd 0.10) active 4 rec 16\n  [4] aoe           windup~ 18.6t (sd 0.10) active 4 rec 24",
+   "map_moves": [
+    [
+     "idle",
+     9.782689306834612
+    ],
+    [
+     "slam",
+     15.275026920717925
+    ],
+    [
+     "sweep",
+     8.511029526406748
+    ],
+    [
+     "lunge",
+     16.149997140025484
+    ],
+    [
+     "aoe",
+     18.563019178461076
+    ]
+   ],
+   "map_laws": [],
+   "true_describe": "train02: 6 moves, phase-2 speed x0.85\n  [0] idle          windup~  9.2t (sd 0.35) active 0 rec 0\n  [1] slam          windup~ 14.9t (sd 0.10) active 3 rec 18\n  [2] sweep         windup~  8.6t (sd 0.10) active 4 rec 12\n  [3] slam          windup~ 18.3t (sd 0.10) active 3 rec 18\n  [4] lunge         windup~ 17.1t (sd 0.10) active 4 rec 16\n  [5] aoe           windup~ 19.0t (sd 0.10) active 4 rec 24"
+  },
+  {
+   "boss": 3,
+   "attempt": 1,
+   "outcome": "death",
+   "boss_hp_frac": 0.16,
+   "hp": 0,
+   "ticks": 260,
+   "fight_s": 2.0476572513580322,
+   "learn_s": 0.6227328777313232,
+   "K_map": 8,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 4,
+   "accepted": [
+    "birth sweep@14",
+    "delete lunge",
+    "retype slam->delayed_slam",
+    "birth sweep@14",
+    "delete lunge",
+    "delete delayed_slam",
+    "delete delayed_slam"
+   ]
+  },
+  {
+   "boss": 3,
+   "attempt": 2,
+   "outcome": "win",
+   "boss_hp_frac": 0.0,
+   "hp": 0,
+   "ticks": 291,
+   "fight_s": 2.348492383956909,
+   "learn_s": 1.1559743881225586,
+   "K_map": 8,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 4,
+   "accepted": [
+    "birth aoe@29",
+    "retype slam->delayed_slam",
+    "retype slam->delayed_slam",
+    "delete slam",
+    "delete lunge",
+    "delete jab",
+    "birth aoe@29"
+   ]
+  },
+  {
+   "boss": 3,
+   "attempt": 3,
+   "outcome": "win",
+   "boss_hp_frac": 0.0,
+   "hp": 21.0,
+   "ticks": 292,
+   "fight_s": 2.6585123538970947,
+   "learn_s": 1.6214277744293213,
+   "K_map": 5,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 4,
+   "accepted": [
+    "birth aoe@25",
+    "split sweep",
+    "split sweep",
+    "split aoe"
+   ]
+  },
+  {
+   "boss": 3,
+   "attempt": 4,
+   "outcome": "death",
+   "boss_hp_frac": 0.25,
+   "hp": 0,
+   "ticks": 342,
+   "fight_s": 4.07735276222229,
+   "learn_s": 2.3967084884643555,
+   "K_map": 4,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 4,
+   "accepted": [
+    "merge aoe",
+    "merge aoe",
+    "split sweep",
+    "merge aoe",
+    "merge aoe"
+   ]
+  },
+  {
+   "boss": 3,
+   "attempt": 5,
+   "outcome": "death",
+   "boss_hp_frac": 0.31,
+   "hp": 0,
+   "ticks": 358,
+   "fight_s": 3.986825466156006,
+   "learn_s": 2.488149404525757,
+   "K_map": 4,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 4,
+   "accepted": []
+  },
+  {
+   "boss": 3,
+   "attempt": 6,
+   "outcome": "win",
+   "boss_hp_frac": 0.0,
+   "hp": 12.5,
+   "ticks": 351,
+   "fight_s": 3.7911078929901123,
+   "learn_s": 2.9987599849700928,
+   "K_map": 4,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 4,
+   "accepted": [
+    "merge sweep"
+   ],
+   "map_describe": "belief: 4 moves, phase-2 speed x0.74\n  [0] idle          windup~  9.5t (sd 0.35) active 0 rec 0\n  [1] sweep         windup~ 13.3t (sd 0.10) active 4 rec 12\n  [2] feint         windup~ 10.1t (sd 0.10) active 2 rec 6\n  [3] aoe           windup~ 27.4t (sd 0.10) active 4 rec 24",
+   "map_moves": [
+    [
+     "idle",
+     9.513997392452346
+    ],
+    [
+     "sweep",
+     13.289413683828247
+    ],
+    [
+     "feint",
+     10.05896955048337
+    ],
+    [
+     "aoe",
+     27.414597341570353
+    ]
+   ],
+   "map_laws": [],
+   "true_describe": "train03: 4 moves, phase-2 speed x0.75\n  [0] idle          windup~ 10.2t (sd 0.35) active 0 rec 0\n  [1] sweep         windup~ 13.1t (sd 0.10) active 4 rec 12\n  [2] feint         windup~  9.8t (sd 0.10) active 2 rec 6\n  [3] aoe           windup~ 29.1t (sd 0.10) active 4 rec 24"
+  },
+  {
+   "boss": 4,
+   "attempt": 1,
+   "outcome": "death",
+   "boss_hp_frac": 0.31,
+   "hp": 0,
+   "ticks": 281,
+   "fight_s": 2.1319239139556885,
+   "learn_s": 0.7603237628936768,
+   "K_map": 7,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 6,
+   "accepted": [
+    "birth aoe@36",
+    "delete feint",
+    "delete delayed_slam",
+    "split aoe",
+    "delete lunge",
+    "retype lunge->feint",
+    "delete feint",
+    "birth aoe@34",
+    "birth jab@4",
+    "retype feint->lunge",
+    "merge lunge"
+   ]
+  },
+  {
+   "boss": 4,
+   "attempt": 2,
+   "outcome": "win",
+   "boss_hp_frac": 0.0,
+   "hp": 7.0,
+   "ticks": 378,
+   "fight_s": 4.277919769287109,
+   "learn_s": 1.5689761638641357,
+   "K_map": 9,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 6,
+   "accepted": [
+    "birth sweep@6",
+    "retype delayed_slam->slam",
+    "retype delayed_slam->slam",
+    "birth sweep@6",
+    "delete slam",
+    "retype delayed_slam->slam"
+   ]
+  },
+  {
+   "boss": 4,
+   "attempt": 3,
+   "outcome": "win",
+   "boss_hp_frac": 0.0,
+   "hp": 29.5,
+   "ticks": 365,
+   "fight_s": 3.998800754547119,
+   "learn_s": 2.5541627407073975,
+   "K_map": 8,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 6,
+   "accepted": [
+    "delete slam",
+    "retype slam->delayed_slam",
+    "delete jab",
+    "retype slam->delayed_slam",
+    "merge slam",
+    "delete slam",
+    "retype slam->delayed_slam"
+   ]
+  },
+  {
+   "boss": 4,
+   "attempt": 4,
+   "outcome": "death",
+   "boss_hp_frac": 0.25,
+   "hp": 0,
+   "ticks": 273,
+   "fight_s": 2.3167598247528076,
+   "learn_s": 2.724120855331421,
+   "K_map": 8,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 6,
+   "accepted": [
+    "retype slam->delayed_slam",
+    "split aoe",
+    "retype slam->delayed_slam",
+    "delete slam",
+    "delete delayed_slam"
+   ]
+  },
+  {
+   "boss": 4,
+   "attempt": 5,
+   "outcome": "death",
+   "boss_hp_frac": 0.34,
+   "hp": 0,
+   "ticks": 169,
+   "fight_s": 0.7046642303466797,
+   "learn_s": 2.8306100368499756,
+   "K_map": 7,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 6,
+   "accepted": [
+    "delete delayed_slam",
+    "split feint",
+    "delete delayed_slam",
+    "retype delayed_slam->slam"
+   ]
+  },
+  {
+   "boss": 4,
+   "attempt": 6,
+   "outcome": "death",
+   "boss_hp_frac": 0.22,
+   "hp": 0,
+   "ticks": 384,
+   "fight_s": 3.8358047008514404,
+   "learn_s": 3.9509849548339844,
+   "K_map": 7,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 6,
+   "accepted": [
+    "retype delayed_slam->slam",
+    "split feint",
+    "retype delayed_slam->slam",
+    "delete slam",
+    "delete delayed_slam"
+   ],
+   "map_describe": "belief: 7 moves, phase-2 speed x0.86\n  [0] idle          windup~  9.3t (sd 0.35) active 0 rec 0\n  [1] delayed_slam  windup~ 14.1t (sd 0.18) active 3 rec 20\n  [2] sweep         windup~ 11.2t (sd 0.10) active 4 rec 12\n  [3] feint         windup~  4.5t (sd 0.10) active 2 rec 6\n  [4] aoe           windup~ 20.8t (sd 0.10) active 4 rec 24\n  [5] aoe           windup~ 34.3t (sd 0.10) active 4 rec 24\n  [6] sweep         windup~  7.0t (sd 0.10) active 4 rec 12",
+   "map_moves": [
+    [
+     "idle",
+     9.252685385842879
+    ],
+    [
+     "delayed_slam",
+     14.050645809032362
+    ],
+    [
+     "sweep",
+     11.24435178812734
+    ],
+    [
+     "feint",
+     4.48530256515285
+    ],
+    [
+     "aoe",
+     20.750546747836683
+    ],
+    [
+     "aoe",
+     34.256558715137466
+    ],
+    [
+     "sweep",
+     7.003505404429911
+    ]
+   ],
+   "map_laws": [],
+   "true_describe": "train04: 6 moves, phase-2 speed x0.89\n  [0] idle          windup~  9.7t (sd 0.35) active 0 rec 0\n  [1] feint         windup~  4.5t (sd 0.10) active 2 rec 6\n  [2] sweep         windup~ 10.4t (sd 0.10) active 4 rec 12\n  [3] sweep         windup~  6.4t (sd 0.10) active 4 rec 12\n  [4] aoe           windup~ 19.3t (sd 0.10) active 4 rec 24\n  [5] aoe           windup~ 33.2t (sd 0.10) active 4 rec 24"
+  },
+  {
+   "boss": 5,
+   "attempt": 1,
+   "outcome": "death",
+   "boss_hp_frac": 0.34,
+   "hp": 0,
+   "ticks": 260,
+   "fight_s": 1.971397876739502,
+   "learn_s": 0.6753494739532471,
+   "K_map": 7,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 4,
+   "accepted": [
+    "delete slam",
+    "split lunge",
+    "delete delayed_slam",
+    "delete feint",
+    "retype slam->delayed_slam",
+    "retype delayed_slam->slam",
+    "delete aoe",
+    "retype feint->lunge",
+    "delete delayed_slam"
+   ]
+  },
+  {
+   "boss": 5,
+   "attempt": 2,
+   "outcome": "death",
+   "boss_hp_frac": 0.34,
+   "hp": 0,
+   "ticks": 263,
+   "fight_s": 1.9306938648223877,
+   "learn_s": 1.2879846096038818,
+   "K_map": 7,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 4,
+   "accepted": [
+    "merge delayed_slam",
+    "split lunge",
+    "retype delayed_slam->slam",
+    "split lunge",
+    "delete sweep",
+    "merge slam",
+    "delete sweep",
+    "split jab",
+    "delete sweep",
+    "delete delayed_slam"
+   ]
+  },
+  {
+   "boss": 5,
+   "attempt": 3,
+   "outcome": "death",
+   "boss_hp_frac": 0.37,
+   "hp": 0,
+   "ticks": 293,
+   "fight_s": 2.3673036098480225,
+   "learn_s": 1.7035770416259766,
+   "K_map": 4,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 4,
+   "accepted": [
+    "delete delayed_slam",
+    "delete aoe",
+    "delete delayed_slam",
+    "split lunge",
+    "delete aoe",
+    "delete aoe",
+    "delete slam"
+   ]
+  },
+  {
+   "boss": 5,
+   "attempt": 4,
+   "outcome": "death",
+   "boss_hp_frac": 0.31,
+   "hp": 0,
+   "ticks": 296,
+   "fight_s": 2.592697858810425,
+   "learn_s": 2.053098201751709,
+   "K_map": 5,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 4,
+   "accepted": [
+    "delete feint",
+    "split lunge",
+    "split lunge",
+    "split jab"
+   ]
+  },
+  {
+   "boss": 5,
+   "attempt": 5,
+   "outcome": "death",
+   "boss_hp_frac": 0.43,
+   "hp": 0,
+   "ticks": 460,
+   "fight_s": 5.530449151992798,
+   "learn_s": 2.8217036724090576,
+   "K_map": 5,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 4,
+   "accepted": [
+    "split lunge",
+    "merge jab"
+   ]
+  },
+  {
+   "boss": 5,
+   "attempt": 6,
+   "outcome": "death",
+   "boss_hp_frac": 0.37,
+   "hp": 0,
+   "ticks": 360,
+   "fight_s": 3.5381102561950684,
+   "learn_s": 3.6451222896575928,
+   "K_map": 6,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 4,
+   "accepted": [
+    "split lunge",
+    "merge jab"
+   ],
+   "map_describe": "belief: 6 moves, phase-2 speed x0.85\n  [0] idle          windup~ 25.9t (sd 0.35) active 0 rec 0\n  [1] lunge         windup~ 10.3t (sd 0.10) active 4 rec 16\n  [2] jab           windup~  7.0t (sd 0.10) active 2 rec 6\n  [3] jab           windup~  8.8t (sd 0.10) active 2 rec 6\n  [4] lunge         windup~  9.3t (sd 0.10) active 4 rec 16\n  [5] lunge         windup~ 11.2t (sd 0.10) active 4 rec 16",
+   "map_moves": [
+    [
+     "idle",
+     25.929336629744345
+    ],
+    [
+     "lunge",
+     10.34305243107954
+    ],
+    [
+     "jab",
+     7.003505404429911
+    ],
+    [
+     "jab",
+     8.75139587532213
+    ],
+    [
+     "lunge",
+     9.252685385842879
+    ],
+    [
+     "lunge",
+     11.24435178812734
+    ]
+   ],
+   "map_laws": [],
+   "true_describe": "train05: 4 moves, phase-2 speed x0.86\n  [0] idle          windup~ 21.9t (sd 0.35) active 0 rec 0\n  [1] lunge         windup~  9.6t (sd 0.10) active 4 rec 16\n  [2] jab           windup~  7.2t (sd 0.10) active 2 rec 6\n  [3] lunge         windup~ 10.4t (sd 0.10) active 4 rec 16\n  law: if player attacks -> move [2] x6.9"
+  },
+  {
+   "boss": 6,
+   "attempt": 1,
+   "outcome": "death",
+   "boss_hp_frac": 0.43,
+   "hp": 0,
+   "ticks": 382,
+   "fight_s": 4.005508899688721,
+   "learn_s": 0.8834285736083984,
+   "K_map": 8,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 5,
+   "accepted": [
+    "retype lunge->feint",
+    "birth delayed_slam@17",
+    "retype slam->delayed_slam",
+    "delete sweep",
+    "delete sweep",
+    "birth delayed_slam@17",
+    "merge delayed_slam"
+   ]
+  },
+  {
+   "boss": 6,
+   "attempt": 2,
+   "outcome": "death",
+   "boss_hp_frac": 0.31,
+   "hp": 0,
+   "ticks": 285,
+   "fight_s": 2.6697189807891846,
+   "learn_s": 1.4862635135650635,
+   "K_map": 6,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 5,
+   "accepted": [
+    "merge feint",
+    "delete sweep",
+    "birth aoe@12",
+    "merge feint",
+    "birth aoe@12",
+    "delete slam",
+    "delete sweep",
+    "delete jab",
+    "retype slam->delayed_slam"
+   ]
+  },
+  {
+   "boss": 6,
+   "attempt": 3,
+   "outcome": "death",
+   "boss_hp_frac": 0.28,
+   "hp": 0,
+   "ticks": 432,
+   "fight_s": 4.743499517440796,
+   "learn_s": 2.229442834854126,
+   "K_map": 5,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 5,
+   "accepted": [
+    "delete feint",
+    "delete jab",
+    "birth aoe@24",
+    "delete feint",
+    "delete jab"
+   ]
+  },
+  {
+   "boss": 6,
+   "attempt": 4,
+   "outcome": "death",
+   "boss_hp_frac": 0.52,
+   "hp": 0,
+   "ticks": 248,
+   "fight_s": 2.0600087642669678,
+   "learn_s": 2.263381242752075,
+   "K_map": 5,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 5,
+   "accepted": [
+    "retype feint->lunge",
+    "delete lunge"
+   ]
+  },
+  {
+   "boss": 6,
+   "attempt": 5,
+   "outcome": "death",
+   "boss_hp_frac": 0.46,
+   "hp": 0,
+   "ticks": 318,
+   "fight_s": 4.041733503341675,
+   "learn_s": 2.5759425163269043,
+   "K_map": 5,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 5,
+   "accepted": []
+  },
+  {
+   "boss": 6,
+   "attempt": 6,
+   "outcome": "win",
+   "boss_hp_frac": 0.0,
+   "hp": 12.25,
+   "ticks": 495,
+   "fight_s": 6.68206000328064,
+   "learn_s": 3.489215850830078,
+   "K_map": 5,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 5,
+   "accepted": [],
+   "map_describe": "belief: 5 moves, phase-2 speed x0.74\n  [0] idle          windup~ 14.1t (sd 0.35) active 0 rec 0\n  [1] delayed_slam  windup~ 19.1t (sd 0.18) active 3 rec 20\n  [2] feint         windup~  5.8t (sd 0.10) active 2 rec 6\n  [3] aoe           windup~ 19.6t (sd 0.10) active 4 rec 24\n  [4] aoe           windup~ 17.1t (sd 0.10) active 4 rec 24",
+   "map_moves": [
+    [
+     "idle",
+     14.050645809032362
+    ],
+    [
+     "delayed_slam",
+     19.087271283441925
+    ],
+    [
+     "feint",
+     5.763002912596746
+    ],
+    [
+     "aoe",
+     19.62632918412522
+    ],
+    [
+     "aoe",
+     17.0750866087883
+    ]
+   ],
+   "map_laws": [],
+   "true_describe": "train06: 5 moves, phase-2 speed x0.81\n  [0] idle          windup~ 10.1t (sd 0.35) active 0 rec 0\n  [1] aoe           windup~ 19.0t (sd 0.10) active 4 rec 24\n  [2] aoe           windup~ 13.1t (sd 0.10) active 4 rec 24\n  [3] delayed_slam  windup~ 18.6t (sd 0.18) active 3 rec 20\n  [4] feint         windup~  5.2t (sd 0.10) active 2 rec 6"
+  },
+  {
+   "boss": 7,
+   "attempt": 1,
+   "outcome": "death",
+   "boss_hp_frac": 0.46,
+   "hp": 0,
+   "ticks": 217,
+   "fight_s": 1.9630169868469238,
+   "learn_s": 0.5329232215881348,
+   "K_map": 7,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 7,
+   "accepted": [
+    "delete delayed_slam",
+    "birth slam@9",
+    "delete sweep",
+    "split slam",
+    "split slam"
+   ]
+  },
+  {
+   "boss": 7,
+   "attempt": 2,
+   "outcome": "death",
+   "boss_hp_frac": 0.4,
+   "hp": 0,
+   "ticks": 231,
+   "fight_s": 1.9640448093414307,
+   "learn_s": 1.0498502254486084,
+   "K_map": 8,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 7,
+   "accepted": [
+    "split slam",
+    "split slam",
+    "delete sweep",
+    "birth slam@9",
+    "birth slam@9",
+    "merge slam",
+    "birth slam@10",
+    "merge slam"
+   ]
+  },
+  {
+   "boss": 7,
+   "attempt": 3,
+   "outcome": "death",
+   "boss_hp_frac": 0.4,
+   "hp": 0,
+   "ticks": 317,
+   "fight_s": 2.839254856109619,
+   "learn_s": 1.5979080200195312,
+   "K_map": 7,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 7,
+   "accepted": [
+    "retype feint->lunge",
+    "add novel sweep",
+    "delete aoe",
+    "split slam",
+    "birth sweep@9",
+    "split slam",
+    "retype feint->lunge"
+   ]
+  },
+  {
+   "boss": 7,
+   "attempt": 4,
+   "outcome": "death",
+   "boss_hp_frac": 0.34,
+   "hp": 0,
+   "ticks": 300,
+   "fight_s": 3.190387725830078,
+   "learn_s": 2.052095890045166,
+   "K_map": 7,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 7,
+   "accepted": [
+    "delete feint",
+    "delete feint",
+    "split slam",
+    "split slam",
+    "delete feint"
+   ]
+  },
+  {
+   "boss": 7,
+   "attempt": 5,
+   "outcome": "win",
+   "boss_hp_frac": 0.0,
+   "hp": 5.0,
+   "ticks": 481,
+   "fight_s": 5.195357799530029,
+   "learn_s": 3.0661203861236572,
+   "K_map": 5,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 7,
+   "accepted": [
+    "delete jab",
+    "merge slam",
+    "merge slam",
+    "split slam",
+    "split lunge"
+   ]
+  },
+  {
+   "boss": 7,
+   "attempt": 6,
+   "outcome": "death",
+   "boss_hp_frac": 0.37,
+   "hp": 0,
+   "ticks": 390,
+   "fight_s": 4.8465681076049805,
+   "learn_s": 4.150959730148315,
+   "K_map": 7,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 7,
+   "accepted": [
+    "split lunge",
+    "delete jab",
+    "delete jab",
+    "birth slam@15",
+    "birth slam@9"
+   ],
+   "map_describe": "belief: 7 moves, phase-2 speed x0.79\n  [0] idle          windup~ 13.3t (sd 0.35) active 0 rec 0\n  [1] slam          windup~ 11.6t (sd 0.10) active 3 rec 18\n  [2] sweep         windup~ 10.6t (sd 0.10) active 4 rec 12\n  [3] lunge         windup~ 10.6t (sd 0.10) active 4 rec 16\n  [4] slam          windup~ 14.1t (sd 0.10) active 3 rec 18\n  [5] lunge         windup~ 12.2t (sd 0.10) active 4 rec 16\n  [6] lunge         windup~ 11.6t (sd 0.10) active 4 rec 16",
+   "map_moves": [
+    [
+     "idle",
+     13.289413683828247
+    ],
+    [
+     "slam",
+     11.561911934857719
+    ],
+    [
+     "sweep",
+     10.635158308727524
+    ],
+    [
+     "lunge",
+     10.635158308727524
+    ],
+    [
+     "slam",
+     14.050645809032362
+    ],
+    [
+     "lunge",
+     12.224190873792757
+    ],
+    [
+     "lunge",
+     11.561911934857719
+    ]
+   ],
+   "map_laws": [],
+   "true_describe": "train07: 7 moves, phase-2 speed x0.81\n  [0] idle          windup~  9.9t (sd 0.35) active 0 rec 0\n  [1] slam          windup~ 13.8t (sd 0.10) active 3 rec 18\n  [2] sweep         windup~  9.7t (sd 0.10) active 4 rec 12\n  [3] lunge         windup~ 11.8t (sd 0.10) active 4 rec 16\n  [4] slam          windup~ 13.8t (sd 0.10) active 3 rec 18\n  [5] lunge         windup~  9.6t (sd 0.10) active 4 rec 16\n  [6] slam          windup~  9.7t (sd 0.10) active 3 rec 18\n  law: if player attacks -> move [1] x7.6"
+  },
+  {
+   "boss": 8,
+   "attempt": 1,
+   "outcome": "death",
+   "boss_hp_frac": 0.52,
+   "hp": 0,
+   "ticks": 281,
+   "fight_s": 2.663851737976074,
+   "learn_s": 0.7454345226287842,
+   "K_map": 7,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 5,
+   "accepted": [
+    "delete lunge",
+    "retype feint->lunge",
+    "delete lunge",
+    "birth slam@8",
+    "delete sweep",
+    "delete slam",
+    "retype lunge->feint",
+    "retype feint->lunge"
+   ]
+  },
+  {
+   "boss": 8,
+   "attempt": 2,
+   "outcome": "death",
+   "boss_hp_frac": 0.28,
+   "hp": 0,
+   "ticks": 350,
+   "fight_s": 2.639347791671753,
+   "learn_s": 1.4027173519134521,
+   "K_map": 5,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 5,
+   "accepted": [
+    "delete lunge",
+    "delete jab",
+    "split delayed_slam",
+    "birth sweep@13",
+    "delete lunge",
+    "birth sweep@13",
+    "merge sweep"
+   ]
+  },
+  {
+   "boss": 8,
+   "attempt": 3,
+   "outcome": "death",
+   "boss_hp_frac": 0.37,
+   "hp": 0,
+   "ticks": 304,
+   "fight_s": 3.189309597015381,
+   "learn_s": 2.0554392337799072,
+   "K_map": 8,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 5,
+   "accepted": [
+    "birth slam@7",
+    "delete jab",
+    "birth slam@7"
+   ]
+  },
+  {
+   "boss": 8,
+   "attempt": 4,
+   "outcome": "death",
+   "boss_hp_frac": 0.34,
+   "hp": 0,
+   "ticks": 476,
+   "fight_s": 5.9602086544036865,
+   "learn_s": 3.328916311264038,
+   "K_map": 7,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 5,
+   "accepted": [
+    "retype lunge->feint",
+    "delete feint",
+    "delete jab",
+    "retype lunge->feint",
+    "delete feint",
+    "retype lunge->feint",
+    "split slam",
+    "delete lunge",
+    "split slam"
+   ]
+  },
+  {
+   "boss": 8,
+   "attempt": 5,
+   "outcome": "death",
+   "boss_hp_frac": 0.46,
+   "hp": 0,
+   "ticks": 472,
+   "fight_s": 6.8622870445251465,
+   "learn_s": 3.7483861446380615,
+   "K_map": 7,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 5,
+   "accepted": [
+    "split aoe",
+    "split delayed_slam"
+   ]
+  },
+  {
+   "boss": 8,
+   "attempt": 6,
+   "outcome": "death",
+   "boss_hp_frac": 0.1,
+   "hp": 0,
+   "ticks": 325,
+   "fight_s": 2.6790711879730225,
+   "learn_s": 3.920328378677368,
+   "K_map": 7,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 5,
+   "accepted": [
+    "merge delayed_slam",
+    "delete jab"
+   ],
+   "map_describe": "belief: 7 moves, phase-2 speed x0.83\n  [0] idle          windup~  9.3t (sd 0.35) active 0 rec 0\n  [1] slam          windup~  8.8t (sd 0.10) active 3 rec 18\n  [2] delayed_slam  windup~ 24.5t (sd 0.18) active 3 rec 20\n  [3] sweep         windup~ 10.9t (sd 0.10) active 4 rec 12\n  [4] jab           windup~  4.6t (sd 0.10) active 2 rec 6\n  [5] aoe           windup~ 16.6t (sd 0.10) active 4 rec 24\n  [6] delayed_slam  windup~ 29.0t (sd 0.18) active 3 rec 20",
+   "map_moves": [
+    [
+     "idle",
+     9.252685385842879
+    ],
+    [
+     "slam",
+     8.75139587532213
+    ],
+    [
+     "delayed_slam",
+     24.524543974939498
+    ],
+    [
+     "sweep",
+     10.935513766886201
+    ],
+    [
+     "jab",
+     4.6119753487475466
+    ],
+    [
+     "aoe",
+     16.60610128529929
+    ],
+    [
+     "delayed_slam",
+     28.984935408578817
+    ]
+   ],
+   "map_laws": [],
+   "true_describe": "train08: 5 moves, phase-2 speed x0.81\n  [0] idle          windup~  9.1t (sd 0.35) active 0 rec 0\n  [1] sweep         windup~ 11.0t (sd 0.10) active 4 rec 12\n  [2] slam          windup~  8.8t (sd 0.10) active 3 rec 18\n  [3] delayed_slam  windup~ 28.4t (sd 0.18) active 3 rec 20\n  [4] aoe           windup~ 16.3t (sd 0.10) active 4 rec 24\n  law: if player attacks -> move [2] x5.5"
+  },
+  {
+   "boss": 9,
+   "attempt": 1,
+   "outcome": "death",
+   "boss_hp_frac": 0.28,
+   "hp": 0,
+   "ticks": 280,
+   "fight_s": 2.5136988162994385,
+   "learn_s": 0.7818381786346436,
+   "K_map": 7,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 6,
+   "accepted": [
+    "delete feint",
+    "retype lunge->feint",
+    "retype delayed_slam->slam",
+    "split aoe",
+    "delete lunge",
+    "birth aoe@24",
+    "retype slam->delayed_slam",
+    "retype delayed_slam->slam",
+    "merge slam"
+   ]
+  },
+  {
+   "boss": 9,
+   "attempt": 2,
+   "outcome": "death",
+   "boss_hp_frac": 0.16,
+   "hp": 0,
+   "ticks": 306,
+   "fight_s": 2.8865578174591064,
+   "learn_s": 1.3285391330718994,
+   "K_map": 9,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 6,
+   "accepted": [
+    "birth sweep@16",
+    "retype feint->lunge",
+    "retype slam->delayed_slam",
+    "split aoe",
+    "birth sweep@16",
+    "retype slam->delayed_slam",
+    "retype feint->lunge"
+   ]
+  },
+  {
+   "boss": 9,
+   "attempt": 3,
+   "outcome": "win",
+   "boss_hp_frac": 0.0,
+   "hp": 5.5,
+   "ticks": 450,
+   "fight_s": 4.279917478561401,
+   "learn_s": 2.4370663166046143,
+   "K_map": 8,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 6,
+   "accepted": [
+    "delete delayed_slam",
+    "retype delayed_slam->slam",
+    "delete sweep",
+    "retype delayed_slam->slam",
+    "delete delayed_slam",
+    "delete jab",
+    "retype delayed_slam->slam",
+    "retype slam->delayed_slam"
+   ]
+  },
+  {
+   "boss": 9,
+   "attempt": 4,
+   "outcome": "win",
+   "boss_hp_frac": 0.0,
+   "hp": 14.0,
+   "ticks": 280,
+   "fight_s": 2.554827928543091,
+   "learn_s": 2.4784815311431885,
+   "K_map": 8,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 6,
+   "accepted": [
+    "retype delayed_slam->slam",
+    "retype delayed_slam->slam",
+    "delete slam"
+   ]
+  },
+  {
+   "boss": 9,
+   "attempt": 5,
+   "outcome": "death",
+   "boss_hp_frac": 0.16,
+   "hp": 0,
+   "ticks": 378,
+   "fight_s": 4.141693115234375,
+   "learn_s": 3.1710832118988037,
+   "K_map": 6,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 6,
+   "accepted": [
+    "delete delayed_slam",
+    "delete jab",
+    "delete jab",
+    "delete slam",
+    "delete sweep"
+   ]
+  },
+  {
+   "boss": 9,
+   "attempt": 6,
+   "outcome": "death",
+   "boss_hp_frac": 0.13,
+   "hp": 0,
+   "ticks": 259,
+   "fight_s": 2.152377128601074,
+   "learn_s": 3.2614829540252686,
+   "K_map": 6,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 6,
+   "accepted": [
+    "merge sweep"
+   ],
+   "map_describe": "belief: 6 moves, phase-2 speed x0.93\n  [0] idle          windup~  8.0t (sd 0.35) active 0 rec 0\n  [1] sweep         windup~ 15.3t (sd 0.10) active 4 rec 12\n  [2] feint         windup~ 14.4t (sd 0.10) active 2 rec 6\n  [3] aoe           windup~ 14.9t (sd 0.10) active 4 rec 24\n  [4] aoe           windup~ 26.7t (sd 0.10) active 4 rec 24\n  [5] sweep         windup~ 16.6t (sd 0.10) active 4 rec 12",
+   "map_moves": [
+    [
+     "idle",
+     8.049921248387482
+    ],
+    [
+     "sweep",
+     15.275026920717925
+    ],
+    [
+     "feint",
+     14.447460603592965
+    ],
+    [
+     "aoe",
+     14.855482141482122
+    ],
+    [
+     "aoe",
+     26.661626413976926
+    ],
+    [
+     "sweep",
+     16.60610128529929
+    ]
+   ],
+   "map_laws": [],
+   "true_describe": "train09: 6 moves, phase-2 speed x0.89\n  [0] idle          windup~  9.0t (sd 0.35) active 0 rec 0\n  [1] aoe           windup~ 15.3t (sd 0.10) active 4 rec 24\n  [2] feint         windup~ 15.3t (sd 0.10) active 2 rec 6\n  [3] aoe           windup~ 26.4t (sd 0.10) active 4 rec 24\n  [4] sweep         windup~ 15.9t (sd 0.10) active 4 rec 12\n  [5] aoe           windup~ 28.8t (sd 0.10) active 4 rec 24"
+  },
+  {
+   "boss": 10,
+   "attempt": 1,
+   "outcome": "win",
+   "boss_hp_frac": 0.0,
+   "hp": 43.5,
+   "ticks": 239,
+   "fight_s": 2.105149507522583,
+   "learn_s": 0.5467908382415771,
+   "K_map": 7,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 5,
+   "accepted": [
+    "delete lunge",
+    "split aoe",
+    "merge aoe",
+    "delete lunge",
+    "delete lunge",
+    "birth slam@10",
+    "delete slam"
+   ]
+  },
+  {
+   "boss": 10,
+   "attempt": 2,
+   "outcome": "death",
+   "boss_hp_frac": 0.31,
+   "hp": 0,
+   "ticks": 218,
+   "fight_s": 1.5304667949676514,
+   "learn_s": 1.0999445915222168,
+   "K_map": 9,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 5,
+   "accepted": [
+    "split slam",
+    "birth slam@16",
+    "delete sweep",
+    "retype feint->lunge",
+    "birth slam@16",
+    "delete feint",
+    "split slam"
+   ]
+  },
+  {
+   "boss": 10,
+   "attempt": 3,
+   "outcome": "death",
+   "boss_hp_frac": 0.13,
+   "hp": 0,
+   "ticks": 242,
+   "fight_s": 2.1775050163269043,
+   "learn_s": 1.5837454795837402,
+   "K_map": 8,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 5,
+   "accepted": [
+    "delete feint",
+    "retype lunge->feint",
+    "delete feint",
+    "merge slam",
+    "birth slam@15",
+    "delete jab",
+    "merge slam",
+    "birth slam@15"
+   ]
+  },
+  {
+   "boss": 10,
+   "attempt": 4,
+   "outcome": "win",
+   "boss_hp_frac": 0.0,
+   "hp": 24.25,
+   "ticks": 327,
+   "fight_s": 2.641329288482666,
+   "learn_s": 1.7341325283050537,
+   "K_map": 8,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 5,
+   "accepted": [
+    "retype lunge->feint"
+   ]
+  },
+  {
+   "boss": 10,
+   "attempt": 5,
+   "outcome": "win",
+   "boss_hp_frac": 0.0,
+   "hp": 24.75,
+   "ticks": 399,
+   "fight_s": 4.759413242340088,
+   "learn_s": 2.6710197925567627,
+   "K_map": 8,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 5,
+   "accepted": [
+    "retype lunge->feint",
+    "retype lunge->feint",
+    "split slam"
+   ]
+  },
+  {
+   "boss": 10,
+   "attempt": 6,
+   "outcome": "death",
+   "boss_hp_frac": 0.46,
+   "hp": 0,
+   "ticks": 261,
+   "fight_s": 2.731034517288208,
+   "learn_s": 3.6561789512634277,
+   "K_map": 7,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 5,
+   "accepted": [
+    "merge feint",
+    "retype feint->lunge",
+    "delete lunge",
+    "delete feint",
+    "retype lunge->feint",
+    "retype feint->lunge",
+    "delete lunge",
+    "delete sweep"
+   ],
+   "map_describe": "belief: 7 moves, phase-2 speed x0.86\n  [0] idle          windup~ 20.8t (sd 0.35) active 0 rec 0\n  [1] delayed_slam  windup~ 29.0t (sd 0.18) active 3 rec 20\n  [2] sweep         windup~ 15.3t (sd 0.10) active 4 rec 12\n  [3] lunge         windup~ 17.1t (sd 0.10) active 4 rec 16\n  [4] aoe           windup~ 22.6t (sd 0.10) active 4 rec 24\n  [5] slam          windup~  9.8t (sd 0.10) active 3 rec 18\n  [6] slam          windup~ 13.3t (sd 0.10) active 3 rec 18",
+   "map_moves": [
+    [
+     "idle",
+     20.750546747836683
+    ],
+    [
+     "delayed_slam",
+     28.984935408578817
+    ],
+    [
+     "sweep",
+     15.275026920717925
+    ],
+    [
+     "lunge",
+     17.0750866087883
+    ],
+    [
+     "aoe",
+     22.558760963788732
+    ],
+    [
+     "slam",
+     9.782689306834612
+    ],
+    [
+     "slam",
+     13.289413683828247
+    ]
+   ],
+   "map_laws": [],
+   "true_describe": "train10: 5 moves, phase-2 speed x0.78\n  [0] idle          windup~ 20.2t (sd 0.35) active 0 rec 0\n  [1] aoe           windup~ 23.9t (sd 0.10) active 4 rec 24\n  [2] slam          windup~  9.9t (sd 0.10) active 3 rec 18\n  [3] delayed_slam  windup~ 31.1t (sd 0.18) active 3 rec 20\n  [4] slam          windup~ 13.0t (sd 0.10) active 3 rec 18\n  law: if player heals -> move [4] x5.9"
+  },
+  {
+   "boss": 11,
+   "attempt": 1,
+   "outcome": "death",
+   "boss_hp_frac": 0.28,
+   "hp": 0,
+   "ticks": 249,
+   "fight_s": 1.9300336837768555,
+   "learn_s": 0.6167678833007812,
+   "K_map": 6,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 6,
+   "accepted": [
+    "retype delayed_slam->slam",
+    "delete sweep",
+    "merge slam",
+    "split aoe",
+    "retype slam->delayed_slam",
+    "retype feint->lunge",
+    "delete jab",
+    "split aoe",
+    "retype lunge->feint",
+    "delete slam"
+   ]
+  },
+  {
+   "boss": 11,
+   "attempt": 2,
+   "outcome": "death",
+   "boss_hp_frac": 0.37,
+   "hp": 0,
+   "ticks": 280,
+   "fight_s": 2.92789888381958,
+   "learn_s": 1.0458333492279053,
+   "K_map": 5,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 6,
+   "accepted": [
+    "delete lunge",
+    "retype slam->delayed_slam",
+    "retype slam->delayed_slam",
+    "delete jab",
+    "delete lunge",
+    "retype slam->delayed_slam"
+   ]
+  },
+  {
+   "boss": 11,
+   "attempt": 3,
+   "outcome": "death",
+   "boss_hp_frac": 0.37,
+   "hp": 0,
+   "ticks": 232,
+   "fight_s": 1.4603805541992188,
+   "learn_s": 1.3640944957733154,
+   "K_map": 6,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 6,
+   "accepted": [
+    "delete lunge",
+    "birth aoe@25",
+    "birth jab@7",
+    "delete feint"
+   ]
+  },
+  {
+   "boss": 11,
+   "attempt": 4,
+   "outcome": "death",
+   "boss_hp_frac": 0.31,
+   "hp": 0,
+   "ticks": 260,
+   "fight_s": 2.1825878620147705,
+   "learn_s": 2.0774476528167725,
+   "K_map": 5,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 6,
+   "accepted": [
+    "retype feint->lunge",
+    "merge lunge",
+    "split slam",
+    "merge slam",
+    "birth aoe@25",
+    "delete feint"
+   ]
+  },
+  {
+   "boss": 11,
+   "attempt": 5,
+   "outcome": "death",
+   "boss_hp_frac": 0.25,
+   "hp": 0,
+   "ticks": 328,
+   "fight_s": 3.9516749382019043,
+   "learn_s": 3.145693302154541,
+   "K_map": 7,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 6,
+   "accepted": [
+    "retype feint->lunge",
+    "birth slam@30",
+    "delete lunge",
+    "retype feint->lunge",
+    "retype lunge->feint",
+    "split aoe"
+   ]
+  },
+  {
+   "boss": 11,
+   "attempt": 6,
+   "outcome": "win",
+   "boss_hp_frac": 0.0,
+   "hp": 1.5,
+   "ticks": 343,
+   "fight_s": 2.674288749694824,
+   "learn_s": 3.3239428997039795,
+   "K_map": 8,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 6,
+   "accepted": [
+    "birth slam@29",
+    "retype lunge->feint",
+    "birth slam@30",
+    "delete feint"
+   ],
+   "map_describe": "belief: 8 moves, phase-2 speed x0.83\n  [0] idle          windup~  9.5t (sd 0.35) active 0 rec 0\n  [1] slam          windup~ 21.3t (sd 0.10) active 3 rec 18\n  [2] lunge         windup~  9.5t (sd 0.10) active 4 rec 16\n  [3] feint         windup~ 10.9t (sd 0.10) active 2 rec 6\n  [4] jab           windup~  6.4t (sd 0.10) active 2 rec 6\n  [5] aoe           windup~ 15.7t (sd 0.10) active 4 rec 24\n  [6] aoe           windup~ 25.2t (sd 0.10) active 4 rec 24\n  [7] aoe           windup~ 16.1t (sd 0.10) active 4 rec 24",
+   "map_moves": [
+    [
+     "idle",
+     9.513997392452346
+    ],
+    [
+     "slam",
+     21.33657845461202
+    ],
+    [
+     "lunge",
+     9.513997392452346
+    ],
+    [
+     "feint",
+     10.935513766886201
+    ],
+    [
+     "jab",
+     6.442134234527667
+    ],
+    [
+     "aoe",
+     15.70642037777567
+    ],
+    [
+     "aoe",
+     25.217159959384293
+    ],
+    [
+     "aoe",
+     16.149997140025484
+    ]
+   ],
+   "map_laws": [],
+   "true_describe": "train11: 6 moves, phase-2 speed x0.84\n  [0] idle          windup~ 11.6t (sd 0.35) active 0 rec 0\n  [1] slam          windup~ 19.7t (sd 0.10) active 3 rec 18\n  [2] aoe           windup~ 26.2t (sd 0.10) active 4 rec 24\n  [3] jab           windup~  6.9t (sd 0.10) active 2 rec 6\n  [4] aoe           windup~ 16.1t (sd 0.10) active 4 rec 24\n  [5] delayed_slam  windup~ 34.1t (sd 0.18) active 3 rec 20"
+  },
+  {
+   "boss": 12,
+   "attempt": 1,
+   "outcome": "death",
+   "boss_hp_frac": 0.43,
+   "hp": 0,
+   "ticks": 245,
+   "fight_s": 1.860123634338379,
+   "learn_s": 0.6838531494140625,
+   "K_map": 8,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 7,
+   "accepted": [
+    "birth slam@15",
+    "delete feint",
+    "birth aoe@33",
+    "delete jab",
+    "birth slam@14",
+    "birth aoe@33",
+    "merge aoe",
+    "birth aoe@33",
+    "delete jab",
+    "birth slam@15"
+   ]
+  },
+  {
+   "boss": 12,
+   "attempt": 2,
+   "outcome": "death",
+   "boss_hp_frac": 0.1,
+   "hp": 0,
+   "ticks": 383,
+   "fight_s": 4.694868564605713,
+   "learn_s": 1.413198709487915,
+   "K_map": 9,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 7,
+   "accepted": [
+    "merge aoe",
+    "delete feint",
+    "delete aoe",
+    "delete feint",
+    "retype delayed_slam->slam",
+    "split aoe"
+   ]
+  },
+  {
+   "boss": 12,
+   "attempt": 3,
+   "outcome": "death",
+   "boss_hp_frac": 0.31,
+   "hp": 0,
+   "ticks": 525,
+   "fight_s": 7.79937481880188,
+   "learn_s": 2.395186424255371,
+   "K_map": 8,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 7,
+   "accepted": [
+    "birth sweep@12",
+    "split slam",
+    "retype delayed_slam->slam",
+    "birth lunge@15"
+   ]
+  },
+  {
+   "boss": 12,
+   "attempt": 4,
+   "outcome": "death",
+   "boss_hp_frac": 0.16,
+   "hp": 0,
+   "ticks": 494,
+   "fight_s": 6.196882009506226,
+   "learn_s": 3.687917947769165,
+   "K_map": 6,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 7,
+   "accepted": [
+    "delete delayed_slam",
+    "split lunge",
+    "delete delayed_slam",
+    "delete delayed_slam"
+   ]
+  },
+  {
+   "boss": 12,
+   "attempt": 5,
+   "outcome": "death",
+   "boss_hp_frac": 0.22,
+   "hp": 0,
+   "ticks": 283,
+   "fight_s": 2.4009628295898438,
+   "learn_s": 3.3083202838897705,
+   "K_map": 6,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 7,
+   "accepted": []
+  },
+  {
+   "boss": 12,
+   "attempt": 6,
+   "outcome": "death",
+   "boss_hp_frac": 0.34,
+   "hp": 0,
+   "ticks": 277,
+   "fight_s": 2.60994553565979,
+   "learn_s": 3.8025400638580322,
+   "K_map": 7,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 7,
+   "accepted": [
+    "split sweep"
+   ],
+   "map_describe": "belief: 7 moves, phase-2 speed x0.74\n  [0] idle          windup~ 15.3t (sd 0.35) active 0 rec 0\n  [1] slam          windup~  7.0t (sd 0.10) active 3 rec 18\n  [2] sweep         windup~ 14.1t (sd 0.10) active 4 rec 12\n  [3] lunge         windup~ 12.2t (sd 0.10) active 4 rec 16\n  [4] aoe           windup~ 34.3t (sd 0.10) active 4 rec 24\n  [5] slam          windup~ 22.6t (sd 0.10) active 3 rec 18\n  [6] sweep         windup~ 14.9t (sd 0.10) active 4 rec 12",
+   "map_moves": [
+    [
+     "idle",
+     15.275026920717925
+    ],
+    [
+     "slam",
+     7.003505404429911
+    ],
+    [
+     "sweep",
+     14.050645809032362
+    ],
+    [
+     "lunge",
+     12.224190873792757
+    ],
+    [
+     "aoe",
+     34.256558715137466
+    ],
+    [
+     "slam",
+     22.558760963788732
+    ],
+    [
+     "sweep",
+     14.855482141482122
+    ]
+   ],
+   "map_laws": [],
+   "true_describe": "train12: 7 moves, phase-2 speed x0.76\n  [0] idle          windup~ 11.8t (sd 0.35) active 0 rec 0\n  [1] slam          windup~  7.2t (sd 0.10) active 3 rec 18\n  [2] aoe           windup~ 33.0t (sd 0.10) active 4 rec 24\n  [3] sweep         windup~ 14.5t (sd 0.10) active 4 rec 12\n  [4] slam          windup~ 21.6t (sd 0.10) active 3 rec 18\n  [5] lunge         windup~ 10.0t (sd 0.10) active 4 rec 16\n  [6] lunge         windup~ 13.1t (sd 0.10) active 4 rec 16\n  law: if player heals -> move [3] x4.7"
+  },
+  {
+   "boss": 13,
+   "attempt": 1,
+   "outcome": "death",
+   "boss_hp_frac": 0.34,
+   "hp": 0,
+   "ticks": 192,
+   "fight_s": 1.0683505535125732,
+   "learn_s": 0.6177985668182373,
+   "K_map": 8,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 5,
+   "accepted": [
+    "birth sweep@7",
+    "delete feint",
+    "retype slam->delayed_slam",
+    "birth sweep@7",
+    "delete feint",
+    "delete delayed_slam",
+    "retype slam->delayed_slam",
+    "merge delayed_slam",
+    "delete slam"
+   ]
+  },
+  {
+   "boss": 13,
+   "attempt": 2,
+   "outcome": "death",
+   "boss_hp_frac": 0.46,
+   "hp": 0,
+   "ticks": 328,
+   "fight_s": 2.771212339401245,
+   "learn_s": 1.2960546016693115,
+   "K_map": 6,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 5,
+   "accepted": [
+    "retype delayed_slam->slam",
+    "delete jab",
+    "delete delayed_slam",
+    "retype lunge->feint",
+    "delete lunge",
+    "delete jab",
+    "retype lunge->feint",
+    "split sweep"
+   ]
+  },
+  {
+   "boss": 13,
+   "attempt": 3,
+   "outcome": "win",
+   "boss_hp_frac": 0.0,
+   "hp": 5.0,
+   "ticks": 560,
+   "fight_s": 6.115231275558472,
+   "learn_s": 2.4314372539520264,
+   "K_map": 3,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 5,
+   "accepted": [
+    "delete delayed_slam",
+    "delete feint",
+    "delete delayed_slam",
+    "retype delayed_slam->slam",
+    "delete feint"
+   ]
+  },
+  {
+   "boss": 13,
+   "attempt": 4,
+   "outcome": "death",
+   "boss_hp_frac": 0.01,
+   "hp": 0,
+   "ticks": 465,
+   "fight_s": 5.110235214233398,
+   "learn_s": 3.1973156929016113,
+   "K_map": 4,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 5,
+   "accepted": [
+    "split delayed_slam",
+    "merge delayed_slam",
+    "split sweep",
+    "birth delayed_slam@46"
+   ]
+  },
+  {
+   "boss": 13,
+   "attempt": 5,
+   "outcome": "death",
+   "boss_hp_frac": 0.1,
+   "hp": 0,
+   "ticks": 310,
+   "fight_s": 2.7575981616973877,
+   "learn_s": 3.310999631881714,
+   "K_map": 5,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 5,
+   "accepted": [
+    "birth delayed_slam@44",
+    "birth delayed_slam@30",
+    "merge sweep",
+    "birth delayed_slam@24",
+    "merge delayed_slam"
+   ]
+  },
+  {
+   "boss": 13,
+   "attempt": 6,
+   "outcome": "win",
+   "boss_hp_frac": 0.0,
+   "hp": 50.75,
+   "ticks": 296,
+   "fight_s": 2.7876908779144287,
+   "learn_s": 3.5310890674591064,
+   "K_map": 5,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 5,
+   "accepted": [
+    "delete delayed_slam",
+    "merge delayed_slam"
+   ],
+   "map_describe": "belief: 5 moves, phase-2 speed x0.79\n  [0] idle          windup~  9.3t (sd 0.35) active 0 rec 0\n  [1] delayed_slam  windup~ 52.0t (sd 0.18) active 3 rec 20\n  [2] sweep         windup~  8.0t (sd 0.10) active 4 rec 12\n  [3] aoe           windup~ 28.2t (sd 0.10) active 4 rec 24\n  [4] delayed_slam  windup~ 28.2t (sd 0.18) active 3 rec 20",
+   "map_moves": [
+    [
+     "idle",
+     9.252685385842879
+    ],
+    [
+     "delayed_slam",
+     52.020224731641036
+    ],
+    [
+     "sweep",
+     8.049921248387482
+    ],
+    [
+     "aoe",
+     28.188833484158454
+    ],
+    [
+     "delayed_slam",
+     28.188833484158454
+    ]
+   ],
+   "map_laws": [],
+   "true_describe": "train13: 5 moves, phase-2 speed x0.81\n  [0] idle          windup~ 14.0t (sd 0.35) active 0 rec 0\n  [1] sweep         windup~  8.1t (sd 0.10) active 4 rec 12\n  [2] aoe           windup~ 27.9t (sd 0.10) active 4 rec 24\n  [3] delayed_slam  windup~ 51.5t (sd 0.18) active 3 rec 20\n  [4] delayed_slam  windup~ 33.6t (sd 0.18) active 3 rec 20\n  law: if player heals -> move [4] x8.9\n  law: if player attacks -> move [1] x5.8"
+  },
+  {
+   "boss": 14,
+   "attempt": 1,
+   "outcome": "death",
+   "boss_hp_frac": 0.28,
+   "hp": 0,
+   "ticks": 220,
+   "fight_s": 1.2651607990264893,
+   "learn_s": 0.5809392929077148,
+   "K_map": 9,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 7,
+   "accepted": [
+    "split jab",
+    "retype feint->lunge",
+    "retype lunge->feint",
+    "birth aoe@33",
+    "delete lunge",
+    "birth aoe@33",
+    "delete feint",
+    "birth aoe@33",
+    "delete aoe",
+    "delete sweep"
+   ]
+  },
+  {
+   "boss": 14,
+   "attempt": 2,
+   "outcome": "death",
+   "boss_hp_frac": 0.22,
+   "hp": 0,
+   "ticks": 318,
+   "fight_s": 2.6650633811950684,
+   "learn_s": 1.2293384075164795,
+   "K_map": 7,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 7,
+   "accepted": [
+    "split jab",
+    "merge aoe",
+    "delete sweep",
+    "delete aoe",
+    "retype slam->delayed_slam",
+    "birth feint@17",
+    "merge aoe"
+   ]
+  },
+  {
+   "boss": 14,
+   "attempt": 3,
+   "outcome": "death",
+   "boss_hp_frac": 0.43,
+   "hp": 0,
+   "ticks": 258,
+   "fight_s": 1.5902249813079834,
+   "learn_s": 1.809006690979004,
+   "K_map": 7,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 7,
+   "accepted": [
+    "split jab",
+    "delete slam",
+    "birth jab@7",
+    "merge jab",
+    "split feint",
+    "merge jab",
+    "delete slam"
+   ]
+  },
+  {
+   "boss": 14,
+   "attempt": 4,
+   "outcome": "win",
+   "boss_hp_frac": 0.0,
+   "hp": 4.300000000000001,
+   "ticks": 315,
+   "fight_s": 2.4926466941833496,
+   "learn_s": 2.4480884075164795,
+   "K_map": 8,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 7,
+   "accepted": [
+    "birth feint@7",
+    "merge feint",
+    "birth feint@12",
+    "retype slam->delayed_slam",
+    "merge feint",
+    "birth feint@11",
+    "birth feint@12"
+   ]
+  },
+  {
+   "boss": 14,
+   "attempt": 5,
+   "outcome": "death",
+   "boss_hp_frac": 0.1,
+   "hp": 0,
+   "ticks": 315,
+   "fight_s": 2.5136218070983887,
+   "learn_s": 2.592958688735962,
+   "K_map": 8,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 7,
+   "accepted": [
+    "merge feint",
+    "merge feint",
+    "merge jab"
+   ]
+  },
+  {
+   "boss": 14,
+   "attempt": 6,
+   "outcome": "death",
+   "boss_hp_frac": 0.49,
+   "hp": 0,
+   "ticks": 224,
+   "fight_s": 1.4121875762939453,
+   "learn_s": 3.3092293739318848,
+   "K_map": 7,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 7,
+   "accepted": [
+    "merge delayed_slam",
+    "merge jab",
+    "merge delayed_slam",
+    "merge jab"
+   ],
+   "map_describe": "belief: 7 moves, phase-2 speed x0.80\n  [0] idle          windup~  9.3t (sd 0.35) active 0 rec 0\n  [1] delayed_slam  windup~ 20.2t (sd 0.18) active 3 rec 20\n  [2] feint         windup~  7.4t (sd 0.10) active 2 rec 6\n  [3] jab           windup~  5.5t (sd 0.10) active 2 rec 6\n  [4] aoe           windup~ 31.5t (sd 0.10) active 4 rec 24\n  [5] feint         windup~ 14.9t (sd 0.10) active 2 rec 6\n  [6] feint         windup~ 14.1t (sd 0.10) active 2 rec 6",
+   "map_moves": [
+    [
+     "idle",
+     9.252685385842879
+    ],
+    [
+     "delayed_slam",
+     20.180611022058315
+    ],
+    [
+     "feint",
+     7.404673840429483
+    ],
+    [
+     "jab",
+     5.450776484406991
+    ],
+    [
+     "aoe",
+     31.510698844653504
+    ],
+    [
+     "feint",
+     14.855482141482122
+    ],
+    [
+     "feint",
+     14.050645809032362
+    ]
+   ],
+   "map_laws": [],
+   "true_describe": "train14: 7 moves, phase-2 speed x0.77\n  [0] idle          windup~ 12.8t (sd 0.35) active 0 rec 0\n  [1] delayed_slam  windup~ 18.2t (sd 0.18) active 3 rec 20\n  [2] aoe           windup~ 31.3t (sd 0.10) active 4 rec 24\n  [3] delayed_slam  windup~ 23.0t (sd 0.18) active 3 rec 20\n  [4] jab           windup~  5.5t (sd 0.10) active 2 rec 6\n  [5] feint         windup~ 13.8t (sd 0.10) active 2 rec 6\n  [6] feint         windup~  7.7t (sd 0.10) active 2 rec 6\n  law: if player heals -> move [4] x12.5"
+  },
+  {
+   "boss": 15,
+   "attempt": 1,
+   "outcome": "death",
+   "boss_hp_frac": 0.34,
+   "hp": 0,
+   "ticks": 381,
+   "fight_s": 4.2938454151153564,
+   "learn_s": 0.8962123394012451,
+   "K_map": 8,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 7,
+   "accepted": [
+    "birth lunge@16",
+    "delete feint",
+    "birth lunge@16",
+    "merge lunge",
+    "split slam",
+    "birth lunge@16",
+    "delete aoe",
+    "merge lunge"
+   ]
+  },
+  {
+   "boss": 15,
+   "attempt": 2,
+   "outcome": "death",
+   "boss_hp_frac": 0.37,
+   "hp": 0,
+   "ticks": 430,
+   "fight_s": 4.9162516593933105,
+   "learn_s": 1.9219205379486084,
+   "K_map": 8,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 7,
+   "accepted": [
+    "delete sweep",
+    "split slam",
+    "birth slam@21",
+    "merge slam",
+    "birth slam@16",
+    "retype delayed_slam->slam",
+    "split slam",
+    "delete delayed_slam"
+   ]
+  },
+  {
+   "boss": 15,
+   "attempt": 3,
+   "outcome": "death",
+   "boss_hp_frac": 0.28,
+   "hp": 0,
+   "ticks": 294,
+   "fight_s": 3.2450132369995117,
+   "learn_s": 2.229886054992676,
+   "K_map": 8,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 7,
+   "accepted": [
+    "delete aoe",
+    "delete sweep",
+    "retype delayed_slam->slam"
+   ]
+  },
+  {
+   "boss": 15,
+   "attempt": 4,
+   "outcome": "death",
+   "boss_hp_frac": 0.22,
+   "hp": 0,
+   "ticks": 254,
+   "fight_s": 1.9265344142913818,
+   "learn_s": 2.527359962463379,
+   "K_map": 7,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 7,
+   "accepted": [
+    "split lunge",
+    "merge lunge"
+   ]
+  },
+  {
+   "boss": 15,
+   "attempt": 5,
+   "outcome": "win",
+   "boss_hp_frac": 0.0,
+   "hp": 1.75,
+   "ticks": 463,
+   "fight_s": 5.492254734039307,
+   "learn_s": 3.0755679607391357,
+   "K_map": 7,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 7,
+   "accepted": []
+  },
+  {
+   "boss": 15,
+   "attempt": 6,
+   "outcome": "win",
+   "boss_hp_frac": 0.0,
+   "hp": 1.75,
+   "ticks": 302,
+   "fight_s": 2.4717657566070557,
+   "learn_s": 4.323925018310547,
+   "K_map": 6,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 7,
+   "accepted": [
+    "birth slam@18",
+    "merge lunge",
+    "merge lunge"
+   ],
+   "map_describe": "belief: 6 moves, phase-2 speed x0.89\n  [0] idle          windup~ 23.9t (sd 0.35) active 0 rec 0\n  [1] slam          windup~ 17.1t (sd 0.10) active 3 rec 18\n  [2] lunge         windup~ 13.7t (sd 0.10) active 4 rec 16\n  [3] jab           windup~  5.0t (sd 0.10) active 2 rec 6\n  [4] lunge         windup~ 13.7t (sd 0.10) active 4 rec 16\n  [5] slam          windup~ 24.5t (sd 0.10) active 3 rec 18",
+   "map_moves": [
+    [
+     "idle",
+     23.850951421471112
+    ],
+    [
+     "slam",
+     17.0750866087883
+    ],
+    [
+     "lunge",
+     13.664729952735208
+    ],
+    [
+     "jab",
+     5.013865452683972
+    ],
+    [
+     "lunge",
+     13.664729952735208
+    ],
+    [
+     "slam",
+     24.524543974939498
+    ]
+   ],
+   "map_laws": [],
+   "true_describe": "train15: 7 moves, phase-2 speed x0.86\n  [0] idle          windup~ 27.6t (sd 0.35) active 0 rec 0\n  [1] feint         windup~  5.5t (sd 0.10) active 2 rec 6\n  [2] delayed_slam  windup~ 18.2t (sd 0.18) active 3 rec 20\n  [3] slam          windup~ 25.1t (sd 0.10) active 3 rec 18\n  [4] lunge         windup~ 14.4t (sd 0.10) active 4 rec 16\n  [5] jab           windup~  5.4t (sd 0.10) active 2 rec 6\n  [6] slam          windup~ 18.4t (sd 0.10) active 3 rec 18\n  law: if player attacks -> move [4] x5.7"
+  },
+  {
+   "boss": 16,
+   "attempt": 1,
+   "outcome": "win",
+   "boss_hp_frac": 0.0,
+   "hp": 10.5,
+   "ticks": 328,
+   "fight_s": 2.9001760482788086,
+   "learn_s": 1.0160753726959229,
+   "K_map": 9,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 6,
+   "accepted": [
+    "birth feint@7",
+    "retype slam->delayed_slam",
+    "retype delayed_slam->slam",
+    "retype slam->delayed_slam",
+    "delete lunge",
+    "birth delayed_slam@37",
+    "delete lunge",
+    "delete jab",
+    "delete slam",
+    "split sweep",
+    "merge sweep"
+   ]
+  },
+  {
+   "boss": 16,
+   "attempt": 2,
+   "outcome": "death",
+   "boss_hp_frac": 0.28,
+   "hp": 0,
+   "ticks": 436,
+   "fight_s": 5.217577934265137,
+   "learn_s": 1.8426308631896973,
+   "K_map": 5,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 6,
+   "accepted": [
+    "delete aoe",
+    "birth delayed_slam@40",
+    "split delayed_slam",
+    "merge delayed_slam",
+    "delete aoe"
+   ]
+  },
+  {
+   "boss": 16,
+   "attempt": 3,
+   "outcome": "win",
+   "boss_hp_frac": 0.0,
+   "hp": 1.5,
+   "ticks": 356,
+   "fight_s": 3.167917490005493,
+   "learn_s": 2.2146122455596924,
+   "K_map": 6,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 6,
+   "accepted": [
+    "split delayed_slam",
+    "delete aoe",
+    "delete aoe"
+   ]
+  },
+  {
+   "boss": 16,
+   "attempt": 4,
+   "outcome": "death",
+   "boss_hp_frac": 0.25,
+   "hp": 0,
+   "ticks": 226,
+   "fight_s": 1.575199842453003,
+   "learn_s": 2.2887065410614014,
+   "K_map": 4,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 6,
+   "accepted": [
+    "delete aoe"
+   ]
+  },
+  {
+   "boss": 16,
+   "attempt": 5,
+   "outcome": "death",
+   "boss_hp_frac": 0.22,
+   "hp": 0,
+   "ticks": 280,
+   "fight_s": 3.2548153400421143,
+   "learn_s": 2.75315523147583,
+   "K_map": 4,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 6,
+   "accepted": [
+    "split delayed_slam"
+   ]
+  },
+  {
+   "boss": 16,
+   "attempt": 6,
+   "outcome": "death",
+   "boss_hp_frac": 0.13,
+   "hp": 0,
+   "ticks": 335,
+   "fight_s": 3.076932191848755,
+   "learn_s": 3.1779110431671143,
+   "K_map": 5,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 6,
+   "accepted": [
+    "split delayed_slam"
+   ],
+   "map_describe": "belief: 5 moves, phase-2 speed x0.80\n  [0] idle          windup~ 14.9t (sd 0.35) active 0 rec 0\n  [1] delayed_slam  windup~ 22.6t (sd 0.18) active 3 rec 20\n  [2] sweep         windup~ 11.2t (sd 0.10) active 4 rec 12\n  [3] feint         windup~  6.6t (sd 0.10) active 2 rec 6\n  [4] delayed_slam  windup~ 36.2t (sd 0.18) active 3 rec 20",
+   "map_moves": [
+    [
+     "idle",
+     14.855482141482122
+    ],
+    [
+     "delayed_slam",
+     22.558760963788732
+    ],
+    [
+     "sweep",
+     11.24435178812734
+    ],
+    [
+     "feint",
+     6.624071364503757
+    ],
+    [
+     "delayed_slam",
+     36.218811799683756
+    ]
+   ],
+   "map_laws": [],
+   "true_describe": "train16: 6 moves, phase-2 speed x0.83\n  [0] idle          windup~  9.2t (sd 0.35) active 0 rec 0\n  [1] delayed_slam  windup~ 21.5t (sd 0.18) active 3 rec 20\n  [2] feint         windup~  6.6t (sd 0.10) active 2 rec 6\n  [3] delayed_slam  windup~ 21.5t (sd 0.18) active 3 rec 20\n  [4] sweep         windup~ 11.2t (sd 0.10) active 4 rec 12\n  [5] delayed_slam  windup~ 39.3t (sd 0.18) active 3 rec 20"
+  },
+  {
+   "boss": 17,
+   "attempt": 1,
+   "outcome": "death",
+   "boss_hp_frac": 0.34,
+   "hp": 0,
+   "ticks": 219,
+   "fight_s": 1.3766567707061768,
+   "learn_s": 0.6157145500183105,
+   "K_map": 8,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 7,
+   "accepted": [
+    "split slam",
+    "merge slam",
+    "delete aoe",
+    "retype lunge->feint",
+    "retype feint->lunge",
+    "retype lunge->feint",
+    "retype feint->lunge",
+    "split slam",
+    "delete delayed_slam",
+    "delete slam"
+   ]
+  },
+  {
+   "boss": 17,
+   "attempt": 2,
+   "outcome": "death",
+   "boss_hp_frac": 0.52,
+   "hp": 0,
+   "ticks": 337,
+   "fight_s": 3.9244465827941895,
+   "learn_s": 1.4066672325134277,
+   "K_map": 7,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 7,
+   "accepted": [
+    "delete lunge",
+    "retype feint->lunge",
+    "delete aoe",
+    "delete feint",
+    "delete feint",
+    "delete lunge",
+    "delete sweep",
+    "retype feint->lunge"
+   ]
+  },
+  {
+   "boss": 17,
+   "attempt": 3,
+   "outcome": "win",
+   "boss_hp_frac": 0.0,
+   "hp": 75.0,
+   "ticks": 377,
+   "fight_s": 3.4905247688293457,
+   "learn_s": 1.7627384662628174,
+   "K_map": 4,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 7,
+   "accepted": [
+    "delete lunge",
+    "delete jab",
+    "delete jab",
+    "retype lunge->feint",
+    "delete jab"
+   ]
+  },
+  {
+   "boss": 17,
+   "attempt": 4,
+   "outcome": "win",
+   "boss_hp_frac": 0.0,
+   "hp": 26.0,
+   "ticks": 666,
+   "fight_s": 8.90725326538086,
+   "learn_s": 2.775768280029297,
+   "K_map": 5,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 7,
+   "accepted": [
+    "delete lunge",
+    "delete lunge"
+   ]
+  },
+  {
+   "boss": 17,
+   "attempt": 5,
+   "outcome": "death",
+   "boss_hp_frac": 0.04,
+   "hp": 0,
+   "ticks": 401,
+   "fight_s": 3.659065008163452,
+   "learn_s": 3.0517516136169434,
+   "K_map": 4,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 7,
+   "accepted": []
+  },
+  {
+   "boss": 17,
+   "attempt": 6,
+   "outcome": "death",
+   "boss_hp_frac": 0.19,
+   "hp": 0,
+   "ticks": 301,
+   "fight_s": 2.4325010776519775,
+   "learn_s": 3.796475410461426,
+   "K_map": 4,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 7,
+   "accepted": [
+    "add novel aoe",
+    "add novel aoe"
+   ],
+   "map_describe": "belief: 4 moves, phase-2 speed x0.73\n  [0] idle          windup~ 19.6t (sd 0.35) active 0 rec 0\n  [1] slam          windup~ 12.6t (sd 0.10) active 3 rec 18\n  [2] delayed_slam  windup~ 25.2t (sd 0.18) active 3 rec 20\n  [3] sweep         windup~ 12.9t (sd 0.10) active 4 rec 12",
+   "map_moves": [
+    [
+     "idle",
+     19.62632918412522
+    ],
+    [
+     "slam",
+     12.56942338880893
+    ],
+    [
+     "delayed_slam",
+     25.217159959384293
+    ],
+    [
+     "sweep",
+     12.924405873426762
+    ]
+   ],
+   "map_laws": [],
+   "true_describe": "train17: 7 moves, phase-2 speed x0.76\n  [0] idle          windup~ 16.1t (sd 0.35) active 0 rec 0\n  [1] sweep         windup~ 11.9t (sd 0.10) active 4 rec 12\n  [2] slam          windup~ 12.6t (sd 0.10) active 3 rec 18\n  [3] slam          windup~ 11.7t (sd 0.10) active 3 rec 18\n  [4] aoe           windup~ 19.7t (sd 0.10) active 4 rec 24\n  [5] slam          windup~ 11.9t (sd 0.10) active 3 rec 18\n  [6] delayed_slam  windup~ 21.7t (sd 0.18) active 3 rec 20\n  law: if player heals -> move [2] x5.9"
+  },
+  {
+   "boss": 18,
+   "attempt": 1,
+   "outcome": "death",
+   "boss_hp_frac": 0.37,
+   "hp": 0,
+   "ticks": 320,
+   "fight_s": 3.0094075202941895,
+   "learn_s": 0.8188717365264893,
+   "K_map": 7,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 6,
+   "accepted": [
+    "birth jab@10",
+    "merge jab",
+    "delete delayed_slam",
+    "birth feint@15",
+    "retype slam->delayed_slam",
+    "delete delayed_slam",
+    "retype delayed_slam->slam",
+    "retype slam->delayed_slam",
+    "retype feint->lunge",
+    "retype delayed_slam->slam",
+    "birth lunge@43"
+   ]
+  },
+  {
+   "boss": 18,
+   "attempt": 2,
+   "outcome": "death",
+   "boss_hp_frac": 0.28,
+   "hp": 0,
+   "ticks": 202,
+   "fight_s": 0.9100863933563232,
+   "learn_s": 1.295041561126709,
+   "K_map": 7,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 6,
+   "accepted": [
+    "delete feint",
+    "delete feint",
+    "birth lunge@38",
+    "retype feint->lunge",
+    "delete feint",
+    "split delayed_slam",
+    "birth lunge@38",
+    "split lunge",
+    "retype lunge->feint",
+    "retype slam->delayed_slam"
+   ]
+  },
+  {
+   "boss": 18,
+   "attempt": 3,
+   "outcome": "death",
+   "boss_hp_frac": 0.28,
+   "hp": 0,
+   "ticks": 290,
+   "fight_s": 2.487699508666992,
+   "learn_s": 1.8144192695617676,
+   "K_map": 6,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 6,
+   "accepted": [
+    "merge lunge",
+    "delete feint",
+    "delete lunge",
+    "delete feint",
+    "merge lunge",
+    "delete feint",
+    "merge lunge"
+   ]
+  },
+  {
+   "boss": 18,
+   "attempt": 4,
+   "outcome": "death",
+   "boss_hp_frac": 0.37,
+   "hp": 0,
+   "ticks": 203,
+   "fight_s": 1.0515775680541992,
+   "learn_s": 1.7797362804412842,
+   "K_map": 6,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 6,
+   "accepted": [
+    "merge delayed_slam",
+    "birth lunge@36",
+    "split sweep"
+   ]
+  },
+  {
+   "boss": 18,
+   "attempt": 5,
+   "outcome": "win",
+   "boss_hp_frac": 0.0,
+   "hp": 48.400000000000006,
+   "ticks": 290,
+   "fight_s": 1.7019157409667969,
+   "learn_s": 2.456414222717285,
+   "K_map": 6,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 6,
+   "accepted": [
+    "birth delayed_slam@28"
+   ]
+  },
+  {
+   "boss": 18,
+   "attempt": 6,
+   "outcome": "death",
+   "boss_hp_frac": 0.28,
+   "hp": 0,
+   "ticks": 217,
+   "fight_s": 1.8991985321044922,
+   "learn_s": 2.6511592864990234,
+   "K_map": 7,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 6,
+   "accepted": [
+    "split aoe",
+    "split delayed_slam"
+   ],
+   "map_describe": "belief: 7 moves, phase-2 speed x0.89\n  [0] idle          windup~ 15.7t (sd 0.35) active 0 rec 0\n  [1] delayed_slam  windup~ 20.2t (sd 0.18) active 3 rec 20\n  [2] sweep         windup~  9.3t (sd 0.10) active 4 rec 12\n  [3] lunge         windup~ 29.8t (sd 0.10) active 4 rec 16\n  [4] jab           windup~  9.8t (sd 0.10) active 2 rec 6\n  [5] aoe           windup~ 19.6t (sd 0.10) active 4 rec 24\n  [6] lunge         windup~ 32.4t (sd 0.10) active 4 rec 16",
+   "map_moves": [
+    [
+     "idle",
+     15.70642037777567
+    ],
+    [
+     "delayed_slam",
+     20.180611022058315
+    ],
+    [
+     "sweep",
+     9.252685385842879
+    ],
+    [
+     "lunge",
+     29.80352064272612
+    ],
+    [
+     "jab",
+     9.782689306834612
+    ],
+    [
+     "aoe",
+     19.62632918412522
+    ],
+    [
+     "lunge",
+     32.400616052620144
+    ]
+   ],
+   "map_laws": [],
+   "true_describe": "train18: 6 moves, phase-2 speed x0.88\n  [0] idle          windup~ 14.3t (sd 0.35) active 0 rec 0\n  [1] jab           windup~  9.9t (sd 0.10) active 2 rec 6\n  [2] sweep         windup~  9.3t (sd 0.10) active 4 rec 12\n  [3] delayed_slam  windup~ 21.0t (sd 0.18) active 3 rec 20\n  [4] lunge         windup~ 30.6t (sd 0.10) active 4 rec 16\n  [5] aoe           windup~ 20.4t (sd 0.10) active 4 rec 24\n  law: if player heals -> move [1] x9.9"
+  },
+  {
+   "boss": 19,
+   "attempt": 1,
+   "outcome": "death",
+   "boss_hp_frac": 0.25,
+   "hp": 0,
+   "ticks": 300,
+   "fight_s": 2.840050220489502,
+   "learn_s": 0.8388574123382568,
+   "K_map": 9,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 5,
+   "accepted": [
+    "split delayed_slam",
+    "delete lunge",
+    "birth feint@25",
+    "retype slam->delayed_slam",
+    "birth feint@28",
+    "retype lunge->feint",
+    "merge feint",
+    "delete aoe",
+    "delete slam"
+   ]
+  },
+  {
+   "boss": 19,
+   "attempt": 2,
+   "outcome": "death",
+   "boss_hp_frac": 0.16,
+   "hp": 0,
+   "ticks": 293,
+   "fight_s": 2.6533379554748535,
+   "learn_s": 1.5191850662231445,
+   "K_map": 6,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 5,
+   "accepted": [
+    "delete slam",
+    "delete aoe",
+    "merge delayed_slam",
+    "delete jab",
+    "delete lunge",
+    "merge delayed_slam",
+    "split sweep",
+    "retype slam->delayed_slam",
+    "retype lunge->feint"
+   ]
+  },
+  {
+   "boss": 19,
+   "attempt": 3,
+   "outcome": "death",
+   "boss_hp_frac": 0.04,
+   "hp": 0,
+   "ticks": 308,
+   "fight_s": 2.5138132572174072,
+   "learn_s": 1.9440789222717285,
+   "K_map": 4,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 5,
+   "accepted": [
+    "delete jab",
+    "merge feint",
+    "merge feint",
+    "delete jab",
+    "merge feint",
+    "delete jab"
+   ]
+  },
+  {
+   "boss": 19,
+   "attempt": 4,
+   "outcome": "win",
+   "boss_hp_frac": 0.0,
+   "hp": 31.5,
+   "ticks": 339,
+   "fight_s": 3.5811707973480225,
+   "learn_s": 2.123587131500244,
+   "K_map": 5,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 5,
+   "accepted": [
+    "split feint",
+    "merge feint"
+   ]
+  },
+  {
+   "boss": 19,
+   "attempt": 5,
+   "outcome": "win",
+   "boss_hp_frac": 0.0,
+   "hp": 1.5,
+   "ticks": 301,
+   "fight_s": 3.0431442260742188,
+   "learn_s": 2.7342469692230225,
+   "K_map": 4,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 5,
+   "accepted": [
+    "merge feint",
+    "merge feint"
+   ]
+  },
+  {
+   "boss": 19,
+   "attempt": 6,
+   "outcome": "win",
+   "boss_hp_frac": 0.0,
+   "hp": 6.75,
+   "ticks": 544,
+   "fight_s": 5.043865442276001,
+   "learn_s": 3.2606701850891113,
+   "K_map": 4,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 5,
+   "accepted": [],
+   "map_describe": "belief: 4 moves, phase-2 speed x0.90\n  [0] idle          windup~ 21.3t (sd 0.35) active 0 rec 0\n  [1] delayed_slam  windup~ 18.6t (sd 0.18) active 3 rec 20\n  [2] sweep         windup~  5.0t (sd 0.10) active 4 rec 12\n  [3] feint         windup~ 24.5t (sd 0.10) active 2 rec 6",
+   "map_moves": [
+    [
+     "idle",
+     21.33657845461202
+    ],
+    [
+     "delayed_slam",
+     18.563019178461076
+    ],
+    [
+     "sweep",
+     5.013865452683972
+    ],
+    [
+     "feint",
+     24.524543974939498
+    ]
+   ],
+   "map_laws": [],
+   "true_describe": "train19: 5 moves, phase-2 speed x0.86\n  [0] idle          windup~ 26.9t (sd 0.35) active 0 rec 0\n  [1] delayed_slam  windup~ 18.1t (sd 0.18) active 3 rec 20\n  [2] feint         windup~ 24.1t (sd 0.10) active 2 rec 6\n  [3] sweep         windup~  5.3t (sd 0.10) active 4 rec 12\n  [4] delayed_slam  windup~ 20.4t (sd 0.18) active 3 rec 20\n  law: if player attacks -> move [3] x7.6"
+  },
+  {
+   "boss": 20,
+   "attempt": 1,
+   "outcome": "death",
+   "boss_hp_frac": 0.37,
+   "hp": 0,
+   "ticks": 368,
+   "fight_s": 2.854351758956909,
+   "learn_s": 0.9257104396820068,
+   "K_map": 9,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 5,
+   "accepted": [
+    "birth delayed_slam@50",
+    "merge delayed_slam",
+    "birth delayed_slam@59",
+    "retype slam->delayed_slam",
+    "merge delayed_slam",
+    "delete slam",
+    "delete jab",
+    "split feint",
+    "retype lunge->feint",
+    "delete feint"
+   ]
+  },
+  {
+   "boss": 20,
+   "attempt": 2,
+   "outcome": "win",
+   "boss_hp_frac": 0.0,
+   "hp": 29.75,
+   "ticks": 375,
+   "fight_s": 2.9165499210357666,
+   "learn_s": 1.645660400390625,
+   "K_map": 6,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 5,
+   "accepted": [
+    "delete jab",
+    "retype slam->delayed_slam",
+    "delete slam",
+    "retype slam->delayed_slam",
+    "split feint",
+    "merge delayed_slam"
+   ]
+  },
+  {
+   "boss": 20,
+   "attempt": 3,
+   "outcome": "win",
+   "boss_hp_frac": 0.0,
+   "hp": 59.75,
+   "ticks": 316,
+   "fight_s": 2.374873399734497,
+   "learn_s": 1.853729009628296,
+   "K_map": 5,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 5,
+   "accepted": [
+    "delete aoe",
+    "delete aoe",
+    "birth delayed_slam@60"
+   ]
+  },
+  {
+   "boss": 20,
+   "attempt": 4,
+   "outcome": "win",
+   "boss_hp_frac": 0.0,
+   "hp": 56.25,
+   "ticks": 403,
+   "fight_s": 4.579928874969482,
+   "learn_s": 2.7179172039031982,
+   "K_map": 5,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 5,
+   "accepted": [
+    "delete aoe",
+    "split feint",
+    "merge delayed_slam",
+    "birth feint@15"
+   ]
+  },
+  {
+   "boss": 20,
+   "attempt": 5,
+   "outcome": "win",
+   "boss_hp_frac": 0.0,
+   "hp": 91.0,
+   "ticks": 274,
+   "fight_s": 1.6045432090759277,
+   "learn_s": 3.0876142978668213,
+   "K_map": 5,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 5,
+   "accepted": [
+    "birth feint@15",
+    "merge delayed_slam",
+    "birth feint@16",
+    "birth feint@17"
+   ]
+  },
+  {
+   "boss": 20,
+   "attempt": 6,
+   "outcome": "win",
+   "boss_hp_frac": 0.0,
+   "hp": 33.0,
+   "ticks": 234,
+   "fight_s": 1.3505194187164307,
+   "learn_s": 3.569765567779541,
+   "K_map": 6,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 5,
+   "accepted": [
+    "birth feint@16",
+    "delete delayed_slam"
+   ],
+   "map_describe": "belief: 6 moves, phase-2 speed x0.88\n  [0] idle          windup~ 11.6t (sd 0.35) active 0 rec 0\n  [1] delayed_slam  windup~ 50.6t (sd 0.18) active 3 rec 20\n  [2] delayed_slam  windup~ 45.3t (sd 0.18) active 3 rec 20\n  [3] sweep         windup~  9.3t (sd 0.10) active 4 rec 12\n  [4] feint         windup~  6.8t (sd 0.10) active 2 rec 6\n  [5] feint         windup~ 18.1t (sd 0.10) active 2 rec 6",
+   "map_moves": [
+    [
+     "idle",
+     11.561911934857719
+    ],
+    [
+     "delayed_slam",
+     50.5914342087758
+    ],
+    [
+     "delayed_slam",
+     45.25807319179503
+    ],
+    [
+     "sweep",
+     9.252685385842879
+    ],
+    [
+     "feint",
+     6.8111467170096605
+    ],
+    [
+     "feint",
+     18.0531662123354
+    ]
+   ],
+   "map_laws": [],
+   "true_describe": "train20: 5 moves, phase-2 speed x0.81\n  [0] idle          windup~ 12.7t (sd 0.35) active 0 rec 0\n  [1] delayed_slam  windup~ 51.7t (sd 0.18) active 3 rec 20\n  [2] feint         windup~ 17.6t (sd 0.10) active 2 rec 6\n  [3] feint         windup~  6.8t (sd 0.10) active 2 rec 6\n  [4] sweep         windup~  9.1t (sd 0.10) active 4 rec 12\n  law: if player attacks -> move [1] x5.4"
+  },
+  {
+   "boss": 21,
+   "attempt": 1,
+   "outcome": "death",
+   "boss_hp_frac": 0.25,
+   "hp": 0,
+   "ticks": 334,
+   "fight_s": 3.6055004596710205,
+   "learn_s": 0.9681024551391602,
+   "K_map": 7,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 5,
+   "accepted": [
+    "delete delayed_slam",
+    "retype lunge->feint",
+    "birth jab@10",
+    "delete sweep",
+    "birth jab@10"
+   ]
+  },
+  {
+   "boss": 21,
+   "attempt": 2,
+   "outcome": "win",
+   "boss_hp_frac": 0.0,
+   "hp": 9.900000000000006,
+   "ticks": 343,
+   "fight_s": 3.084667921066284,
+   "learn_s": 1.5264365673065186,
+   "K_map": 7,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 5,
+   "accepted": [
+    "delete sweep",
+    "merge feint",
+    "delete sweep"
+   ]
+  },
+  {
+   "boss": 21,
+   "attempt": 3,
+   "outcome": "win",
+   "boss_hp_frac": 0.0,
+   "hp": 37.2,
+   "ticks": 282,
+   "fight_s": 2.118860960006714,
+   "learn_s": 2.019810199737549,
+   "K_map": 6,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 5,
+   "accepted": [
+    "delete sweep",
+    "delete sweep",
+    "split feint",
+    "split aoe",
+    "delete sweep",
+    "delete sweep",
+    "split jab"
+   ]
+  },
+  {
+   "boss": 21,
+   "attempt": 4,
+   "outcome": "win",
+   "boss_hp_frac": 0.0,
+   "hp": 3.4000000000000057,
+   "ticks": 432,
+   "fight_s": 5.390846490859985,
+   "learn_s": 2.5168442726135254,
+   "K_map": 7,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 5,
+   "accepted": [
+    "split jab",
+    "split feint"
+   ]
+  },
+  {
+   "boss": 21,
+   "attempt": 5,
+   "outcome": "win",
+   "boss_hp_frac": 0.0,
+   "hp": 41.2,
+   "ticks": 317,
+   "fight_s": 2.8122918605804443,
+   "learn_s": 3.085012912750244,
+   "K_map": 6,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 5,
+   "accepted": [
+    "split slam"
+   ]
+  },
+  {
+   "boss": 21,
+   "attempt": 6,
+   "outcome": "win",
+   "boss_hp_frac": 0.0,
+   "hp": 1.5,
+   "ticks": 446,
+   "fight_s": 4.193012952804565,
+   "learn_s": 3.5744717121124268,
+   "K_map": 6,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 5,
+   "accepted": [
+    "split jab"
+   ],
+   "map_describe": "belief: 6 moves, phase-2 speed x0.76\n  [0] idle          windup~ 12.6t (sd 0.35) active 0 rec 0\n  [1] slam          windup~ 15.3t (sd 0.10) active 3 rec 18\n  [2] feint         windup~  9.5t (sd 0.10) active 2 rec 6\n  [3] feint         windup~  9.5t (sd 0.10) active 2 rec 6\n  [4] jab           windup~ 10.9t (sd 0.10) active 2 rec 6\n  [5] aoe           windup~ 17.1t (sd 0.10) active 4 rec 24",
+   "map_moves": [
+    [
+     "idle",
+     12.56942338880893
+    ],
+    [
+     "slam",
+     15.275026920717925
+    ],
+    [
+     "feint",
+     9.513997392452346
+    ],
+    [
+     "feint",
+     9.513997392452346
+    ],
+    [
+     "jab",
+     10.935513766886201
+    ],
+    [
+     "aoe",
+     17.0750866087883
+    ]
+   ],
+   "map_laws": [],
+   "true_describe": "train21: 5 moves, phase-2 speed x0.78\n  [0] idle          windup~ 10.5t (sd 0.35) active 0 rec 0\n  [1] feint         windup~  9.1t (sd 0.10) active 2 rec 6\n  [2] aoe           windup~ 16.7t (sd 0.10) active 4 rec 24\n  [3] jab           windup~ 11.1t (sd 0.10) active 2 rec 6\n  [4] slam          windup~ 15.1t (sd 0.10) active 3 rec 18\n  law: if player heals -> move [3] x11.7"
+  },
+  {
+   "boss": 22,
+   "attempt": 1,
+   "outcome": "death",
+   "boss_hp_frac": 0.52,
+   "hp": 0,
+   "ticks": 224,
+   "fight_s": 1.8295600414276123,
+   "learn_s": 0.6341655254364014,
+   "K_map": 8,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 6,
+   "accepted": [
+    "birth slam@10",
+    "retype feint->lunge",
+    "delete sweep",
+    "retype feint->lunge",
+    "delete jab",
+    "merge lunge",
+    "delete jab",
+    "split slam",
+    "split slam",
+    "delete sweep",
+    "delete slam"
+   ]
+  },
+  {
+   "boss": 22,
+   "attempt": 2,
+   "outcome": "death",
+   "boss_hp_frac": 0.28,
+   "hp": 0,
+   "ticks": 353,
+   "fight_s": 3.596726655960083,
+   "learn_s": 1.3753628730773926,
+   "K_map": 8,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 6,
+   "accepted": [
+    "split aoe",
+    "merge slam",
+    "split aoe",
+    "delete jab",
+    "birth aoe@34",
+    "merge lunge",
+    "birth aoe@22"
+   ]
+  },
+  {
+   "boss": 22,
+   "attempt": 3,
+   "outcome": "death",
+   "boss_hp_frac": 0.25,
+   "hp": 0,
+   "ticks": 331,
+   "fight_s": 3.1778526306152344,
+   "learn_s": 1.893812894821167,
+   "K_map": 8,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 6,
+   "accepted": [
+    "birth lunge@15",
+    "merge slam",
+    "delete jab",
+    "delete jab"
+   ]
+  },
+  {
+   "boss": 22,
+   "attempt": 4,
+   "outcome": "death",
+   "boss_hp_frac": 0.46,
+   "hp": 0,
+   "ticks": 387,
+   "fight_s": 4.342305421829224,
+   "learn_s": 2.1724398136138916,
+   "K_map": 6,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 6,
+   "accepted": [
+    "merge slam",
+    "merge slam"
+   ]
+  },
+  {
+   "boss": 22,
+   "attempt": 5,
+   "outcome": "death",
+   "boss_hp_frac": 0.4,
+   "hp": 0,
+   "ticks": 317,
+   "fight_s": 3.124821901321411,
+   "learn_s": 2.7898802757263184,
+   "K_map": 8,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 6,
+   "accepted": [
+    "birth aoe@34",
+    "merge slam",
+    "birth aoe@34"
+   ]
+  },
+  {
+   "boss": 22,
+   "attempt": 6,
+   "outcome": "death",
+   "boss_hp_frac": 0.19,
+   "hp": 0,
+   "ticks": 380,
+   "fight_s": 4.846264123916626,
+   "learn_s": 3.328925132751465,
+   "K_map": 6,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 6,
+   "accepted": [
+    "birth delayed_slam@41"
+   ],
+   "map_describe": "belief: 6 moves, phase-2 speed x0.79\n  [0] idle          windup~ 12.6t (sd 0.35) active 0 rec 0\n  [1] slam          windup~ 11.2t (sd 0.10) active 3 rec 18\n  [2] delayed_slam  windup~ 32.4t (sd 0.18) active 3 rec 20\n  [3] lunge         windup~ 14.4t (sd 0.10) active 4 rec 16\n  [4] aoe           windup~ 15.3t (sd 0.10) active 4 rec 24\n  [5] aoe           windup~ 29.0t (sd 0.10) active 4 rec 24",
+   "map_moves": [
+    [
+     "idle",
+     12.56942338880893
+    ],
+    [
+     "slam",
+     11.24435178812734
+    ],
+    [
+     "delayed_slam",
+     32.400616052620144
+    ],
+    [
+     "lunge",
+     14.447460603592965
+    ],
+    [
+     "aoe",
+     15.275026920717925
+    ],
+    [
+     "aoe",
+     28.984935408578817
+    ]
+   ],
+   "map_laws": [],
+   "true_describe": "train22: 6 moves, phase-2 speed x0.78\n  [0] idle          windup~ 14.6t (sd 0.35) active 0 rec 0\n  [1] lunge         windup~ 13.2t (sd 0.10) active 4 rec 16\n  [2] aoe           windup~ 29.2t (sd 0.10) active 4 rec 24\n  [3] slam          windup~ 11.8t (sd 0.10) active 3 rec 18\n  [4] aoe           windup~ 15.2t (sd 0.10) active 4 rec 24\n  [5] delayed_slam  windup~ 32.7t (sd 0.18) active 3 rec 20"
+  },
+  {
+   "boss": 23,
+   "attempt": 1,
+   "outcome": "win",
+   "boss_hp_frac": 0.0,
+   "hp": 42.0,
+   "ticks": 360,
+   "fight_s": 4.599194288253784,
+   "learn_s": 0.823514461517334,
+   "K_map": 7,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 6,
+   "accepted": [
+    "delete sweep",
+    "delete aoe",
+    "delete sweep",
+    "split feint",
+    "merge feint",
+    "delete slam",
+    "retype lunge->feint"
+   ]
+  },
+  {
+   "boss": 23,
+   "attempt": 2,
+   "outcome": "win",
+   "boss_hp_frac": 0.0,
+   "hp": 100.0,
+   "ticks": 271,
+   "fight_s": 1.992262840270996,
+   "learn_s": 1.2141504287719727,
+   "K_map": 9,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 6,
+   "accepted": [
+    "split delayed_slam",
+    "birth feint@13",
+    "delete aoe",
+    "delete lunge"
+   ]
+  },
+  {
+   "boss": 23,
+   "attempt": 3,
+   "outcome": "win",
+   "boss_hp_frac": 0.0,
+   "hp": 51.0,
+   "ticks": 231,
+   "fight_s": 1.377563238143921,
+   "learn_s": 2.178148031234741,
+   "K_map": 9,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 6,
+   "accepted": [
+    "delete sweep",
+    "split feint",
+    "delete slam",
+    "delete aoe",
+    "delete sweep",
+    "merge delayed_slam",
+    "split feint",
+    "delete aoe",
+    "delete slam",
+    "birth feint@13"
+   ]
+  },
+  {
+   "boss": 23,
+   "attempt": 4,
+   "outcome": "win",
+   "boss_hp_frac": 0.0,
+   "hp": 51.0,
+   "ticks": 236,
+   "fight_s": 1.5988202095031738,
+   "learn_s": 2.419306755065918,
+   "K_map": 7,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 6,
+   "accepted": [
+    "birth jab@11",
+    "merge jab",
+    "delete aoe",
+    "delete slam",
+    "retype lunge->feint",
+    "delete aoe",
+    "retype slam->delayed_slam",
+    "delete lunge"
+   ]
+  },
+  {
+   "boss": 23,
+   "attempt": 5,
+   "outcome": "win",
+   "boss_hp_frac": 0.0,
+   "hp": 100.0,
+   "ticks": 222,
+   "fight_s": 1.0726702213287354,
+   "learn_s": 2.3407368659973145,
+   "K_map": 6,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 6,
+   "accepted": [
+    "delete feint",
+    "split delayed_slam",
+    "merge delayed_slam"
+   ]
+  },
+  {
+   "boss": 23,
+   "attempt": 6,
+   "outcome": "win",
+   "boss_hp_frac": 0.0,
+   "hp": 53.2,
+   "ticks": 273,
+   "fight_s": 2.4825387001037598,
+   "learn_s": 2.512662172317505,
+   "K_map": 7,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 6,
+   "accepted": [
+    "split delayed_slam"
+   ],
+   "map_describe": "belief: 7 moves, phase-2 speed x0.91\n  [0] idle          windup~ 13.7t (sd 0.35) active 0 rec 0\n  [1] delayed_slam  windup~ 23.2t (sd 0.18) active 3 rec 20\n  [2] feint         windup~  8.0t (sd 0.10) active 2 rec 6\n  [3] jab           windup~  9.8t (sd 0.10) active 2 rec 6\n  [4] delayed_slam  windup~ 20.2t (sd 0.18) active 3 rec 20\n  [5] feint         windup~ 10.3t (sd 0.10) active 2 rec 6\n  [6] delayed_slam  windup~ 22.6t (sd 0.18) active 3 rec 20",
+   "map_moves": [
+    [
+     "idle",
+     13.664729952735208
+    ],
+    [
+     "delayed_slam",
+     23.19585980031575
+    ],
+    [
+     "feint",
+     8.049921248387482
+    ],
+    [
+     "jab",
+     9.782689306834612
+    ],
+    [
+     "delayed_slam",
+     20.180611022058315
+    ],
+    [
+     "feint",
+     10.34305243107954
+    ],
+    [
+     "delayed_slam",
+     22.558760963788732
+    ]
+   ],
+   "map_laws": [],
+   "true_describe": "train23: 6 moves, phase-2 speed x0.85\n  [0] idle          windup~ 13.7t (sd 0.35) active 0 rec 0\n  [1] feint         windup~ 10.4t (sd 0.10) active 2 rec 6\n  [2] delayed_slam  windup~ 22.7t (sd 0.18) active 3 rec 20\n  [3] feint         windup~ 10.6t (sd 0.10) active 2 rec 6\n  [4] feint         windup~  7.8t (sd 0.10) active 2 rec 6\n  [5] jab           windup~ 10.1t (sd 0.10) active 2 rec 6"
+  },
+  {
+   "boss": 24,
+   "attempt": 1,
+   "outcome": "death",
+   "boss_hp_frac": 0.22,
+   "hp": 0,
+   "ticks": 352,
+   "fight_s": 3.3844003677368164,
+   "learn_s": 0.8518660068511963,
+   "K_map": 9,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 5,
+   "accepted": [
+    "birth lunge@4",
+    "birth delayed_slam@38",
+    "delete slam",
+    "birth lunge@6",
+    "merge lunge",
+    "birth feint@7",
+    "delete aoe",
+    "merge feint"
+   ]
+  },
+  {
+   "boss": 24,
+   "attempt": 2,
+   "outcome": "death",
+   "boss_hp_frac": 0.13,
+   "hp": 0,
+   "ticks": 455,
+   "fight_s": 4.938632011413574,
+   "learn_s": 1.5445733070373535,
+   "K_map": 7,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 5,
+   "accepted": [
+    "delete aoe",
+    "merge delayed_slam",
+    "delete sweep"
+   ]
+  },
+  {
+   "boss": 24,
+   "attempt": 3,
+   "outcome": "win",
+   "boss_hp_frac": 0.0,
+   "hp": 65.0,
+   "ticks": 241,
+   "fight_s": 1.305039644241333,
+   "learn_s": 1.913834810256958,
+   "K_map": 6,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 5,
+   "accepted": [
+    "delete aoe",
+    "delete aoe",
+    "merge delayed_slam"
+   ]
+  },
+  {
+   "boss": 24,
+   "attempt": 4,
+   "outcome": "win",
+   "boss_hp_frac": 0.0,
+   "hp": 39.099999999999994,
+   "ticks": 526,
+   "fight_s": 5.230042934417725,
+   "learn_s": 2.5622549057006836,
+   "K_map": 6,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 5,
+   "accepted": [
+    "delete delayed_slam"
+   ]
+  },
+  {
+   "boss": 24,
+   "attempt": 5,
+   "outcome": "win",
+   "boss_hp_frac": 0.0,
+   "hp": 7.000000000000014,
+   "ticks": 231,
+   "fight_s": 1.2972164154052734,
+   "learn_s": 3.2081987857818604,
+   "K_map": 5,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 5,
+   "accepted": [
+    "merge delayed_slam"
+   ]
+  },
+  {
+   "boss": 24,
+   "attempt": 6,
+   "outcome": "win",
+   "boss_hp_frac": 0.0,
+   "hp": 36.400000000000006,
+   "ticks": 234,
+   "fight_s": 1.5107712745666504,
+   "learn_s": 3.4479403495788574,
+   "K_map": 5,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 5,
+   "accepted": [
+    "split delayed_slam"
+   ],
+   "map_describe": "belief: 5 moves, phase-2 speed x0.83\n  [0] idle          windup~ 18.6t (sd 0.35) active 0 rec 0\n  [1] lunge         windup~  4.5t (sd 0.10) active 4 rec 16\n  [2] feint         windup~  8.8t (sd 0.10) active 2 rec 6\n  [3] jab           windup~  5.3t (sd 0.10) active 2 rec 6\n  [4] delayed_slam  windup~ 37.2t (sd 0.18) active 3 rec 20",
+   "map_moves": [
+    [
+     "idle",
+     18.563019178461076
+    ],
+    [
+     "lunge",
+     4.48530256515285
+    ],
+    [
+     "feint",
+     8.75139587532213
+    ],
+    [
+     "jab",
+     5.301065139956755
+    ],
+    [
+     "delayed_slam",
+     37.24169434607046
+    ]
+   ],
+   "map_laws": [],
+   "true_describe": "train24: 5 moves, phase-2 speed x0.83\n  [0] idle          windup~ 12.5t (sd 0.35) active 0 rec 0\n  [1] delayed_slam  windup~ 37.2t (sd 0.18) active 3 rec 20\n  [2] lunge         windup~  4.6t (sd 0.10) active 4 rec 16\n  [3] feint         windup~  8.8t (sd 0.10) active 2 rec 6\n  [4] jab           windup~  5.5t (sd 0.10) active 2 rec 6"
+  },
+  {
+   "boss": 25,
+   "attempt": 1,
+   "outcome": "death",
+   "boss_hp_frac": 0.13,
+   "hp": 0,
+   "ticks": 387,
+   "fight_s": 3.283066987991333,
+   "learn_s": 1.0090601444244385,
+   "K_map": 8,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 6,
+   "accepted": [
+    "birth jab@10",
+    "delete jab",
+    "birth aoe@28",
+    "merge aoe",
+    "retype feint->lunge",
+    "split aoe",
+    "delete sweep",
+    "delete aoe",
+    "birth jab@10",
+    "delete jab"
+   ]
+  },
+  {
+   "boss": 25,
+   "attempt": 2,
+   "outcome": "win",
+   "boss_hp_frac": 0.0,
+   "hp": 70.7,
+   "ticks": 296,
+   "fight_s": 2.1193840503692627,
+   "learn_s": 1.6905286312103271,
+   "K_map": 8,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 6,
+   "accepted": [
+    "split jab",
+    "merge jab",
+    "retype lunge->feint",
+    "split feint",
+    "delete slam",
+    "delete sweep",
+    "delete lunge",
+    "delete sweep",
+    "delete slam",
+    "birth feint@12",
+    "delete lunge"
+   ]
+  },
+  {
+   "boss": 25,
+   "attempt": 3,
+   "outcome": "death",
+   "boss_hp_frac": 0.25,
+   "hp": 0,
+   "ticks": 367,
+   "fight_s": 3.305311918258667,
+   "learn_s": 2.192324161529541,
+   "K_map": 9,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 6,
+   "accepted": [
+    "birth delayed_slam@54",
+    "split aoe",
+    "retype lunge->feint",
+    "merge feint",
+    "birth delayed_slam@54",
+    "birth jab@10"
+   ]
+  },
+  {
+   "boss": 25,
+   "attempt": 4,
+   "outcome": "death",
+   "boss_hp_frac": 0.04,
+   "hp": 0,
+   "ticks": 400,
+   "fight_s": 3.4933249950408936,
+   "learn_s": 2.7859933376312256,
+   "K_map": 7,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 6,
+   "accepted": [
+    "split feint",
+    "split delayed_slam",
+    "birth delayed_slam@54",
+    "birth delayed_slam@54"
+   ]
+  },
+  {
+   "boss": 25,
+   "attempt": 5,
+   "outcome": "win",
+   "boss_hp_frac": 0.0,
+   "hp": 51.0,
+   "ticks": 233,
+   "fight_s": 1.448732614517212,
+   "learn_s": 3.002317190170288,
+   "K_map": 6,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 6,
+   "accepted": [
+    "split feint",
+    "merge delayed_slam"
+   ]
+  },
+  {
+   "boss": 25,
+   "attempt": 6,
+   "outcome": "death",
+   "boss_hp_frac": 0.34,
+   "hp": 0,
+   "ticks": 211,
+   "fight_s": 1.174410104751587,
+   "learn_s": 2.958690643310547,
+   "K_map": 7,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 6,
+   "accepted": [],
+   "map_describe": "belief: 7 moves, phase-2 speed x0.90\n  [0] idle          windup~ 10.6t (sd 0.35) active 0 rec 0\n  [1] delayed_slam  windup~ 25.2t (sd 0.18) active 3 rec 20\n  [2] feint         windup~  8.3t (sd 0.10) active 2 rec 6\n  [3] aoe           windup~ 25.2t (sd 0.10) active 4 rec 24\n  [4] jab           windup~  8.3t (sd 0.10) active 2 rec 6\n  [5] feint         windup~ 10.3t (sd 0.10) active 2 rec 6\n  [6] feint         windup~ 16.1t (sd 0.10) active 2 rec 6",
+   "map_moves": [
+    [
+     "idle",
+     10.635158308727524
+    ],
+    [
+     "delayed_slam",
+     25.217159959384293
+    ],
+    [
+     "feint",
+     8.277265093632977
+    ],
+    [
+     "aoe",
+     25.217159959384293
+    ],
+    [
+     "jab",
+     8.277265093632977
+    ],
+    [
+     "feint",
+     10.34305243107954
+    ],
+    [
+     "feint",
+     16.149997140025484
+    ]
+   ],
+   "map_laws": [],
+   "true_describe": "train25: 6 moves, phase-2 speed x0.82\n  [0] idle          windup~  8.0t (sd 0.35) active 0 rec 0\n  [1] delayed_slam  windup~ 31.7t (sd 0.18) active 3 rec 20\n  [2] delayed_slam  windup~ 22.3t (sd 0.18) active 3 rec 20\n  [3] aoe           windup~ 26.9t (sd 0.10) active 4 rec 24\n  [4] jab           windup~  8.6t (sd 0.10) active 2 rec 6\n  [5] feint         windup~ 11.4t (sd 0.10) active 2 rec 6\n  law: if player attacks -> move [3] x5.5\n  law: if player heals -> move [2] x13.4"
+  },
+  {
+   "boss": 26,
+   "attempt": 1,
+   "outcome": "death",
+   "boss_hp_frac": 0.37,
+   "hp": 0,
+   "ticks": 305,
+   "fight_s": 2.3705761432647705,
+   "learn_s": 0.7004745006561279,
+   "K_map": 9,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 7,
+   "accepted": [
+    "birth jab@12",
+    "birth jab@12",
+    "delete lunge",
+    "split jab",
+    "split delayed_slam",
+    "merge delayed_slam"
+   ]
+  },
+  {
+   "boss": 26,
+   "attempt": 2,
+   "outcome": "death",
+   "boss_hp_frac": 0.13,
+   "hp": 0,
+   "ticks": 397,
+   "fight_s": 3.492920160293579,
+   "learn_s": 1.4841630458831787,
+   "K_map": 9,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 7,
+   "accepted": [
+    "retype lunge->feint",
+    "delete feint",
+    "delete lunge",
+    "delete aoe"
+   ]
+  },
+  {
+   "boss": 26,
+   "attempt": 3,
+   "outcome": "death",
+   "boss_hp_frac": 0.22,
+   "hp": 0,
+   "ticks": 296,
+   "fight_s": 2.192209482192993,
+   "learn_s": 1.8124525547027588,
+   "K_map": 8,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 7,
+   "accepted": [
+    "delete feint",
+    "delete feint",
+    "retype lunge->feint"
+   ]
+  },
+  {
+   "boss": 26,
+   "attempt": 4,
+   "outcome": "death",
+   "boss_hp_frac": 0.28,
+   "hp": 0,
+   "ticks": 309,
+   "fight_s": 2.159799098968506,
+   "learn_s": 2.508826732635498,
+   "K_map": 8,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 7,
+   "accepted": [
+    "delete aoe",
+    "birth delayed_slam@29",
+    "delete aoe",
+    "delete lunge",
+    "split jab"
+   ]
+  },
+  {
+   "boss": 26,
+   "attempt": 5,
+   "outcome": "win",
+   "boss_hp_frac": 0.0,
+   "hp": 2.3499999999999943,
+   "ticks": 571,
+   "fight_s": 5.030715227127075,
+   "learn_s": 3.6095690727233887,
+   "K_map": 8,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 7,
+   "accepted": [
+    "delete aoe",
+    "delete aoe",
+    "birth jab@12",
+    "delete aoe"
+   ]
+  },
+  {
+   "boss": 26,
+   "attempt": 6,
+   "outcome": "win",
+   "boss_hp_frac": 0.0,
+   "hp": 54.5,
+   "ticks": 398,
+   "fight_s": 3.4470367431640625,
+   "learn_s": 3.7809765338897705,
+   "K_map": 8,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 7,
+   "accepted": [
+    "birth jab@7"
+   ],
+   "map_describe": "belief: 8 moves, phase-2 speed x0.84\n  [0] idle          windup~ 16.6t (sd 0.35) active 0 rec 0\n  [1] slam          windup~ 13.3t (sd 0.10) active 3 rec 18\n  [2] delayed_slam  windup~ 36.2t (sd 0.18) active 3 rec 20\n  [3] sweep         windup~ 10.3t (sd 0.10) active 4 rec 12\n  [4] jab           windup~  5.0t (sd 0.10) active 2 rec 6\n  [5] jab           windup~  9.5t (sd 0.10) active 2 rec 6\n  [6] jab           windup~  5.2t (sd 0.10) active 2 rec 6\n  [7] jab           windup~  7.4t (sd 0.10) active 2 rec 6",
+   "map_moves": [
+    [
+     "idle",
+     16.60610128529929
+    ],
+    [
+     "slam",
+     13.289413683828247
+    ],
+    [
+     "delayed_slam",
+     36.218811799683756
+    ],
+    [
+     "sweep",
+     10.34305243107954
+    ],
+    [
+     "jab",
+     5.013865452683972
+    ],
+    [
+     "jab",
+     9.513997392452346
+    ],
+    [
+     "jab",
+     5.155465776014472
+    ],
+    [
+     "jab",
+     7.404673840429483
+    ]
+   ],
+   "map_laws": [],
+   "true_describe": "train26: 7 moves, phase-2 speed x0.83\n  [0] idle          windup~ 15.9t (sd 0.35) active 0 rec 0\n  [1] sweep         windup~ 11.1t (sd 0.10) active 4 rec 12\n  [2] jab           windup~ 10.4t (sd 0.10) active 2 rec 6\n  [3] jab           windup~  8.2t (sd 0.10) active 2 rec 6\n  [4] slam          windup~ 13.5t (sd 0.10) active 3 rec 18\n  [5] delayed_slam  windup~ 37.5t (sd 0.18) active 3 rec 20\n  [6] jab           windup~  5.3t (sd 0.10) active 2 rec 6"
+  },
+  {
+   "boss": 27,
+   "attempt": 1,
+   "outcome": "death",
+   "boss_hp_frac": 0.34,
+   "hp": 0,
+   "ticks": 304,
+   "fight_s": 2.6236236095428467,
+   "learn_s": 0.725724458694458,
+   "K_map": 7,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 7,
+   "accepted": [
+    "birth slam@28",
+    "delete jab",
+    "delete lunge",
+    "split feint",
+    "delete aoe",
+    "split sweep",
+    "retype lunge->feint",
+    "delete jab"
+   ]
+  },
+  {
+   "boss": 27,
+   "attempt": 2,
+   "outcome": "death",
+   "boss_hp_frac": 0.13,
+   "hp": 0,
+   "ticks": 501,
+   "fight_s": 6.712312459945679,
+   "learn_s": 1.6298410892486572,
+   "K_map": 8,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 7,
+   "accepted": [
+    "split slam",
+    "delete aoe"
+   ]
+  },
+  {
+   "boss": 27,
+   "attempt": 3,
+   "outcome": "death",
+   "boss_hp_frac": 0.4,
+   "hp": 0,
+   "ticks": 247,
+   "fight_s": 2.0051753520965576,
+   "learn_s": 1.9455151557922363,
+   "K_map": 7,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 7,
+   "accepted": [
+    "birth slam@8",
+    "birth slam@8"
+   ]
+  },
+  {
+   "boss": 27,
+   "attempt": 4,
+   "outcome": "win",
+   "boss_hp_frac": 0.0,
+   "hp": 7.25,
+   "ticks": 309,
+   "fight_s": 3.384451150894165,
+   "learn_s": 2.712980031967163,
+   "K_map": 6,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 7,
+   "accepted": [
+    "delete aoe",
+    "delete aoe",
+    "delete aoe"
+   ]
+  },
+  {
+   "boss": 27,
+   "attempt": 5,
+   "outcome": "death",
+   "boss_hp_frac": 0.25,
+   "hp": 0,
+   "ticks": 470,
+   "fight_s": 6.079947233200073,
+   "learn_s": 3.0823585987091064,
+   "K_map": 6,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 7,
+   "accepted": []
+  },
+  {
+   "boss": 27,
+   "attempt": 6,
+   "outcome": "win",
+   "boss_hp_frac": 0.0,
+   "hp": 19.25,
+   "ticks": 343,
+   "fight_s": 3.8419857025146484,
+   "learn_s": 3.7397334575653076,
+   "K_map": 6,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 7,
+   "accepted": [],
+   "map_describe": "belief: 6 moves, phase-2 speed x0.81\n  [0] idle          windup~ 18.1t (sd 0.35) active 0 rec 0\n  [1] slam          windup~  9.5t (sd 0.10) active 3 rec 18\n  [2] delayed_slam  windup~ 25.2t (sd 0.18) active 3 rec 20\n  [3] sweep         windup~ 11.6t (sd 0.10) active 4 rec 12\n  [4] feint         windup~ 12.2t (sd 0.10) active 2 rec 6\n  [5] slam          windup~ 28.2t (sd 0.10) active 3 rec 18",
+   "map_moves": [
+    [
+     "idle",
+     18.0531662123354
+    ],
+    [
+     "slam",
+     9.513997392452346
+    ],
+    [
+     "delayed_slam",
+     25.217159959384293
+    ],
+    [
+     "sweep",
+     11.561911934857719
+    ],
+    [
+     "feint",
+     12.224190873792757
+    ],
+    [
+     "slam",
+     28.188833484158454
+    ]
+   ],
+   "map_laws": [],
+   "true_describe": "train27: 7 moves, phase-2 speed x0.83\n  [0] idle          windup~ 16.6t (sd 0.35) active 0 rec 0\n  [1] slam          windup~ 22.6t (sd 0.10) active 3 rec 18\n  [2] sweep         windup~ 10.9t (sd 0.10) active 4 rec 12\n  [3] slam          windup~  9.3t (sd 0.10) active 3 rec 18\n  [4] delayed_slam  windup~ 25.4t (sd 0.18) active 3 rec 20\n  [5] slam          windup~ 30.5t (sd 0.10) active 3 rec 18\n  [6] feint         windup~ 11.2t (sd 0.10) active 2 rec 6\n  law: if player heals -> move [2] x9.7"
+  },
+  {
+   "boss": 28,
+   "attempt": 1,
+   "outcome": "death",
+   "boss_hp_frac": 0.25,
+   "hp": 0,
+   "ticks": 332,
+   "fight_s": 3.0379295349121094,
+   "learn_s": 0.8521542549133301,
+   "K_map": 7,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 6,
+   "accepted": [
+    "birth slam@22",
+    "delete jab",
+    "merge slam",
+    "split lunge",
+    "birth lunge@8",
+    "delete feint",
+    "split lunge",
+    "delete feint"
+   ]
+  },
+  {
+   "boss": 28,
+   "attempt": 2,
+   "outcome": "death",
+   "boss_hp_frac": 0.7,
+   "hp": 0,
+   "ticks": 151,
+   "fight_s": 0.8724632263183594,
+   "learn_s": 0.9502995014190674,
+   "K_map": 8,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 6,
+   "accepted": [
+    "delete feint",
+    "delete sweep"
+   ]
+  },
+  {
+   "boss": 28,
+   "attempt": 3,
+   "outcome": "death",
+   "boss_hp_frac": 0.46,
+   "hp": 0,
+   "ticks": 352,
+   "fight_s": 4.149487495422363,
+   "learn_s": 1.8402693271636963,
+   "K_map": 8,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 6,
+   "accepted": [
+    "split delayed_slam",
+    "delete sweep",
+    "split slam",
+    "delete jab",
+    "delete sweep",
+    "split delayed_slam"
+   ]
+  },
+  {
+   "boss": 28,
+   "attempt": 4,
+   "outcome": "death",
+   "boss_hp_frac": 0.13,
+   "hp": 0,
+   "ticks": 280,
+   "fight_s": 2.707888126373291,
+   "learn_s": 2.059380531311035,
+   "K_map": 6,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 6,
+   "accepted": [
+    "delete sweep",
+    "merge slam",
+    "split lunge",
+    "delete jab"
+   ]
+  },
+  {
+   "boss": 28,
+   "attempt": 5,
+   "outcome": "death",
+   "boss_hp_frac": 0.25,
+   "hp": 0,
+   "ticks": 475,
+   "fight_s": 6.9547600746154785,
+   "learn_s": 2.7451412677764893,
+   "K_map": 6,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 6,
+   "accepted": [
+    "delete sweep",
+    "delete sweep"
+   ]
+  },
+  {
+   "boss": 28,
+   "attempt": 6,
+   "outcome": "death",
+   "boss_hp_frac": 0.25,
+   "hp": 0,
+   "ticks": 403,
+   "fight_s": 5.399555683135986,
+   "learn_s": 3.4635403156280518,
+   "K_map": 6,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 6,
+   "accepted": [
+    "split delayed_slam",
+    "delete sweep"
+   ],
+   "map_describe": "belief: 6 moves, phase-2 speed x0.94\n  [0] idle          windup~ 12.6t (sd 0.35) active 0 rec 0\n  [1] slam          windup~ 23.2t (sd 0.10) active 3 rec 18\n  [2] delayed_slam  windup~ 23.2t (sd 0.18) active 3 rec 20\n  [3] lunge         windup~  7.8t (sd 0.10) active 4 rec 16\n  [4] aoe           windup~ 18.6t (sd 0.10) active 4 rec 24\n  [5] lunge         windup~ 11.2t (sd 0.10) active 4 rec 16",
+   "map_moves": [
+    [
+     "idle",
+     12.56942338880893
+    ],
+    [
+     "slam",
+     23.19585980031575
+    ],
+    [
+     "delayed_slam",
+     23.19585980031575
+    ],
+    [
+     "lunge",
+     7.828821642439185
+    ],
+    [
+     "aoe",
+     18.563019178461076
+    ],
+    [
+     "lunge",
+     11.24435178812734
+    ]
+   ],
+   "map_laws": [],
+   "true_describe": "train28: 6 moves, phase-2 speed x0.87\n  [0] idle          windup~ 13.9t (sd 0.35) active 0 rec 0\n  [1] lunge         windup~ 12.5t (sd 0.10) active 4 rec 16\n  [2] slam          windup~ 22.6t (sd 0.10) active 3 rec 18\n  [3] lunge         windup~  7.9t (sd 0.10) active 4 rec 16\n  [4] aoe           windup~ 18.9t (sd 0.10) active 4 rec 24\n  [5] delayed_slam  windup~ 22.6t (sd 0.18) active 3 rec 20"
+  },
+  {
+   "boss": 29,
+   "attempt": 1,
+   "outcome": "death",
+   "boss_hp_frac": 0.13,
+   "hp": 0,
+   "ticks": 254,
+   "fight_s": 1.5574052333831787,
+   "learn_s": 0.5969910621643066,
+   "K_map": 7,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 7,
+   "accepted": [
+    "delete slam",
+    "retype lunge->feint",
+    "birth aoe@15",
+    "delete sweep",
+    "split feint",
+    "birth jab@8",
+    "merge jab",
+    "retype lunge->feint"
+   ]
+  },
+  {
+   "boss": 29,
+   "attempt": 2,
+   "outcome": "death",
+   "boss_hp_frac": 0.31,
+   "hp": 0,
+   "ticks": 267,
+   "fight_s": 2.0871360301971436,
+   "learn_s": 1.049675464630127,
+   "K_map": 7,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 7,
+   "accepted": [
+    "delete sweep",
+    "retype delayed_slam->slam",
+    "retype slam->delayed_slam",
+    "split jab",
+    "retype delayed_slam->slam"
+   ]
+  },
+  {
+   "boss": 29,
+   "attempt": 3,
+   "outcome": "death",
+   "boss_hp_frac": 0.16,
+   "hp": 0,
+   "ticks": 365,
+   "fight_s": 3.342320680618286,
+   "learn_s": 2.0055437088012695,
+   "K_map": 6,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 7,
+   "accepted": [
+    "merge feint",
+    "retype delayed_slam->slam",
+    "birth aoe@25",
+    "delete slam",
+    "birth aoe@25",
+    "delete delayed_slam",
+    "split aoe"
+   ]
+  },
+  {
+   "boss": 29,
+   "attempt": 4,
+   "outcome": "death",
+   "boss_hp_frac": 0.19,
+   "hp": 0,
+   "ticks": 305,
+   "fight_s": 2.1817359924316406,
+   "learn_s": 1.9826040267944336,
+   "K_map": 7,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 7,
+   "accepted": [
+    "split feint"
+   ]
+  },
+  {
+   "boss": 29,
+   "attempt": 5,
+   "outcome": "death",
+   "boss_hp_frac": 0.37,
+   "hp": 0,
+   "ticks": 304,
+   "fight_s": 2.847928524017334,
+   "learn_s": 2.6933183670043945,
+   "K_map": 8,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 7,
+   "accepted": [
+    "split feint",
+    "merge feint",
+    "split aoe"
+   ]
+  },
+  {
+   "boss": 29,
+   "attempt": 6,
+   "outcome": "death",
+   "boss_hp_frac": 0.28,
+   "hp": 0,
+   "ticks": 329,
+   "fight_s": 3.3073313236236572,
+   "learn_s": 3.285536527633667,
+   "K_map": 7,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 7,
+   "accepted": [
+    "retype feint->lunge",
+    "delete lunge",
+    "merge feint",
+    "merge aoe"
+   ],
+   "map_describe": "belief: 7 moves, phase-2 speed x0.88\n  [0] idle          windup~  7.4t (sd 0.35) active 0 rec 0\n  [1] feint         windup~  9.5t (sd 0.10) active 2 rec 6\n  [2] feint         windup~  9.8t (sd 0.10) active 2 rec 6\n  [3] jab           windup~  7.2t (sd 0.10) active 2 rec 6\n  [4] aoe           windup~ 16.6t (sd 0.10) active 4 rec 24\n  [5] aoe           windup~ 21.9t (sd 0.10) active 4 rec 24\n  [6] feint         windup~ 15.7t (sd 0.10) active 2 rec 6",
+   "map_moves": [
+    [
+     "idle",
+     7.404673840429483
+    ],
+    [
+     "feint",
+     9.513997392452346
+    ],
+    [
+     "feint",
+     9.782689306834612
+    ],
+    [
+     "jab",
+     7.201296637376403
+    ],
+    [
+     "aoe",
+     16.60610128529929
+    ],
+    [
+     "aoe",
+     21.939160721019327
+    ],
+    [
+     "feint",
+     15.70642037777567
+    ]
+   ],
+   "map_laws": [],
+   "true_describe": "train29: 7 moves, phase-2 speed x0.84\n  [0] idle          windup~  7.2t (sd 0.35) active 0 rec 0\n  [1] slam          windup~  9.6t (sd 0.10) active 3 rec 18\n  [2] feint         windup~ 15.7t (sd 0.10) active 2 rec 6\n  [3] feint         windup~  9.6t (sd 0.10) active 2 rec 6\n  [4] aoe           windup~ 20.9t (sd 0.10) active 4 rec 24\n  [5] jab           windup~  7.1t (sd 0.10) active 2 rec 6\n  [6] aoe           windup~ 17.0t (sd 0.10) active 4 rec 24\n  law: if player attacks -> move [6] x5.1"
+  },
+  {
+   "boss": 30,
+   "attempt": 1,
+   "outcome": "death",
+   "boss_hp_frac": 0.16,
+   "hp": 0,
+   "ticks": 274,
+   "fight_s": 2.6099307537078857,
+   "learn_s": 0.6882138252258301,
+   "K_map": 9,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 5,
+   "accepted": [
+    "retype delayed_slam->slam",
+    "split jab",
+    "split lunge",
+    "delete aoe",
+    "retype delayed_slam->slam",
+    "delete sweep",
+    "delete slam",
+    "delete slam",
+    "delete sweep"
+   ]
+  },
+  {
+   "boss": 30,
+   "attempt": 2,
+   "outcome": "death",
+   "boss_hp_frac": 0.25,
+   "hp": 0,
+   "ticks": 429,
+   "fight_s": 4.431545972824097,
+   "learn_s": 1.555204153060913,
+   "K_map": 5,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 5,
+   "accepted": [
+    "delete aoe",
+    "birth feint@15",
+    "birth feint@15",
+    "delete delayed_slam",
+    "split feint",
+    "retype delayed_slam->slam",
+    "split feint"
+   ]
+  },
+  {
+   "boss": 30,
+   "attempt": 3,
+   "outcome": "death",
+   "boss_hp_frac": 0.28,
+   "hp": 0,
+   "ticks": 539,
+   "fight_s": 5.2220048904418945,
+   "learn_s": 2.4458606243133545,
+   "K_map": 5,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 5,
+   "accepted": [
+    "delete aoe",
+    "split feint",
+    "delete aoe"
+   ]
+  },
+  {
+   "boss": 30,
+   "attempt": 4,
+   "outcome": "win",
+   "boss_hp_frac": 0.0,
+   "hp": 40.5,
+   "ticks": 391,
+   "fight_s": 3.675889015197754,
+   "learn_s": 2.7148969173431396,
+   "K_map": 5,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 5,
+   "accepted": []
+  },
+  {
+   "boss": 30,
+   "attempt": 5,
+   "outcome": "win",
+   "boss_hp_frac": 0.0,
+   "hp": 10.5,
+   "ticks": 381,
+   "fight_s": 3.57743763923645,
+   "learn_s": 3.259399175643921,
+   "K_map": 5,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 5,
+   "accepted": []
+  },
+  {
+   "boss": 30,
+   "attempt": 6,
+   "outcome": "win",
+   "boss_hp_frac": 0.0,
+   "hp": 0.45000000000001705,
+   "ticks": 353,
+   "fight_s": 2.5479865074157715,
+   "learn_s": 3.537989377975464,
+   "K_map": 5,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 5,
+   "accepted": [],
+   "map_describe": "belief: 5 moves, phase-2 speed x0.78\n  [0] idle          windup~ 15.3t (sd 0.35) active 0 rec 0\n  [1] lunge         windup~ 11.2t (sd 0.10) active 4 rec 16\n  [2] feint         windup~  7.2t (sd 0.10) active 2 rec 6\n  [3] jab           windup~  4.7t (sd 0.10) active 2 rec 6\n  [4] feint         windup~ 14.1t (sd 0.10) active 2 rec 6",
+   "map_moves": [
+    [
+     "idle",
+     15.275026920717925
+    ],
+    [
+     "lunge",
+     11.24435178812734
+    ],
+    [
+     "feint",
+     7.201296637376403
+    ],
+    [
+     "jab",
+     4.742225593142389
+    ],
+    [
+     "feint",
+     14.050645809032362
+    ]
+   ],
+   "map_laws": [],
+   "true_describe": "train30: 5 moves, phase-2 speed x0.83\n  [0] idle          windup~ 11.6t (sd 0.35) active 0 rec 0\n  [1] lunge         windup~ 11.3t (sd 0.10) active 4 rec 16\n  [2] jab           windup~  4.5t (sd 0.10) active 2 rec 6\n  [3] feint         windup~ 14.2t (sd 0.10) active 2 rec 6\n  [4] feint         windup~  7.2t (sd 0.10) active 2 rec 6"
+  },
+  {
+   "boss": 31,
+   "attempt": 1,
+   "outcome": "death",
+   "boss_hp_frac": 0.49,
+   "hp": 0,
+   "ticks": 248,
+   "fight_s": 1.742607593536377,
+   "learn_s": 0.6714155673980713,
+   "K_map": 8,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 7,
+   "accepted": [
+    "delete delayed_slam",
+    "retype slam->delayed_slam",
+    "birth sweep@5",
+    "split sweep",
+    "delete lunge",
+    "birth sweep@5",
+    "birth sweep@5",
+    "retype feint->lunge",
+    "split sweep",
+    "retype lunge->feint",
+    "retype feint->lunge"
+   ]
+  },
+  {
+   "boss": 31,
+   "attempt": 2,
+   "outcome": "death",
+   "boss_hp_frac": 0.07,
+   "hp": 0,
+   "ticks": 452,
+   "fight_s": 4.59041166305542,
+   "learn_s": 1.507521390914917,
+   "K_map": 8,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 7,
+   "accepted": [
+    "delete feint",
+    "delete delayed_slam",
+    "split sweep",
+    "delete lunge",
+    "birth sweep@8"
+   ]
+  },
+  {
+   "boss": 31,
+   "attempt": 3,
+   "outcome": "death",
+   "boss_hp_frac": 0.22,
+   "hp": 0,
+   "ticks": 326,
+   "fight_s": 3.4146318435668945,
+   "learn_s": 2.2142844200134277,
+   "K_map": 8,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 7,
+   "accepted": [
+    "retype delayed_slam->slam",
+    "merge sweep",
+    "delete jab",
+    "retype delayed_slam->slam",
+    "retype delayed_slam->slam",
+    "delete jab",
+    "delete delayed_slam"
+   ]
+  },
+  {
+   "boss": 31,
+   "attempt": 4,
+   "outcome": "death",
+   "boss_hp_frac": 0.28,
+   "hp": 0,
+   "ticks": 225,
+   "fight_s": 1.5880537033081055,
+   "learn_s": 2.24792218208313,
+   "K_map": 6,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 7,
+   "accepted": [
+    "delete feint",
+    "delete feint",
+    "delete feint",
+    "delete feint"
+   ]
+  },
+  {
+   "boss": 31,
+   "attempt": 5,
+   "outcome": "death",
+   "boss_hp_frac": 0.16,
+   "hp": 0,
+   "ticks": 305,
+   "fight_s": 2.3429768085479736,
+   "learn_s": 2.635535717010498,
+   "K_map": 6,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 7,
+   "accepted": [
+    "split sweep",
+    "merge sweep"
+   ]
+  },
+  {
+   "boss": 31,
+   "attempt": 6,
+   "outcome": "death",
+   "boss_hp_frac": 0.13,
+   "hp": 0,
+   "ticks": 314,
+   "fight_s": 3.124501943588257,
+   "learn_s": 2.8459441661834717,
+   "K_map": 6,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 7,
+   "accepted": [],
+   "map_describe": "belief: 6 moves, phase-2 speed x0.95\n  [0] idle          windup~ 21.3t (sd 0.35) active 0 rec 0\n  [1] slam          windup~ 22.6t (sd 0.10) active 3 rec 18\n  [2] sweep         windup~  5.9t (sd 0.10) active 4 rec 12\n  [3] aoe           windup~ 31.5t (sd 0.10) active 4 rec 24\n  [4] sweep         windup~ 10.9t (sd 0.10) active 4 rec 12\n  [5] sweep         windup~ 10.3t (sd 0.10) active 4 rec 12",
+   "map_moves": [
+    [
+     "idle",
+     21.33657845461202
+    ],
+    [
+     "slam",
+     22.558760963788732
+    ],
+    [
+     "sweep",
+     5.925760187094702
+    ],
+    [
+     "aoe",
+     31.510698844653504
+    ],
+    [
+     "sweep",
+     10.935513766886201
+    ],
+    [
+     "sweep",
+     10.34305243107954
+    ]
+   ],
+   "map_laws": [],
+   "true_describe": "train31: 7 moves, phase-2 speed x0.87\n  [0] idle          windup~ 22.4t (sd 0.35) active 0 rec 0\n  [1] sweep         windup~ 11.6t (sd 0.10) active 4 rec 12\n  [2] sweep         windup~ 11.0t (sd 0.10) active 4 rec 12\n  [3] sweep         windup~  8.3t (sd 0.10) active 4 rec 12\n  [4] slam          windup~ 22.1t (sd 0.10) active 3 rec 18\n  [5] sweep         windup~  5.6t (sd 0.10) active 4 rec 12\n  [6] aoe           windup~ 31.1t (sd 0.10) active 4 rec 24\n  law: if player heals -> move [5] x10.1"
+  },
+  {
+   "boss": 32,
+   "attempt": 1,
+   "outcome": "death",
+   "boss_hp_frac": 0.4,
+   "hp": 0,
+   "ticks": 262,
+   "fight_s": 2.4850142002105713,
+   "learn_s": 0.6383728981018066,
+   "K_map": 8,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 7,
+   "accepted": [
+    "birth aoe@12",
+    "delete jab",
+    "delete lunge",
+    "birth delayed_slam@11",
+    "retype lunge->feint",
+    "merge feint",
+    "split aoe",
+    "delete jab",
+    "delete aoe"
+   ]
+  },
+  {
+   "boss": 32,
+   "attempt": 2,
+   "outcome": "win",
+   "boss_hp_frac": 0.0,
+   "hp": 5.0,
+   "ticks": 471,
+   "fight_s": 5.47668194770813,
+   "learn_s": 1.6094920635223389,
+   "K_map": 7,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 7,
+   "accepted": [
+    "merge delayed_slam",
+    "split delayed_slam",
+    "delete sweep",
+    "split aoe",
+    "delete jab"
+   ]
+  },
+  {
+   "boss": 32,
+   "attempt": 3,
+   "outcome": "win",
+   "boss_hp_frac": 0.0,
+   "hp": 24.25,
+   "ticks": 389,
+   "fight_s": 4.266808271408081,
+   "learn_s": 2.229569435119629,
+   "K_map": 9,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 7,
+   "accepted": [
+    "birth delayed_slam@13",
+    "split delayed_slam",
+    "split delayed_slam",
+    "delete sweep",
+    "split feint"
+   ]
+  },
+  {
+   "boss": 32,
+   "attempt": 4,
+   "outcome": "win",
+   "boss_hp_frac": 0.0,
+   "hp": 38.75,
+   "ticks": 315,
+   "fight_s": 2.6988577842712402,
+   "learn_s": 2.987117290496826,
+   "K_map": 8,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 7,
+   "accepted": [
+    "merge delayed_slam",
+    "split feint",
+    "delete jab",
+    "split feint",
+    "delete jab",
+    "delete sweep"
+   ]
+  },
+  {
+   "boss": 32,
+   "attempt": 5,
+   "outcome": "win",
+   "boss_hp_frac": 0.0,
+   "hp": 73.25,
+   "ticks": 314,
+   "fight_s": 2.872880220413208,
+   "learn_s": 3.382650852203369,
+   "K_map": 9,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 7,
+   "accepted": [
+    "retype delayed_slam->slam",
+    "delete slam",
+    "delete delayed_slam"
+   ]
+  },
+  {
+   "boss": 32,
+   "attempt": 6,
+   "outcome": "death",
+   "boss_hp_frac": 0.28,
+   "hp": 0,
+   "ticks": 304,
+   "fight_s": 3.3382132053375244,
+   "learn_s": 3.2594096660614014,
+   "K_map": 9,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 7,
+   "accepted": [],
+   "map_describe": "belief: 9 moves, phase-2 speed x0.89\n  [0] idle          windup~ 12.6t (sd 0.35) active 0 rec 0\n  [1] slam          windup~ 12.9t (sd 0.10) active 3 rec 18\n  [2] delayed_slam  windup~ 19.6t (sd 0.18) active 3 rec 20\n  [3] feint         windup~ 10.3t (sd 0.10) active 2 rec 6\n  [4] aoe           windup~ 12.9t (sd 0.10) active 4 rec 24\n  [5] delayed_slam  windup~ 14.4t (sd 0.18) active 3 rec 20\n  [6] aoe           windup~ 12.6t (sd 0.10) active 4 rec 24\n  [7] delayed_slam  windup~ 23.9t (sd 0.18) active 3 rec 20\n  [8] feint         windup~ 13.3t (sd 0.10) active 2 rec 6",
+   "map_moves": [
+    [
+     "idle",
+     12.56942338880893
+    ],
+    [
+     "slam",
+     12.924405873426762
+    ],
+    [
+     "delayed_slam",
+     19.62632918412522
+    ],
+    [
+     "feint",
+     10.34305243107954
+    ],
+    [
+     "aoe",
+     12.924405873426762
+    ],
+    [
+     "delayed_slam",
+     14.447460603592965
+    ],
+    [
+     "aoe",
+     12.56942338880893
+    ],
+    [
+     "delayed_slam",
+     23.850951421471112
+    ],
+    [
+     "feint",
+     13.289413683828247
+    ]
+   ],
+   "map_laws": [],
+   "true_describe": "train32: 7 moves, phase-2 speed x0.88\n  [0] idle          windup~  9.1t (sd 0.35) active 0 rec 0\n  [1] aoe           windup~ 12.6t (sd 0.10) active 4 rec 24\n  [2] feint         windup~ 11.1t (sd 0.10) active 2 rec 6\n  [3] slam          windup~ 13.4t (sd 0.10) active 3 rec 18\n  [4] feint         windup~ 13.4t (sd 0.10) active 2 rec 6\n  [5] delayed_slam  windup~ 22.0t (sd 0.18) active 3 rec 20\n  [6] delayed_slam  windup~ 15.0t (sd 0.18) active 3 rec 20"
+  },
+  {
+   "boss": 33,
+   "attempt": 1,
+   "outcome": "death",
+   "boss_hp_frac": 0.22,
+   "hp": 0,
+   "ticks": 209,
+   "fight_s": 1.0816874504089355,
+   "learn_s": 0.48687243461608887,
+   "K_map": 7,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 6,
+   "accepted": [
+    "delete feint",
+    "retype delayed_slam->slam",
+    "delete aoe",
+    "birth jab@4",
+    "merge jab",
+    "birth sweep@15",
+    "delete aoe"
+   ]
+  },
+  {
+   "boss": 33,
+   "attempt": 2,
+   "outcome": "death",
+   "boss_hp_frac": 0.49,
+   "hp": 0,
+   "ticks": 313,
+   "fight_s": 3.035224437713623,
+   "learn_s": 1.3288023471832275,
+   "K_map": 6,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 6,
+   "accepted": [
+    "retype delayed_slam->slam",
+    "delete aoe",
+    "merge slam",
+    "birth feint@16",
+    "merge feint",
+    "delete lunge",
+    "delete delayed_slam",
+    "delete aoe",
+    "birth feint@16",
+    "retype delayed_slam->slam",
+    "merge slam"
+   ]
+  },
+  {
+   "boss": 33,
+   "attempt": 3,
+   "outcome": "win",
+   "boss_hp_frac": 0.0,
+   "hp": 3.4000000000000057,
+   "ticks": 470,
+   "fight_s": 3.9488260746002197,
+   "learn_s": 1.8227314949035645,
+   "K_map": 6,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 6,
+   "accepted": [
+    "delete lunge",
+    "delete lunge"
+   ]
+  },
+  {
+   "boss": 33,
+   "attempt": 4,
+   "outcome": "death",
+   "boss_hp_frac": 0.04,
+   "hp": 0,
+   "ticks": 481,
+   "fight_s": 4.415766000747681,
+   "learn_s": 2.8557422161102295,
+   "K_map": 5,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 6,
+   "accepted": [
+    "birth feint@13",
+    "merge feint",
+    "split feint",
+    "split feint"
+   ]
+  },
+  {
+   "boss": 33,
+   "attempt": 5,
+   "outcome": "death",
+   "boss_hp_frac": 0.07,
+   "hp": 0,
+   "ticks": 387,
+   "fight_s": 3.05145263671875,
+   "learn_s": 3.0682005882263184,
+   "K_map": 5,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 6,
+   "accepted": [
+    "split feint"
+   ]
+  },
+  {
+   "boss": 33,
+   "attempt": 6,
+   "outcome": "win",
+   "boss_hp_frac": 0.0,
+   "hp": 58.0,
+   "ticks": 444,
+   "fight_s": 3.4904634952545166,
+   "learn_s": 3.8840675354003906,
+   "K_map": 5,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 6,
+   "accepted": [
+    "split feint"
+   ],
+   "map_describe": "belief: 5 moves, phase-2 speed x0.70\n  [0] idle          windup~  6.6t (sd 0.35) active 0 rec 0\n  [1] slam          windup~ 11.9t (sd 0.10) active 3 rec 18\n  [2] sweep         windup~ 14.9t (sd 0.10) active 4 rec 12\n  [3] feint         windup~ 17.6t (sd 0.10) active 2 rec 6\n  [4] jab           windup~  4.7t (sd 0.10) active 2 rec 6",
+   "map_moves": [
+    [
+     "idle",
+     6.624071364503757
+    ],
+    [
+     "slam",
+     11.88844053514519
+    ],
+    [
+     "sweep",
+     14.855482141482122
+    ],
+    [
+     "feint",
+     17.557316897478316
+    ],
+    [
+     "jab",
+     4.742225593142389
+    ]
+   ],
+   "map_laws": [],
+   "true_describe": "train33: 6 moves, phase-2 speed x0.75\n  [0] idle          windup~  6.5t (sd 0.35) active 0 rec 0\n  [1] slam          windup~ 11.8t (sd 0.10) active 3 rec 18\n  [2] sweep         windup~ 14.1t (sd 0.10) active 4 rec 12\n  [3] feint         windup~ 17.8t (sd 0.10) active 2 rec 6\n  [4] jab           windup~  4.7t (sd 0.10) active 2 rec 6\n  [5] jab           windup~  4.5t (sd 0.10) active 2 rec 6\n  law: if player heals -> move [2] x18.8"
+  },
+  {
+   "boss": 34,
+   "attempt": 1,
+   "outcome": "death",
+   "boss_hp_frac": 0.37,
+   "hp": 0,
+   "ticks": 243,
+   "fight_s": 1.9829401969909668,
+   "learn_s": 0.6781110763549805,
+   "K_map": 7,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 4,
+   "accepted": [
+    "delete lunge",
+    "split sweep",
+    "delete aoe",
+    "split jab",
+    "delete slam",
+    "delete delayed_slam",
+    "birth jab@9",
+    "merge jab",
+    "delete slam",
+    "split sweep",
+    "merge sweep",
+    "delete lunge"
+   ]
+  },
+  {
+   "boss": 34,
+   "attempt": 2,
+   "outcome": "death",
+   "boss_hp_frac": 0.01,
+   "hp": 0,
+   "ticks": 545,
+   "fight_s": 5.16650128364563,
+   "learn_s": 1.684675693511963,
+   "K_map": 7,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 4,
+   "accepted": [
+    "retype delayed_slam->slam",
+    "retype delayed_slam->slam",
+    "delete slam",
+    "retype delayed_slam->slam",
+    "merge sweep"
+   ]
+  },
+  {
+   "boss": 34,
+   "attempt": 3,
+   "outcome": "death",
+   "boss_hp_frac": 0.34,
+   "hp": 0,
+   "ticks": 416,
+   "fight_s": 4.007653713226318,
+   "learn_s": 2.417614459991455,
+   "K_map": 7,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 4,
+   "accepted": [
+    "retype slam->delayed_slam",
+    "delete slam",
+    "delete slam",
+    "delete delayed_slam",
+    "split jab",
+    "merge jab"
+   ]
+  },
+  {
+   "boss": 34,
+   "attempt": 4,
+   "outcome": "win",
+   "boss_hp_frac": 0.0,
+   "hp": 4.799999999999997,
+   "ticks": 812,
+   "fight_s": 8.666846752166748,
+   "learn_s": 3.927306890487671,
+   "K_map": 4,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 4,
+   "accepted": [
+    "delete slam",
+    "retype slam->delayed_slam",
+    "retype delayed_slam->slam",
+    "delete slam",
+    "delete slam"
+   ]
+  },
+  {
+   "boss": 34,
+   "attempt": 5,
+   "outcome": "win",
+   "boss_hp_frac": 0.0,
+   "hp": 14.0,
+   "ticks": 542,
+   "fight_s": 4.645303964614868,
+   "learn_s": 3.870440721511841,
+   "K_map": 4,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 4,
+   "accepted": []
+  },
+  {
+   "boss": 34,
+   "attempt": 6,
+   "outcome": "win",
+   "boss_hp_frac": 0.0,
+   "hp": 15.400000000000006,
+   "ticks": 569,
+   "fight_s": 5.593931436538696,
+   "learn_s": 5.075515270233154,
+   "K_map": 5,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 4,
+   "accepted": [
+    "split jab"
+   ],
+   "map_describe": "belief: 5 moves, phase-2 speed x0.84\n  [0] idle          windup~  9.0t (sd 0.35) active 0 rec 0\n  [1] sweep         windup~  8.8t (sd 0.10) active 4 rec 12\n  [2] feint         windup~ 10.1t (sd 0.10) active 2 rec 6\n  [3] jab           windup~  7.6t (sd 0.10) active 2 rec 6\n  [4] jab           windup~  9.5t (sd 0.10) active 2 rec 6",
+   "map_moves": [
+    [
+     "idle",
+     8.998550590029417
+    ],
+    [
+     "sweep",
+     8.75139587532213
+    ],
+    [
+     "feint",
+     10.05896955048337
+    ],
+    [
+     "jab",
+     7.613794771147802
+    ],
+    [
+     "jab",
+     9.513997392452346
+    ]
+   ],
+   "map_laws": [],
+   "true_describe": "train34: 4 moves, phase-2 speed x0.83\n  [0] idle          windup~  9.5t (sd 0.35) active 0 rec 0\n  [1] feint         windup~  9.6t (sd 0.10) active 2 rec 6\n  [2] sweep         windup~  8.8t (sd 0.10) active 4 rec 12\n  [3] jab           windup~  8.4t (sd 0.10) active 2 rec 6"
+  },
+  {
+   "boss": 35,
+   "attempt": 1,
+   "outcome": "death",
+   "boss_hp_frac": 0.07,
+   "hp": 0,
+   "ticks": 329,
+   "fight_s": 2.6366426944732666,
+   "learn_s": 0.8028564453125,
+   "K_map": 9,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 6,
+   "accepted": [
+    "birth slam@8",
+    "delete sweep",
+    "split feint",
+    "delete sweep",
+    "delete feint",
+    "split feint",
+    "merge feint"
+   ]
+  },
+  {
+   "boss": 35,
+   "attempt": 2,
+   "outcome": "win",
+   "boss_hp_frac": 0.0,
+   "hp": 58.0,
+   "ticks": 341,
+   "fight_s": 3.0393171310424805,
+   "learn_s": 1.5353491306304932,
+   "K_map": 9,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 6,
+   "accepted": [
+    "split jab",
+    "retype lunge->feint",
+    "delete lunge",
+    "delete sweep",
+    "birth jab@13",
+    "delete sweep",
+    "birth jab@13"
+   ]
+  },
+  {
+   "boss": 35,
+   "attempt": 3,
+   "outcome": "win",
+   "boss_hp_frac": 0.0,
+   "hp": 5.5,
+   "ticks": 339,
+   "fight_s": 2.961782932281494,
+   "learn_s": 2.486609697341919,
+   "K_map": 7,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 6,
+   "accepted": [
+    "birth slam@5",
+    "delete lunge",
+    "merge slam",
+    "delete lunge",
+    "birth slam@5",
+    "delete lunge",
+    "split aoe",
+    "split slam",
+    "delete lunge",
+    "merge jab"
+   ]
+  },
+  {
+   "boss": 35,
+   "attempt": 4,
+   "outcome": "win",
+   "boss_hp_frac": 0.0,
+   "hp": 23.0,
+   "ticks": 425,
+   "fight_s": 3.8684592247009277,
+   "learn_s": 2.7937002182006836,
+   "K_map": 8,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 6,
+   "accepted": [
+    "delete slam",
+    "merge jab",
+    "merge slam",
+    "delete slam"
+   ]
+  },
+  {
+   "boss": 35,
+   "attempt": 5,
+   "outcome": "win",
+   "boss_hp_frac": 0.0,
+   "hp": 16.0,
+   "ticks": 246,
+   "fight_s": 1.934859275817871,
+   "learn_s": 3.1955485343933105,
+   "K_map": 8,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 6,
+   "accepted": [
+    "birth slam@5",
+    "merge jab",
+    "merge jab",
+    "birth delayed_slam@41"
+   ]
+  },
+  {
+   "boss": 35,
+   "attempt": 6,
+   "outcome": "win",
+   "boss_hp_frac": 0.0,
+   "hp": 15.75,
+   "ticks": 311,
+   "fight_s": 3.0001626014709473,
+   "learn_s": 3.475696086883545,
+   "K_map": 8,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 6,
+   "accepted": [],
+   "map_describe": "belief: 8 moves, phase-2 speed x0.80\n  [0] idle          windup~ 30.6t (sd 0.35) active 0 rec 0\n  [1] delayed_slam  windup~ 33.3t (sd 0.18) active 3 rec 20\n  [2] feint         windup~ 14.9t (sd 0.10) active 2 rec 6\n  [3] jab           windup~ 10.6t (sd 0.10) active 2 rec 6\n  [4] aoe           windup~ 25.2t (sd 0.10) active 4 rec 24\n  [5] jab           windup~ 10.3t (sd 0.10) active 2 rec 6\n  [6] slam          windup~  6.4t (sd 0.10) active 3 rec 18\n  [7] aoe           windup~ 25.2t (sd 0.10) active 4 rec 24",
+   "map_moves": [
+    [
+     "idle",
+     30.6452241545621
+    ],
+    [
+     "delayed_slam",
+     33.31566607788606
+    ],
+    [
+     "feint",
+     14.855482141482122
+    ],
+    [
+     "jab",
+     10.635158308727524
+    ],
+    [
+     "aoe",
+     25.217159959384293
+    ],
+    [
+     "jab",
+     10.34305243107954
+    ],
+    [
+     "slam",
+     6.442134234527667
+    ],
+    [
+     "aoe",
+     25.217159959384293
+    ]
+   ],
+   "map_laws": [],
+   "true_describe": "train35: 6 moves, phase-2 speed x0.81\n  [0] idle          windup~ 26.9t (sd 0.35) active 0 rec 0\n  [1] feint         windup~ 13.8t (sd 0.10) active 2 rec 6\n  [2] aoe           windup~ 23.2t (sd 0.10) active 4 rec 24\n  [3] jab           windup~ 10.9t (sd 0.10) active 2 rec 6\n  [4] slam          windup~  6.4t (sd 0.10) active 3 rec 18\n  [5] delayed_slam  windup~ 33.2t (sd 0.18) active 3 rec 20\n  law: if player attacks -> move [5] x4.7"
+  },
+  {
+   "boss": 36,
+   "attempt": 1,
+   "outcome": "win",
+   "boss_hp_frac": 0.0,
+   "hp": 89.25,
+   "ticks": 358,
+   "fight_s": 3.8919215202331543,
+   "learn_s": 0.914313554763794,
+   "K_map": 9,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 7,
+   "accepted": [
+    "split feint",
+    "birth feint@12",
+    "retype delayed_slam->slam",
+    "delete sweep",
+    "delete delayed_slam",
+    "birth feint@11",
+    "birth feint@20",
+    "birth feint@12",
+    "delete delayed_slam",
+    "retype slam->delayed_slam"
+   ]
+  },
+  {
+   "boss": 36,
+   "attempt": 2,
+   "outcome": "win",
+   "boss_hp_frac": 0.0,
+   "hp": 89.5,
+   "ticks": 378,
+   "fight_s": 3.487699508666992,
+   "learn_s": 1.717667579650879,
+   "K_map": 9,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 7,
+   "accepted": [
+    "birth feint@31",
+    "retype slam->delayed_slam",
+    "birth jab@3",
+    "merge jab",
+    "retype slam->delayed_slam",
+    "birth feint@31",
+    "delete slam",
+    "birth feint@29"
+   ]
+  },
+  {
+   "boss": 36,
+   "attempt": 3,
+   "outcome": "win",
+   "boss_hp_frac": 0.0,
+   "hp": 60.900000000000006,
+   "ticks": 333,
+   "fight_s": 3.233379364013672,
+   "learn_s": 1.9754066467285156,
+   "K_map": 8,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 7,
+   "accepted": [
+    "delete slam",
+    "merge slam",
+    "merge slam"
+   ]
+  },
+  {
+   "boss": 36,
+   "attempt": 4,
+   "outcome": "win",
+   "boss_hp_frac": 0.0,
+   "hp": 81.2,
+   "ticks": 218,
+   "fight_s": 0.8551263809204102,
+   "learn_s": 2.45382022857666,
+   "K_map": 8,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 7,
+   "accepted": [
+    "delete slam",
+    "retype slam->delayed_slam",
+    "delete slam"
+   ]
+  },
+  {
+   "boss": 36,
+   "attempt": 5,
+   "outcome": "win",
+   "boss_hp_frac": 0.0,
+   "hp": 48.2,
+   "ticks": 253,
+   "fight_s": 2.1247644424438477,
+   "learn_s": 2.81075382232666,
+   "K_map": 8,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 7,
+   "accepted": [
+    "retype delayed_slam->slam",
+    "delete slam"
+   ]
+  },
+  {
+   "boss": 36,
+   "attempt": 6,
+   "outcome": "death",
+   "boss_hp_frac": 0.13,
+   "hp": 0,
+   "ticks": 298,
+   "fight_s": 2.801989793777466,
+   "learn_s": 3.6108460426330566,
+   "K_map": 8,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 7,
+   "accepted": [
+    "delete slam",
+    "split feint",
+    "birth lunge@19"
+   ],
+   "map_describe": "belief: 8 moves, phase-2 speed x0.86\n  [0] idle          windup~ 10.9t (sd 0.35) active 0 rec 0\n  [1] slam          windup~  6.4t (sd 0.10) active 3 rec 18\n  [2] lunge         windup~ 14.4t (sd 0.10) active 4 rec 16\n  [3] feint         windup~  7.0t (sd 0.10) active 2 rec 6\n  [4] jab           windup~  2.4t (sd 0.10) active 2 rec 6\n  [5] aoe           windup~ 22.6t (sd 0.10) active 4 rec 24\n  [6] feint         windup~ 19.1t (sd 0.10) active 2 rec 6\n  [7] feint         windup~ 30.6t (sd 0.10) active 2 rec 6",
+   "map_moves": [
+    [
+     "idle",
+     10.935513766886201
+    ],
+    [
+     "slam",
+     6.442134234527667
+    ],
+    [
+     "lunge",
+     14.447460603592965
+    ],
+    [
+     "feint",
+     7.003505404429911
+    ],
+    [
+     "jab",
+     2.430505592534643
+    ],
+    [
+     "aoe",
+     22.558760963788732
+    ],
+    [
+     "feint",
+     19.087271283441925
+    ],
+    [
+     "feint",
+     30.6452241545621
+    ]
+   ],
+   "map_laws": [],
+   "true_describe": "train36: 7 moves, phase-2 speed x0.83\n  [0] idle          windup~  8.9t (sd 0.35) active 0 rec 0\n  [1] aoe           windup~ 23.1t (sd 0.10) active 4 rec 24\n  [2] lunge         windup~ 14.4t (sd 0.10) active 4 rec 16\n  [3] feint         windup~ 30.0t (sd 0.10) active 2 rec 6\n  [4] jab           windup~  2.4t (sd 0.10) active 2 rec 6\n  [5] feint         windup~  7.3t (sd 0.10) active 2 rec 6\n  [6] feint         windup~ 19.8t (sd 0.10) active 2 rec 6"
+  },
+  {
+   "boss": 37,
+   "attempt": 1,
+   "outcome": "death",
+   "boss_hp_frac": 0.61,
+   "hp": 0,
+   "ticks": 264,
+   "fight_s": 2.340285539627075,
+   "learn_s": 0.6940665245056152,
+   "K_map": 7,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 4,
+   "accepted": [
+    "retype slam->delayed_slam",
+    "merge delayed_slam",
+    "birth lunge@9",
+    "retype delayed_slam->slam",
+    "birth jab@9",
+    "retype feint->lunge",
+    "merge jab",
+    "retype feint->lunge",
+    "merge lunge"
+   ]
+  },
+  {
+   "boss": 37,
+   "attempt": 2,
+   "outcome": "death",
+   "boss_hp_frac": 0.34,
+   "hp": 0,
+   "ticks": 470,
+   "fight_s": 3.867633104324341,
+   "learn_s": 1.4927608966827393,
+   "K_map": 7,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 4,
+   "accepted": [
+    "birth aoe@18",
+    "delete sweep",
+    "delete slam",
+    "retype delayed_slam->slam",
+    "birth aoe@18"
+   ]
+  },
+  {
+   "boss": 37,
+   "attempt": 3,
+   "outcome": "death",
+   "boss_hp_frac": 0.46,
+   "hp": 0,
+   "ticks": 270,
+   "fight_s": 2.4415929317474365,
+   "learn_s": 1.8782875537872314,
+   "K_map": 7,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 4,
+   "accepted": [
+    "delete delayed_slam",
+    "retype slam->delayed_slam",
+    "retype delayed_slam->slam",
+    "retype slam->delayed_slam",
+    "merge aoe"
+   ]
+  },
+  {
+   "boss": 37,
+   "attempt": 4,
+   "outcome": "death",
+   "boss_hp_frac": 0.4,
+   "hp": 0,
+   "ticks": 462,
+   "fight_s": 4.751520395278931,
+   "learn_s": 3.0292298793792725,
+   "K_map": 7,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 4,
+   "accepted": [
+    "retype delayed_slam->slam",
+    "retype slam->delayed_slam",
+    "delete delayed_slam",
+    "retype delayed_slam->slam",
+    "split jab",
+    "retype slam->delayed_slam"
+   ]
+  },
+  {
+   "boss": 37,
+   "attempt": 5,
+   "outcome": "death",
+   "boss_hp_frac": 0.46,
+   "hp": 0,
+   "ticks": 243,
+   "fight_s": 2.0361154079437256,
+   "learn_s": 3.0494019985198975,
+   "K_map": 7,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 4,
+   "accepted": [
+    "delete sweep",
+    "retype delayed_slam->slam",
+    "merge jab"
+   ]
+  },
+  {
+   "boss": 37,
+   "attempt": 6,
+   "outcome": "death",
+   "boss_hp_frac": 0.49,
+   "hp": 0,
+   "ticks": 391,
+   "fight_s": 4.351304054260254,
+   "learn_s": 3.931630849838257,
+   "K_map": 5,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 4,
+   "accepted": [
+    "merge aoe",
+    "delete slam",
+    "delete slam",
+    "retype slam->delayed_slam"
+   ],
+   "map_describe": "belief: 5 moves, phase-2 speed x0.88\n  [0] idle          windup~ 12.9t (sd 0.35) active 0 rec 0\n  [1] sweep         windup~  5.0t (sd 0.10) active 4 rec 12\n  [2] lunge         windup~ 10.1t (sd 0.10) active 4 rec 16\n  [3] jab           windup~  7.6t (sd 0.10) active 2 rec 6\n  [4] aoe           windup~ 17.6t (sd 0.10) active 4 rec 24",
+   "map_moves": [
+    [
+     "idle",
+     12.924405873426762
+    ],
+    [
+     "sweep",
+     5.013865452683972
+    ],
+    [
+     "lunge",
+     10.05896955048337
+    ],
+    [
+     "jab",
+     7.613794771147802
+    ],
+    [
+     "aoe",
+     17.557316897478316
+    ]
+   ],
+   "map_laws": [],
+   "true_describe": "train37: 4 moves, phase-2 speed x0.86\n  [0] idle          windup~ 13.5t (sd 0.35) active 0 rec 0\n  [1] jab           windup~  7.6t (sd 0.10) active 2 rec 6\n  [2] aoe           windup~ 17.4t (sd 0.10) active 4 rec 24\n  [3] lunge         windup~  9.8t (sd 0.10) active 4 rec 16\n  law: if player attacks -> move [3] x16.2\n  law: if player heals -> move [3] x8.2"
+  },
+  {
+   "boss": 38,
+   "attempt": 1,
+   "outcome": "death",
+   "boss_hp_frac": 0.19,
+   "hp": 0,
+   "ticks": 251,
+   "fight_s": 2.0231597423553467,
+   "learn_s": 0.654008150100708,
+   "K_map": 7,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 7,
+   "accepted": [
+    "split feint",
+    "delete slam",
+    "delete lunge",
+    "delete lunge",
+    "birth slam@24",
+    "birth feint@7",
+    "delete lunge",
+    "delete slam",
+    "birth jab@4",
+    "delete sweep",
+    "split feint"
+   ]
+  },
+  {
+   "boss": 38,
+   "attempt": 2,
+   "outcome": "death",
+   "boss_hp_frac": 0.55,
+   "hp": 0,
+   "ticks": 229,
+   "fight_s": 1.7271397113800049,
+   "learn_s": 1.0111563205718994,
+   "K_map": 7,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 7,
+   "accepted": [
+    "delete feint",
+    "birth delayed_slam@10",
+    "delete feint",
+    "birth delayed_slam@10",
+    "delete feint",
+    "birth delayed_slam@10",
+    "delete feint"
+   ]
+  },
+  {
+   "boss": 38,
+   "attempt": 3,
+   "outcome": "death",
+   "boss_hp_frac": 0.19,
+   "hp": 0,
+   "ticks": 399,
+   "fight_s": 3.6516034603118896,
+   "learn_s": 1.67643404006958,
+   "K_map": 6,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 7,
+   "accepted": [
+    "merge delayed_slam",
+    "retype delayed_slam->slam",
+    "merge delayed_slam",
+    "split feint"
+   ]
+  },
+  {
+   "boss": 38,
+   "attempt": 4,
+   "outcome": "death",
+   "boss_hp_frac": 0.34,
+   "hp": 0,
+   "ticks": 226,
+   "fight_s": 1.4857609272003174,
+   "learn_s": 2.0028672218322754,
+   "K_map": 7,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 7,
+   "accepted": [
+    "birth delayed_slam@10",
+    "merge delayed_slam"
+   ]
+  },
+  {
+   "boss": 38,
+   "attempt": 5,
+   "outcome": "death",
+   "boss_hp_frac": 0.22,
+   "hp": 0,
+   "ticks": 325,
+   "fight_s": 2.831559181213379,
+   "learn_s": 2.660025119781494,
+   "K_map": 6,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 7,
+   "accepted": [
+    "merge feint",
+    "merge feint",
+    "split feint",
+    "merge feint"
+   ]
+  },
+  {
+   "boss": 38,
+   "attempt": 6,
+   "outcome": "death",
+   "boss_hp_frac": 0.58,
+   "hp": 0,
+   "ticks": 146,
+   "fight_s": 0.8881540298461914,
+   "learn_s": 2.7264695167541504,
+   "K_map": 8,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 7,
+   "accepted": [
+    "split aoe",
+    "split feint",
+    "merge feint"
+   ],
+   "map_describe": "belief: 8 moves, phase-2 speed x0.84\n  [0] idle          windup~ 14.9t (sd 0.35) active 0 rec 0\n  [1] delayed_slam  windup~ 16.1t (sd 0.18) active 3 rec 20\n  [2] sweep         windup~ 10.3t (sd 0.10) active 4 rec 12\n  [3] feint         windup~  7.6t (sd 0.10) active 2 rec 6\n  [4] jab           windup~  4.6t (sd 0.10) active 2 rec 6\n  [5] aoe           windup~ 25.9t (sd 0.10) active 4 rec 24\n  [6] feint         windup~  8.8t (sd 0.10) active 2 rec 6\n  [7] feint         windup~  8.5t (sd 0.10) active 2 rec 6",
+   "map_moves": [
+    [
+     "idle",
+     14.855482141482122
+    ],
+    [
+     "delayed_slam",
+     16.149997140025484
+    ],
+    [
+     "sweep",
+     10.34305243107954
+    ],
+    [
+     "feint",
+     7.613794771147802
+    ],
+    [
+     "jab",
+     4.6119753487475466
+    ],
+    [
+     "aoe",
+     25.929336629744345
+    ],
+    [
+     "feint",
+     8.75139587532213
+    ],
+    [
+     "feint",
+     8.511029526406748
+    ]
+   ],
+   "map_laws": [],
+   "true_describe": "train38: 7 moves, phase-2 speed x0.88\n  [0] idle          windup~ 16.4t (sd 0.35) active 0 rec 0\n  [1] sweep         windup~ 10.7t (sd 0.10) active 4 rec 12\n  [2] aoe           windup~ 21.5t (sd 0.10) active 4 rec 24\n  [3] delayed_slam  windup~ 15.9t (sd 0.18) active 3 rec 20\n  [4] feint         windup~  8.1t (sd 0.10) active 2 rec 6\n  [5] jab           windup~  4.7t (sd 0.10) active 2 rec 6\n  [6] jab           windup~  4.4t (sd 0.10) active 2 rec 6\n  law: if player attacks -> move [3] x6.3"
+  },
+  {
+   "boss": 39,
+   "attempt": 1,
+   "outcome": "win",
+   "boss_hp_frac": 0.0,
+   "hp": 10.75,
+   "ticks": 394,
+   "fight_s": 2.611849069595337,
+   "learn_s": 0.8730762004852295,
+   "K_map": 8,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 7,
+   "accepted": [
+    "birth feint@14",
+    "merge feint",
+    "birth feint@14",
+    "retype slam->delayed_slam",
+    "birth delayed_slam@47",
+    "retype slam->delayed_slam"
+   ]
+  },
+  {
+   "boss": 39,
+   "attempt": 2,
+   "outcome": "death",
+   "boss_hp_frac": 0.19,
+   "hp": 0,
+   "ticks": 169,
+   "fight_s": 0.5438051223754883,
+   "learn_s": 1.2732832431793213,
+   "K_map": 8,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 7,
+   "accepted": [
+    "delete delayed_slam",
+    "delete delayed_slam",
+    "delete lunge",
+    "delete aoe",
+    "delete lunge",
+    "delete delayed_slam"
+   ]
+  },
+  {
+   "boss": 39,
+   "attempt": 3,
+   "outcome": "death",
+   "boss_hp_frac": 0.28,
+   "hp": 0,
+   "ticks": 244,
+   "fight_s": 1.6882152557373047,
+   "learn_s": 1.7011027336120605,
+   "K_map": 8,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 7,
+   "accepted": [
+    "delete lunge",
+    "split jab",
+    "delete aoe",
+    "birth sweep@9",
+    "merge delayed_slam"
+   ]
+  },
+  {
+   "boss": 39,
+   "attempt": 4,
+   "outcome": "win",
+   "boss_hp_frac": 0.0,
+   "hp": 38.75,
+   "ticks": 279,
+   "fight_s": 1.9162542819976807,
+   "learn_s": 1.9686830043792725,
+   "K_map": 6,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 7,
+   "accepted": [
+    "merge jab",
+    "delete lunge"
+   ]
+  },
+  {
+   "boss": 39,
+   "attempt": 5,
+   "outcome": "death",
+   "boss_hp_frac": 0.04,
+   "hp": 0,
+   "ticks": 240,
+   "fight_s": 1.238844394683838,
+   "learn_s": 2.165285348892212,
+   "K_map": 6,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 7,
+   "accepted": [
+    "delete aoe"
+   ]
+  },
+  {
+   "boss": 39,
+   "attempt": 6,
+   "outcome": "win",
+   "boss_hp_frac": 0.0,
+   "hp": 14.450000000000003,
+   "ticks": 408,
+   "fight_s": 3.6194961071014404,
+   "learn_s": 3.2404794692993164,
+   "K_map": 8,
+   "iframes": [
+    2,
+    4
+   ],
+   "true_iframes": [
+    2,
+    4
+   ],
+   "K_true": 7,
+   "accepted": [
+    "birth sweep@9",
+    "split delayed_slam",
+    "split delayed_slam"
+   ],
+   "map_describe": "belief: 8 moves, phase-2 speed x0.72\n  [0] idle          windup~ 10.6t (sd 0.35) active 0 rec 0\n  [1] delayed_slam  windup~ 16.6t (sd 0.18) active 3 rec 20\n  [2] sweep         windup~ 11.6t (sd 0.10) active 4 rec 12\n  [3] feint         windup~ 11.9t (sd 0.10) active 2 rec 6\n  [4] jab           windup~  5.8t (sd 0.10) active 2 rec 6\n  [5] delayed_slam  windup~ 41.6t (sd 0.18) active 3 rec 20\n  [6] sweep         windup~ 10.3t (sd 0.10) active 4 rec 12\n  [7] delayed_slam  windup~ 55.0t (sd 0.18) active 3 rec 20",
+   "map_moves": [
+    [
+     "idle",
+     10.635158308727524
+    ],
+    [
+     "delayed_slam",
+     16.60610128529929
+    ],
+    [
+     "sweep",
+     11.561911934857719
+    ],
+    [
+     "feint",
+     11.88844053514519
+    ],
+    [
+     "jab",
+     5.763002912596746
+    ],
+    [
+     "delayed_slam",
+     41.630378769066496
+    ],
+    [
+     "sweep",
+     10.34305243107954
+    ],
+    [
+     "delayed_slam",
+     55.000000000000014
+    ]
+   ],
+   "map_laws": [],
+   "true_describe": "train39: 7 moves, phase-2 speed x0.76\n  [0] idle          windup~  8.7t (sd 0.35) active 0 rec 0\n  [1] feint         windup~ 12.7t (sd 0.10) active 2 rec 6\n  [2] sweep         windup~  8.8t (sd 0.10) active 4 rec 12\n  [3] sweep         windup~ 11.9t (sd 0.10) active 4 rec 12\n  [4] jab           windup~  5.7t (sd 0.10) active 2 rec 6\n  [5] delayed_slam  windup~ 17.9t (sd 0.18) active 3 rec 20\n  [6] delayed_slam  windup~ 44.5t (sd 0.18) active 3 rec 20\n  law: if player attacks -> move [6] x8.1"
+  }
+ ]
+}

@@ -426,6 +426,35 @@ Test of Entry 16's prediction (train 40 × 4 attempts, same seeds):
 
 Superset seeding helps on novel-move bosses and costs nothing in distribution, so it becomes the default M3 configuration. The win-rate gains are within CIs at n = 90; the evidence-level result is the robust one.
 
+## 2026-11-25 · Entry 19: ablations, and the FightingICE-style baseline
+
+Lesion flags (`RTB_LESION`) switch off one part of the slow mind's learning. Train 40 × 6 attempts, same seeds:
+
+| Learner | Attempt 2 | Attempts 3–6 |
+|---|---|---|
+| Full slow mind | 30% | 33.8% [27–41] |
+| − laws (no reactive-law inference) | 25% | 40.6% [33–48] |
+| − timing (wind-ups fixed at prior) | 22% | 30.6% [24–38] |
+| − structure (move set fixed to generic) | 20% | 30.0% [23–38] |
+| − transitions − laws | 12% | 26.9% [21–34] |
+| **Counts-only opponent model** (− timing − structure − laws; FightingICE-style move-frequency learning) | 20% | **16.9%** [12–23] |
+| Frozen (no learning) | 12% | 13.8% [9–20] |
+
+**Findings:**
+1. **A move-frequency opponent model (the standard fighting-game AI approach) buys almost nothing:** 16.9% vs 13.8% frozen. What matters is learning *when* and *what*: timing and structure. "Which move comes next" alone is not enough.
+2. **No single component is essential, but they are synergistic.** Each single lesion costs 3–7 points; removing timing, structure and laws together costs 17. Timing and structure partly substitute for each other: an extra copy of a move can absorb a tempo, and a wider timing can absorb a missing copy.
+3. **Laws do not help win rate here.** Without law inference the agent does slightly better (40.6 vs 33.8, CIs overlap).
+
+   Law recovery at attempt 12:
+
+   | Law contexts | Count |
+   |---|---|
+   | Correctly found | 17 of 28 |
+   | Missed | 11 |
+   | Spurious | 3 |
+
+   Precision is 85% and recall 61%. A plausible cost: contexts that carry a law are excluded from the transition counts, which throws away data. Laws matter for *interpretability* and for punishing heals, but the planner rarely heals into a law. To test: law inference with pooled counts.
+
 ## Agenda (living)
 
 Done: latency + laws (E5); M2 slow mind (E6); RL² baseline (E7, E13); empirical Bayes (E7); T4 self-model (E8, E10); T2/T3 generalization (E10–11); M3 intuition net + amortization gap (E12, E18); active scouting (E15).
