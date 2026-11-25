@@ -706,6 +706,37 @@ The true-program planner on T1 bosses gets 48.8% (E29). **By attempt 3 the refle
 - The planner's 81% at T3 attempt 4 looks high next to its own attempt 3 (62%) and both hybrids (65–66%). Part of the late gap is probably seed luck.
 - **Next (running): habit as a prior for deliberation.** Act by argmax_a Q(a) + λ·log π_reflex(a), as in the AlphaZero / PUCT idea, with λ = 3 and 10. It keeps planning's exploitation but breaks ties toward robust habits.
 
+## 2026-11-25 · Entry 31: habit as a prior for deliberation is the best all-rounder
+
+Action rule: argmax_a Q_planner(a) + λ·log π_reflex(a). This is the planner's 12-rollout Q-values plus the DAgger reflex's log-probabilities, the PUCT-style "policy prior". 80 bosses, latency 4, learned mixture, paired by seed. Mean win rate over all attempts, with fight-level sign tests and boss-clustered Wilcoxon tests (review point R5):
+
+| Agent | T1 (3 attempts) | T3 (4 attempts, superset seed) |
+|---|---|---|
+| Planner | 20.4% | 51.2% |
+| Reflex | **39.6%** | 47.2% |
+| Reflex on attempt 1, then planner | – | 56.2% |
+| Blend λ = 3 | 35.0% | **58.4%** |
+| Blend λ = 10 | 36.2% | 55.3% |
+
+Per attempt, blend λ = 3: T1 26 / 33 / 46%; T3 28 / 65 / 69 / 73%.
+
+**Tests:**
+
+| Comparison | Fights only A / only B won | Sign p | Wilcoxon p (per boss) |
+|---|---|---|---|
+| T3 blend 3 vs planner | 55 / 32 | 0.018 | 0.013 |
+| T3 blend 3 vs reflex | 78 / 42 | 0.0013 | 0.0003 |
+| T1 blend 3 vs planner | 48 / 13 | < 10⁻⁵ | 0.0001 |
+| T1 blend 3 vs reflex | 28 / 39 | 0.22 | 0.24 (n.s.) |
+
+**Findings:**
+- **Blending dominates the planner on both splits.** On T3 it beats both components, and on T1 it is statistically tied with the reflex.
+- **Mechanism:** Q-values from a 12-rollout planner under a possibly wrong model are noisy and overconfident. The reflex prior, distilled from a 48-rollout teacher across 40 bosses, pulls near-ties toward robust generic choices, while large Q gaps (a model the agent trusts that says "punish now") still win.
+- **Caveats:** λ = 3 was picked from two values, but both values beat the planner on both splits. Blend runs pay the planner's compute.
+- **New headline architecture:** slow mind (programs) → filter (state) → planner Q + reflex prior. This also bears on R1, since the executed policy now leans on a learned habit rather than the optimistic continuation alone.
+
+**Next: privileged-teacher DAgger** ("learning by cheating"). The teacher plans with the *true* program, while the student sees belief features computed from the slow mind's *learned* mixture during learning attempts. The student then learns directly how to act well when its model is wrong, which is the regime where all the remaining gap lives.
+
 ## Agenda (living)
 
 Done: latency + laws (E5); M2 slow mind (E6); RL² baseline (E7, E13); empirical Bayes (E7); T4 self-model (E8, E10); T2/T3 generalization (E10–11); M3 intuition net + amortization gap (E12, E18); active scouting (E15).
