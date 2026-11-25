@@ -202,8 +202,11 @@ class Arena3D:
             tip = d.site_xpos[self.tip].copy() if self.blade >= 0 else d.xpos[self.tip].copy()
             tip_v = min(np.linalg.norm(tip - tip_old) / (0.03 / self.sub), 25.0)
             tip_old = tip
-            if tip_v > 5.0 and self.audio[1] == 0 and self.boss.kind == "strike":
+            # whoosh: onset of a fast swing (crossing 5 m/s upward), once per crossing
+            fast = tip_v > 5.0 and self.boss.kind == "strike"
+            if fast and not getattr(self, "_was_fast", False):
                 self.audio[1] = 1
+            self._was_fast = fast
             shield_touch, body_touch, pbl_touch = False, None, None
             for c in d.contact[:d.ncon]:
                 g1, g2 = c.geom1, c.geom2
