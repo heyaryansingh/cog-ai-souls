@@ -74,6 +74,12 @@ def run_boss(args):
                                       blend=float(os.environ.get("RTB_BLEND", 0)),
                                       mode="map" if mode in ("oracle", "frozen", "map") else "mixture",
                                       n_rollouts=n_rollouts, horizon=horizon, seed=seed)
+        if os.environ.get("RTB_METAGATE") and hasattr(pol, "reflex_probs"):   # R7: learned metacontrol gate
+            from scripts.train_metagate import make_gate
+            g = make_gate(); g.load_state_dict(torch.load(os.environ["RTB_METAGATE"])); g.eval()
+            pol.metagate, pol.meta_cost = g, float(os.environ.get("RTB_METACOST", 0))
+        if hasattr(pol, "attempt"):
+            pol.attempt = a
         if self_model != "true":           # believed body rules (T4); "true" = agent knows its body
             pol.believed_rules = rb.current
         if self_model == "active":         # learned self-model + information-seeking rolls
@@ -144,6 +150,7 @@ def main():
     pr += f"_ra{os.environ['RTB_REFLEX_ATTEMPTS']}" if os.environ.get("RTB_REFLEX_ATTEMPTS") else ""
     pr += f"_blend{os.environ['RTB_BLEND']}" if os.environ.get("RTB_BLEND") else ""
     pr += f"_phantom{os.environ['RTB_PHANTOM']}" if os.environ.get("RTB_PHANTOM") else ""
+    pr += f"_meta{os.environ.get('RTB_METACOST', 0)}" if os.environ.get("RTB_METAGATE") else ""
     name = f"results/learn_{a.split}_{a.mode}{pr}_lat{a.latency}_b{a.bosses}_a{a.attempts}{a.tag}.json"
     json.dump({"args": vars(a), "results": flat}, open(name, "w"), indent=1)
     print(f"saved {name}  ({time.time() - t0:.0f}s)")

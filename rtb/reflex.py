@@ -179,6 +179,9 @@ class MixtureReflexPolicy(MixturePlanner):
         from collections import deque
         self._odd = deque(maxlen=window)
         self.reflexed = 0
+        self._lp = deque(maxlen=100)     # per-tick mixture log predictive of the cue (model-adequacy signal)
+        self.attempt = 0                 # set by the caller (fights already seen on this boss)
+        self.metagate, self.meta_cost = None, 0.0
 
     def _mix_lev(self):
         lw = self.prior_logw + np.array([f.log_evidence for f in self.filters])
@@ -186,10 +189,28 @@ class MixtureReflexPolicy(MixturePlanner):
         return m + np.log(np.exp(lw - m).sum())
 
     def observe(self, obs):
-        before = self._mix_lev() if self.surprise else 0.0
+        before = self._mix_lev()
         super().observe(obs)
-        if self.surprise:
-            self._odd.append(self._mix_lev() - before < np.log(0.01))
+        lp = self._mix_lev() - before
+        self._odd.append(lp < np.log(0.01))
+        self._lp.append(lp)
+
+    def meta_features(self, p) -> np.ndarray:
+        """Inputs for the learned metacontrol gate (R7), besides the belief features."""
+        lw = self.prior_logw + np.array([f.log_evidence for f in self.filters])
+        w = np.exp(lw - lw.max())
+        w /= w.sum()
+        lps = np.array(self._lp) if self._lp else np.zeros(1)
+        return np.array([sum(self._odd) / 10.0, lps.mean() / 3.0, lps[-40:].min() / 7.0, float(p.max()),
+                         float(-(w * np.log(w + 1e-12)).sum()), min(self.attempt, 5) / 5.0], np.float32)
+
+    def reflex_probs(self, obs, env):
+        import torch
+        lw = self.prior_logw + np.array([f.log_evidence for f in self.filters])
+        x = mixture_features(self.filters, lw, obs, env, self.projected)
+        with torch.no_grad():
+            p = torch.softmax(self.net(torch.from_numpy(x)[None]), -1)[0].numpy()
+        return x, p
 
     def act(self, obs, env):
         import torch
@@ -199,10 +220,16 @@ class MixtureReflexPolicy(MixturePlanner):
                 self.planned += 1
                 return super().act(obs, env)
             self.reflexed += 1
-        lw = self.prior_logw + np.array([f.log_evidence for f in self.filters])
-        x = mixture_features(self.filters, lw, obs, env, self.projected)
-        with torch.no_grad():
-            p = torch.softmax(self.net(torch.from_numpy(x)[None]), -1)[0].numpy()
+        x, p = self.reflex_probs(obs, env)
+        if self.metagate is not None:       # R7: plan only where the predicted gain of planning beats its cost
+            z = torch.from_numpy(np.concatenate([x, self.meta_features(p)]))[None]
+            with torch.no_grad():
+                gain = float(self.metagate(z)[0, 0])
+            if gain > self.meta_cost:
+                self.planned += 1
+                return super().act(obs, env)
+            self.reflexed += 1
+            return int(np.argmax(p))
         if self.blend > 0:
             q = self.q_values(obs, env)
             return self.actions[int(np.argmax(q + self.blend * np.log(np.maximum(p[list(self.actions)], 1e-6))))]
