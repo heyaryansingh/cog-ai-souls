@@ -379,9 +379,20 @@ class SlowMind:
         self.history.append({"n_fights": len(self.traces), "resampled": resampled, "ess": self.ess(),
                              "accepted": accepted, "K": [b.K for b in self.particles]})
 
-    def _rejuvenate(self, boss: Boss):
+    def posterior_with(self, partial, sweeps: int = 1):
+        """Within-fight learning: rejuvenated copies of the particles given the logs so far
+        plus the current, unfinished fight. The persistent belief is left unchanged."""
+        saved = self.traces
+        self.traces = saved + [partial]
+        try:
+            parts = [self._rejuvenate(b, sweeps)[0] for b in self.particles]
+        finally:
+            self.traces = saved
+        return parts, self.weights
+
+    def _rejuvenate(self, boss: Boss, sweeps: int | None = None):
         accepted = []
-        for _ in range(self.sweeps):
+        for _ in range(sweeps or self.sweeps):
             paths = [ffbs(boss, tr, self.rng) for tr in self.traces]
             ev = sum(p[1] for p in paths)
             stats = [path_stats(p, tr) for (p, _), tr in zip(paths, self.traces)]

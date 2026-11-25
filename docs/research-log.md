@@ -127,6 +127,49 @@ The planner averages over particles: each rollout samples a program, then a stat
 - (d) Generalization splits T2/T3 (novel move) and T4 (rule change) for the slow mind.
 - (e) Stronger Occam pressure on duplicate moves.
 
+## 2026-11-25 · Entry 7: RL² baseline, learning to learn, and what the prior is (not) for
+
+**RL² baseline** (`rtb/rl.py`, `scripts/train_rl.py`).
+- Setup: GRU-PPO with memory carried across 4-fight trials, trained on fresh Θ* bosses at latency 4, for 1,500 updates (≈5,100 training fights, 25 min).
+- Evaluated on the same 40 bosses × 12 attempts: **2.5–7.5% at every attempt**. There is no in-context improvement across attempts, whether sampled or greedy.
+- Comparison: the slow mind reaches 37% after 3–4 fights *with zero pretraining*. That is consistent with the DSLE finding (≤0.33% wins for PPO/DQN on real souls bosses).
+- Caveat: this is a short run. A 10× longer run is queued as a fairness check before the final claim.
+
+**Learning to learn (empirical Bayes).**
+- Step 1: run the slow mind on the 40 training bosses with a *vague* timing prior (all medians 15 ticks, log-sd 1.0). It still learns: attempts 4–12 win 40% [34–46] on the second half.
+- Step 2: fit per-primitive hyperparameters from the 40 learned programs (`scripts/fit_prior.py`).
+
+  The fitted means recover Θ* almost exactly:
+
+  | Primitive | Fitted | Θ* |
+  |---|---|---|
+  | slam | 13.8 | 14 |
+  | delayed slam | 25.6 | 26 |
+  | sweep | 10.2 | 10 |
+  | lunge | 11.9 | 12 |
+  | feint | 10.4 | 10 |
+  | aoe | 21.5 | 20 |
+  | jab | 6.6 | 6 |
+  | idle | 12.8 | 12 |
+
+  Fitted sds are 0.29–0.46 against a true 0.35. The hyperprior is learnable from the agent's own fights.
+- Step 3: 30 held-out T1 bosses × 8 attempts with each prior:
+
+| Prior | Attempt 1 | Attempts 5–8 | Never beaten |
+|---|---|---|---|
+| Vague | 10.0% | 35.8% [28–45] | 9/30 |
+| Empirical Bayes | 23.3% | 30.8% [23–40] | 10/30 |
+| True Θ* | 13.3% | 29.2% [22–38] | 12/30 |
+
+**Finding:** the timing hyperprior barely matters. All rows overlap, and the 23% at attempt 1 for EB is within noise of the others. This is informative, not disappointing: one fight holds 20+ wind-ups, so the likelihood swamps any reasonable timing prior after a single death. *The binding constraint early on is that the belief does not change during attempt 1 at all.* Particle weights move within a fight, but the programs only change between fights.
+
+**New idea → experiment:** *within-fight learning.* `OnlineMixturePlanner` re-runs one rejuvenation sweep every 200 ticks (10 s) on past fights plus the fight so far, then rebuilds its filters by replaying the fight. Humans visibly adapt mid-fight ("oh, he delays that one"). Prediction: attempts 1–2 rise toward the attempt-4 level. Queued on the 40 training bosses. Caveat: simulated time stops while it thinks, about 1 s per refresh.
+
+**Also built:** the T4 self-model (`RulesBelief`).
+- Stamina cost, regen and heal duration are read off proprioception.
+- The i-frame window is inferred on a grid from every in-reach impact the agent experienced mid-roll: a hit at roll tick τ excludes τ, a clean dodge includes it.
+- Planner rollouts imagine with the believed body. Runs comparing a body model fixed at training rules, a learned one and the true one on T4 are in progress.
+
 ## Agenda (living)
 
 1. ~~Add reaction latency and reactive laws; re-measure at latency 4.~~ Done (Entry 5).

@@ -19,7 +19,7 @@ from rtb.boss import make_splits                       # noqa: E402
 from rtb.env import Rules, T4_RULES                    # noqa: E402
 from rtb.evaluate import wilson                        # noqa: E402
 from rtb.learner import RulesBelief, SlowMind, evidence             # noqa: E402
-from rtb.policies import MixturePlanner                # noqa: E402
+from rtb.policies import MixturePlanner, OnlineMixturePlanner                # noqa: E402
 from rtb.run import fight                              # noqa: E402
 
 
@@ -55,6 +55,8 @@ def run_boss(args):
         bosses, weights = ([boss], [1.0]) if mode == "oracle" else (sm.particles, sm.weights)
         pol = MixturePlanner(bosses, weights, mode="map" if mode in ("oracle", "frozen") else mode, n_rollouts=n_rollouts, horizon=horizon,
                              seed=seed)
+        if mode == "online":
+            pol = OnlineMixturePlanner(sm, every=200, n_rollouts=n_rollouts, horizon=horizon, seed=seed)
         if self_model != "true":           # believed body rules (T4); "true" = agent knows its body
             pol.believed_rules = rb.current
         r = fight(boss, pol, rules=rules, seed=seed, latency=latency)

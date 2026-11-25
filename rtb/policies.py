@@ -223,3 +223,32 @@ class MixturePlanner(OraclePlanner):
             if v > best_v:
                 best, best_v = a, v
         return best
+
+
+class OnlineMixturePlanner(MixturePlanner):
+    """MixturePlanner whose programs are re-learned *during* the fight: every `every` ticks the
+    slow mind rejuvenates its particles on past fights plus the fight so far, and the filters
+    are rebuilt by replaying this fight under the new programs. (Simulated time stops while it
+    thinks; the compute is about 1 s per refresh.)"""
+
+    def __init__(self, slow_mind, every=200, sweeps=1, **kw):
+        super().__init__(slow_mind.particles, slow_mind.weights, **kw)
+        self.sm, self.every, self.sweeps = slow_mind, every, sweeps
+        self.partial = []
+        self.refreshes = 0
+
+    def observe(self, obs):
+        super().observe(obs)
+        self.partial.append((obs["cue"], obs["dist"], obs["phase"], obs["ctx"]))
+        if len(self.partial) % self.every == 0:
+            parts, w = self.sm.posterior_with(list(self.partial), self.sweeps)
+            self.bosses = parts
+            self.prior_logw = np.log(np.maximum(w, 1e-300))
+            self.filters = []
+            for b in parts:
+                f = BossFilter(b)
+                for c, d, p, x in self.partial:
+                    f.update(c)
+                    f.predict(d, p, x)
+                self.filters.append(f)
+            self.refreshes += 1
