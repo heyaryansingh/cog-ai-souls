@@ -192,6 +192,26 @@ T4 bosses come from the training distribution, but the *player rules* change, as
 3. **Identifiability bug, now fixed.** The learned i-frame windows were often (start 0, length 4), which is *observationally identical* to the true (1, 3), because roll tick 0 never coincides with an impact. The grid now starts at 1. Many particles stayed at the training prior (2, 4) through attempt 8: discriminating evidence (an impact landing exactly on roll tick 1 or 4–5) is rare.
 4. Hypothesis to test: much of the gain comes from the proprioceptive quantities (dodge cost, regen, heal time), not the i-frames. Ablation queued: learn proprioception only vs i-frames only.
 
+## 2026-11-25 · Entry 9: within-fight learning doubles first-attempt wins (suggestive)
+
+`OnlineMixturePlanner`, 40 training bosses × 12 attempts, same seeds as Entry 6. It runs one rejuvenation sweep every 200 ticks (10 s) on past fights plus the fight so far.
+
+| Condition | Attempt 1 | Attempts 2–3 | Attempts 4–12 | Never beaten |
+|---|---|---|---|---|
+| Between-fight learning only (Entry 6) | 12.5% [5–26] | 30.0% [21–41] | 37.2% [32–42] | 7/40 |
+| **+ within-fight learning** | **25.0%** [14–40] | 27.5% [19–38] | 37.8% [33–43] | 3/40 |
+
+**Findings:**
+- On attempt 1, the paired comparison over the same bosses and seeds gives 5 bosses newly beaten and 0 lost (sign test p = 0.06). Boss HP left drops from 0.28 to 0.25.
+- Later attempts are unchanged, as expected: by then the between-fight learner already has the program.
+- So the early-attempt deficit was "beliefs frozen during the fight", not "bad prior" (cf. Entry 7).
+- Caveats:
+  - the pairing is only partial, because trajectories diverge after the first refresh;
+  - simulated time stops for about 1 s per refresh;
+  - n = 40 on attempt 1. Needs a replication on more bosses (T1 with 30 more is queued) before it becomes a claim.
+
+**Interpretation for the paper:** this is the cleanest demonstration of the "slow mind / fast hands" split. Fast hands (the exact filter) track state at 20 Hz. The slow mind revises the *program* on a slower clock, and running that clock inside the fight, not only between deaths, is what lets the agent beat a quarter of bosses on sight.
+
 ## Agenda (living)
 
 1. ~~Add reaction latency and reactive laws; re-measure at latency 4.~~ Done (Entry 5).

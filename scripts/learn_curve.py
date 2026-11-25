@@ -60,8 +60,9 @@ def run_boss(args):
         if self_model != "true":           # believed body rules (T4); "true" = agent knows its body
             pol.believed_rules = rb.current
         r = fight(boss, pol, rules=rules, seed=seed, latency=latency)
-        if self_model == "learned":
-            rb.update(r["events"], true_rules=rules)
+        if self_model in ("learned", "proprio", "iframes"):     # ablations learn one part each
+            rb.update(r["events"], true_rules=rules if self_model != "iframes" else None,
+                      learn_iframes=self_model != "proprio")
         t0 = time.time()
         if mode not in ("oracle", "frozen"):      # control conditions: no learning
             sm.update(r["trace"])

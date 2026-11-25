@@ -436,7 +436,9 @@ class RulesBelief:
         self.noise = noise
         self.current = base
 
-    def update(self, events, true_rules=None):
+    def update(self, events, true_rules=None, learn_iframes=True):
+        if not learn_iframes:
+            events = ()
         for (tau, hit) in events:
             if tau <= 0:
                 continue
