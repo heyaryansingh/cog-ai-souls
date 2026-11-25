@@ -12,7 +12,7 @@ exec(open(os.path.join(os.path.dirname(os.path.abspath(__file__)), "arena3d_agen
 from arena3d import threat as T
 from arena3d.env import LIGHT, HEAL
 
-DATA = "data/arena3d_threat.npz"
+DATA = os.environ.get("THREAT_DATA", "data/arena3d_threat.npz")
 
 
 def explore_policy(env, rng, state):

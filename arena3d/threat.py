@@ -18,7 +18,8 @@ import torch.nn as nn
 
 LAGS = (0, 3, 6, 9)
 KS = (1, 4, 7, 10, 13, 16, 20, 24)          # query horizons (frames)
-POSE_D = 39
+import os
+POSE_D = 42 if os.environ.get("SENSE_TIP") == "1" else 39
 FEAT_D = len(LAGS) * POSE_D + POSE_D + 1     # poses + velocity + height
 IN_D = FEAT_D + 2 + len(KS) + 2              # + local xy + k one-hot + (r, cos, sin features) -> r and angle
 

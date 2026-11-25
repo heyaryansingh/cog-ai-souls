@@ -43,11 +43,11 @@ def pstrike():
 
 
 def train_boss(i):
-    return sample_boss(np.random.default_rng(100 + i), U, TRAIN, name=f"train{i}")
+    return sample_boss(np.random.default_rng(100 + i), U, TRAIN, name=f"train{i}", clips=clips())
 
 
 def test_boss(i):
-    return sample_boss(np.random.default_rng(5000 + i), U, TEST, name=f"test{i}")
+    return sample_boss(np.random.default_rng(5000 + i), U, TEST, name=f"test{i}", clips=clips())
 
 
 def collect(i, frames=1500):

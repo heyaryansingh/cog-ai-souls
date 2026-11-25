@@ -41,7 +41,38 @@ Lesson: foveation is what makes an off-the-shelf pose net usable on a small, far
 - Bosses get recovery after combos: an idle mocap unit is played with probability 0.5–0.9. Aggression is now 0.35–0.8. Real bosses leave punish windows.
 - Guard follows the Elden Ring rule: a raised guard blocks hits from the front half, costs stamina by impact speed, and breaks at 0 stamina. Before, only blade-on-shield contact counted, and just 1 in 3 guarded hits were blocked.
 
-## B6 · Agent v2: learned threat model (in progress)
+## B6 · Agent v2: learned threat model
 - A network predicts P(unprotected hit in [t+k, t+k+2] | last 10 frames of perceived pose, my position in the boss's frame at t+k), for k = 1…24.
 - It is trained on exploratory play against 24 training bosses. A per-boss Bayesian logistic last layer adapts across attempts.
 - This replaces "syllable → hazard → hit map" with one amortised appraisal. It is the 3D counterpart of chapter 1's intuition net plus slow mind.
+- Threat net trained on 465k samples from 24 bosses: held-out AUC 0.71 (AP 0.03 vs base 0.015).
+
+## B7 · Attacks verified to connect
+- Diagnostic: with unverified bosses, a standing player was touched by only 5–20% of strikes. Most mocap "strikes" are everyday motions that sweep past the target. Real souls attacks are tuned to hit unless you respond.
+- Fix (`arena3d/aim.py`): when a boss is sampled, each candidate strike is played against a standing player in the real 3D world, and only strikes that connect are kept, the way animators tune attacks. Afterwards 76% of strikes hit a standing player.
+
+## B8 · Why perception does not yet buy prediction (diagnosis)
+Exploratory play, label = an unprotected hit in a 3-frame window k frames ahead (k = 1–24), held-out bosses. Gradient-boosted classifiers, AUC:
+
+| Features | AUC |
+|---|---|
+| my position relative to the boss (distance / local xy) | 0.72–0.76 |
+| + perceived pose (noisy, delayed) | 0.73–0.74 |
+| + perfect pose, no delay | 0.74 |
+| + weapon-tip keypoint (perfect) | 0.76 |
+| **true move state** (striking? frames to danger frame, hold) + position | 0.79 |
+| motion-matching anticipator (130k remembered frames) alone | 0.51 |
+
+Coarser label (any hit in the next 24 frames), perfect pose, 8 training bosses:
+
+| Features | AUC |
+|---|---|
+| position | 0.725 |
+| raw pose only | **0.43** (below chance) |
+| raw pose + position | 0.65 |
+| invariant cues (hand speed, hand-to-me distance, closing velocity, windup rise, body speed) + position | **0.75** |
+
+**Reading.**
+1. Exact hit timing is weakly predictable even from the true move state (0.79): log-normal windup holds and random combo choices make souls timing uncertain *by design*. An agent must hedge (roll late, keep distance), not predict exactly.
+2. Raw pose does not transfer: a model fitted on a few bosses memorises each boss's look and is worse than chance on new ones. This is the cross-boss generalisation problem in its purest form. Humans rely on invariant cues ("the arm draws back", "the weapon closes on me"), and those cues transfer a little.
+3. The next steps follow from this: train on hundreds of bosses (cheap here), use invariant cue features, and model timing as a distribution (a hazard over windup duration) rather than as a point prediction.

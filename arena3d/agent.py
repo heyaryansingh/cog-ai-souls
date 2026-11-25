@@ -41,7 +41,13 @@ def polar_bin(local):
 class Sensor:
     """Calibrated stand-in for the pixel pipeline (see module doc). Returns (pose39 or None, frame)."""
 
-    def __init__(self, env, latency=6, noise=0.06, p_stay_on=0.95, p_stay_off=0.88, seed=0):
+    def __init__(self, env, latency=6, noise=0.06, p_stay_on=0.95, p_stay_off=0.88, seed=0, tip=None):
+        import os
+        latency = int(os.environ.get("SENSE_LAT", latency))
+        noise = float(os.environ.get("SENSE_NOISE", noise))
+        if os.environ.get("SENSE_DROP") == "0":
+            p_stay_on = 1.0
+        self.tip = tip if tip is not None else os.environ.get("SENSE_TIP") == "1"
         self.env, self.L, self.noise = env, latency, noise
         self.ids = [env.m.body("b_" + n).id for n in J13]
         self.rng = np.random.default_rng(seed)
@@ -51,6 +57,8 @@ class Sensor:
     def __call__(self):
         env = self.env
         P = env.d.xpos[self.ids].copy()
+        if self.tip:     # weapon tip as a 14th keypoint (what a weapon-aware detector would add)
+            P = np.vstack([P, env.d.site_xpos[env.tip]])
         h = 1.75 * env.spec.scale
         self.on = self.rng.random() < (self.p_on if self.on else 1 - self.p_off)
         P += self.rng.normal(0, self.noise * h, P.shape)

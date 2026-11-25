@@ -47,17 +47,32 @@ def danger_frame(u, scale, v_min=4.0, z_lo=0.25, z_hi=1.8):
     return int(np.argmax(np.where(ok, v, -1))) if ok.any() else -1
 
 
-def sample_boss(rng, units, allowed, name="boss", n_strikes=None):
+def sample_boss(rng, units, allowed, name="boss", n_strikes=None, clips=None, verify=None):
     scale = float(np.exp(rng.uniform(np.log(1.2), np.log(2.6))))
     pool_s = [i for i in allowed if units[i].kind == "strike" and units[i].length < 75
               and danger_frame(units[i], scale) >= 4]
     pool_w = [i for i in allowed if units[i].kind == "move" and units[i].travel / (units[i].length * 0.03) > 0.6]
     n = int(n_strikes or rng.integers(6, 14))
-    strikes = [int(i) for i in rng.choice(pool_s, n, replace=False)]
+    import os
+    verify = (os.environ.get("ARENA3D_VERIFY", "1") == "1") if verify is None else verify
+    if verify and clips is not None:
+        cand = [int(i) for i in rng.permutation(pool_s)]
+        strikes = None   # filled after the spec exists (needs scale/weapon)
+    else:
+        strikes = [int(i) for i in rng.choice(pool_s, n, replace=False)]
     walks = [int(i) for i in rng.choice(pool_w, min(6, len(pool_w)), replace=False)]
     pool_i = [i for i in allowed if units[i].kind == "move" and units[i].peak_speed < 3.0
               and units[i].travel / (units[i].length * 0.03) < 0.3 and units[i].length >= 15]
     idles = [int(i) for i in rng.choice(pool_i, min(6, len(pool_i)), replace=False)]
+    weapon = str(rng.choice(WEAPON_OF))
+    if strikes is None:
+        from .aim import verify_strikes
+        proto = BossSpec(name=name, scale=scale, weapon=weapon, strikes=[], walks=walks, combo=None, p_end=None,
+                         speed=None, hold_med=None, hold_sig=0.45, track=0.04, aggression=1.0, idles=idles)
+        strikes = verify_strikes(proto, units, clips, cand, n, rng)
+        if len(strikes) < 3:
+            strikes += [c for c in cand if c not in strikes][:3 - len(strikes)]
+        n = len(strikes)
     # motion-matching cost end(i) -> start(j)
     S0 = np.stack([units[i].pose0 for i in strikes])
     S1 = np.stack([units[i].pose1 for i in strikes])
@@ -68,7 +83,7 @@ def sample_boss(rng, units, allowed, name="boss", n_strikes=None):
     np.fill_diagonal(A, A.diagonal() * 0.3)
     A /= A.sum(1, keepdims=True)
     opener = rng.dirichlet(np.ones(n) * 0.7)
-    return BossSpec(name=name, scale=scale, weapon=str(rng.choice(WEAPON_OF)), strikes=strikes, walks=walks,
+    return BossSpec(name=name, scale=scale, weapon=weapon, strikes=strikes, walks=walks,
                     combo=np.vstack([opener, A]), p_end=rng.uniform(0.25, 0.8, n),
                     speed=rng.uniform(0.7, 1.15, n) / np.sqrt(scale / 1.6),
                     hold_med=np.where(rng.random(n) < 0.45, rng.uniform(6, 30, n), 0.0), hold_sig=0.45,

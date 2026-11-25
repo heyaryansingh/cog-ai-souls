@@ -13,6 +13,13 @@ TEST = [i for i, u in enumerate(U) if u.subject in SUBS]
 C = None
 
 
+def clips():
+    global C
+    if C is None:
+        C = mocap.load()
+    return C
+
+
 def pstrike():
     """Player's light attack: a fast, forward, chest-high swing with little travel (from training subjects)."""
     best = None
@@ -31,7 +38,7 @@ def run(args):
     if C is None:
         C = mocap.load()
     pol, b = args
-    spec = sample_boss(np.random.default_rng(5000 + b), U, TEST, name=f"test{b}")
+    spec = sample_boss(np.random.default_rng(5000 + b), U, TEST, name=f"test{b}", clips=clips())
     env = Arena3D(spec, U, C, seed=b, player_strike=pstrike())
     env.reset()
     rng = np.random.default_rng(b)
