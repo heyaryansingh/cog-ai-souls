@@ -12,7 +12,7 @@ from multiprocessing import Pool
 import numpy as np
 
 from .boss import generic_boss, make_splits, prior_mean_boss, theta_star, SPREAD
-from .env import Rules, T4_RULES
+from .env import Rules, SHIELD_RULES, T4_RULES
 from .policies import DodgeEverything, OraclePlanner, RandomPolicy, oracle_continuation
 from .run import fight
 
@@ -55,6 +55,8 @@ def _job(args):
     latency = kw.pop("latency", 0)
     boss = _splits(split_seed)[split][idx]
     rules = T4_RULES if split == "T4" else Rules()
+    if os.environ.get("RTB_RULES") == "shield":     # E32 realism variant: no chip, guard break staggers
+        rules = SHIELD_RULES
     r = fight(boss, make_agent(agent, boss, seed, **kw), rules=rules, seed=seed, latency=latency)
     r.pop("log", None)
     r.pop("trace", None)

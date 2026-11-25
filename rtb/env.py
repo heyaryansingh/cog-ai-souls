@@ -52,6 +52,7 @@ class Rules:
     move_speed: float = 0.15
     block_ticks: int = 6
     block_dmg_frac: float = 0.25
+    guard_break_ticks: int = 0  # >0: a block that runs out of stamina staggers the player this long (E32 realism variant)
     heal_ticks: int = 30
     heal_amount: float = 40.0
     heal_charges: int = 2
@@ -60,6 +61,7 @@ class Rules:
     max_hp: float = 100.0
 
 
+SHIELD_RULES = Rules(block_dmg_frac=0.0, guard_break_ticks=30)   # 100%-physical shield: no chip, guard break staggers
 T4_RULES = Rules(iframe_len=3, iframe_start=1, dodge_cost=22.0, stamina_regen=0.8, heal_ticks=40)
 
 
@@ -80,6 +82,7 @@ class PlayerState:
     heals: int
     action: int = IDLE
     t_in_action: int = 0   # ticks elapsed in the current action (0 = free)
+    stun: int = 0          # >0: length of the current guard-break stagger
 
 
 def action_length(a: int, R: Rules) -> int:
@@ -183,9 +186,10 @@ class MiniSouls:
         self._boss_effects()
 
         # end the player's action after its last tick
-        if p.t_in_action >= action_length(a, R):
+        if p.t_in_action >= (p.stun or action_length(a, R)):
             p.t_in_action = 0
             p.action = IDLE
+            p.stun = 0
 
         self.t += 1
         # 3. observation, then 4. latent transition (uses this tick's distance/phase)
@@ -236,8 +240,11 @@ class MiniSouls:
                     dmg = prim.damage * self.boss.dmg_scale
                     if p.action == BLOCK and not prim.unblockable:
                         p.stamina -= 0.5 * dmg
-                        dmg = dmg * R.block_dmg_frac if p.stamina >= 0 else dmg
+                        broken = p.stamina < 0
+                        dmg = dmg * R.block_dmg_frac if not broken else dmg
                         p.stamina = max(p.stamina, 0.0)
+                        if broken and R.guard_break_ticks > 0:
+                            p.action, p.t_in_action, p.stun = IDLE, 1, R.guard_break_ticks
                     p.hp -= dmg
 
     def _boss_transition(self):
