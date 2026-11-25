@@ -395,6 +395,37 @@ Test of Entry 16's prediction (train 40 × 4 attempts, same seeds):
   Next diagnostic: swap one component at a time between net and prior initialisations.
 - Program-size numbers are reported as MAP move count minus true move count.
 
+## 2026-11-25 · Entry 18: the fix is a *superset* proposal (structure from the net, coverage from the prior)
+
+**Component swap** (`scripts/swap_diag.py`). After one fight, held-out log-evidence per tick vs the true program, 30 bosses per row, s.e.m. 0.03–0.08.
+
+| Initial program for SMC | T1 | OOD (timings ×1.8) | T3 (novel move) |
+|---|---|---|---|
+| Generic prior | −0.118 | **−0.118** | −0.452 |
+| Net proposal | −0.199 | −0.245 | −0.259 |
+| Net structure + prior medians | −0.220 | −0.232 | −0.247 |
+| Prior structure + net medians | −0.128 | −0.134 | −0.472 |
+| Net, 12 sweeps instead of 3 | −0.184 | −0.202 | −0.238 |
+| 50/50 net/prior particles, weighed after rejuvenation | −0.180 | −0.200 | −0.229 |
+| **Superset: net moves + every library move it omitted** | **−0.115** | −0.127 | **−0.156** |
+
+**Findings:**
+1. **The net's move *structure*, not its timings, explains both its T3 win and its OOD loss.** Swapping medians changes almost nothing. Swapping structure moves each row to the other side.
+2. **Slow mixing, not a hard trap.** 12 sweeps recover about a third of the OOD gap. Adding moves is slower than deleting them, so an under-complete start is costly, while an over-complete start is cheap to prune. (Entry 17: an over-complete program that *never* prunes is costly too.)
+3. **Superset proposal = best of both.**
+   - It takes the net's structure, including moves the prior excludes (grab) and duplicate copies, and adds one copy of every library move the net left out. Ordinary SMC then deletes what is unused.
+   - It matches the prior on T1/OOD and is far better than anything on T3 (−0.156 vs −0.259 for net-only and −0.452 for prior-only).
+   - Design principle: **amortized proposals should over-propose structure and let inference prune.** Proposals are cheap to be wrong in the direction inference can fix quickly.
+
+**In play** (`--mode netsup`), attempts 2–4:
+
+| Bosses | Slow mind | + net (50/50 mixture) | **+ net superset** |
+|---|---|---|---|
+| T3 (30) | 51.1% | 61.1% | 60.0% (attempt 2: **53%** vs 40%) |
+| train (40) | 34.2% | 30.8% | 33.3% |
+
+Superset seeding helps on novel-move bosses and costs nothing in distribution, so it becomes the default M3 configuration. The win-rate gains are within CIs at n = 90; the evidence-level result is the robust one.
+
 ## Agenda (living)
 
 1. ~~Add reaction latency and reactive laws; re-measure at latency 4.~~ Done (Entry 5).

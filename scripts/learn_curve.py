@@ -66,15 +66,21 @@ def run_boss(args):
             rb.update(r["events"], true_rules=rules if self_model != "iframes" else None,
                       learn_iframes=self_model != "proprio")
         t0 = time.time()
-        if mode in ("net", "netmix") and a == 0:   # M3: seed the slow mind with the intuition net's proposal
+        if mode in ("net", "netmix", "netsup") and a == 0:   # M3: seed the slow mind with the intuition net's proposal
             import torch
             from rtb.intuition import IntuitionNet, propose
             torch.set_num_threads(1)
             net = IntuitionNet(); net.load_state_dict(torch.load("checkpoints/intuition.pt")); net.eval()
             nb = propose(net, r["trace"], boss, theta)
+            if mode == "netsup":         # superset proposal: the net's moves + every library move it left out
+                from rtb.learner import _add, initial_belief
+                have = {m.primitive.name for m in nb.moves}
+                for m in initial_belief(theta, boss.tell_ticks, boss.cue_noise, boss.dmg_scale).moves:
+                    if m.primitive.name not in have:
+                        nb = _add(nb, m)
             sm = SlowMind(boss, theta=theta, n_particles=n_particles, sweeps=sweeps, seed=idx,
-                          init=nb if mode == "net" else [nb, None])
-            sm.update(r["trace"], weigh_after_move=True)
+                          init=nb if mode in ("net", "netsup") else [nb, None])
+            sm.update(r["trace"], weigh_after_move=mode == "netmix")
         elif mode not in ("oracle", "frozen"):      # control conditions: no learning
             sm.update(r["trace"])
         out.append({"boss": idx, "attempt": a + 1, "outcome": r["outcome"], "boss_hp_frac": r["boss_hp_frac"],
