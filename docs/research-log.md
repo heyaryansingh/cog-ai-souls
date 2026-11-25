@@ -503,6 +503,21 @@ The E10 null now looks like a small-sample miss.
 
 **Claim:** running the slow mind's clock inside the fight roughly **doubles first-encounter wins**. Its benefit shrinks as between-fight learning catches up by attempt 3. This upgrades Entry 10's "modest, not robust" verdict.
 
+## 2026-11-25 · Entry 23: combining the two improvements on T3 (n = 80)
+
+| Condition (80 T3 bosses, same seeds) | Attempt 1 | Attempt 2 | Attempt 3 | Attempt 4 | Attempts 2–4 |
+|---|---|---|---|---|---|
+| Slow mind | 11% | 39% | 55% | 71% | 55.0% |
+| + net superset (E20) | 11% | 50% | 62% | 81% | 64.6% |
+| + net superset + within-fight learning | 15% | 51% | 72% | 64% | 62.5% |
+| True program (oracle) | 75% | 79% | 76% | 76% | 77.1% |
+
+**Findings:**
+- On T3 the two improvements **do not stack.** Within-fight learning adds +4 points on attempt 1 (4 vs 1 paired, n.s.) and nothing later.
+- On T3 the first fight is dominated by the unknown grab move. Within-fight learning *can* add grab mid-fight, but the net superset can only act after fight 1, and grab kills fast.
+- The gap to the oracle on attempt 1 (11–15% vs 75%) is the clearest picture of what an unseen move costs, and of why first-encounter performance needs prior knowledge, not just fast learning.
+- Best configuration for the paper: slow mind + net superset seed, with within-fight learning reported separately (E22: it doubles first-encounter wins on T1).
+
 ## Agenda (living)
 
 Done: latency + laws (E5); M2 slow mind (E6); RL² baseline (E7, E13); empirical Bayes (E7); T4 self-model (E8, E10); T2/T3 generalization (E10–11); M3 intuition net + amortization gap (E12, E18); active scouting (E15).
