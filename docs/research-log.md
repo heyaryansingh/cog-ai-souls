@@ -428,15 +428,13 @@ Superset seeding helps on novel-move bosses and costs nothing in distribution, s
 
 ## Agenda (living)
 
-1. ~~Add reaction latency and reactive laws; re-measure at latency 4.~~ Done (Entry 5).
-2. **Now, M2:** the slow mind. Resample-move SMC over boss programs from fight logs:
-   - FFBS with censoring at death;
-   - conjugate wind-up and transition updates;
-   - split/merge with a CRP;
-   - error-driven rejuvenation.
+Done: latency + laws (E5); M2 slow mind (E6); RL² baseline (E7, E13); empirical Bayes (E7); T4 self-model (E8, E10); T2/T3 generalization (E10–11); M3 intuition net + amortization gap (E12, E18); active scouting (E15).
 
-   Metric: deaths-to-first-win and the win-rate curve over 20 attempts, with CIs, against the prior-model and generic planners.
-3. **Hold out boss families** for generalization (new split T2f).
-4. PPO and recurrent-PPO baselines (Gym wrapper), and the planner with a linear opponent model (FightingICE-style).
-5. **M3:** intuition net; amortization-gap experiment.
-6. SoulsGym validation, once the game is available on the laptop.
+Next, in priority order:
+1. **Linear opponent-model planner baseline** (FightingICE-style: per-move frequency counts with no timing model). This shows how much the *timing/HSMM* structure buys over a simpler opponent model.
+2. **VOI-based scouting** in place of the IG bonus (E15): plan under posterior samples of rules or program and measure the value of resolving each uncertainty.
+3. **Replications at n ≥ 80 per cell** for the within-fight learning (E9–10) and net-superset (E18) win-rate effects.
+4. **Hold out boss families** (T2f: a primitive pair always co-occurring in training appears split).
+5. **Multi-hit combo primitive** (realism audit, E4), then re-check the ladder.
+6. **Human comparison:** a playable terminal or web version of MiniSouls at 20 Hz, to log human deaths-to-first-win on the same bosses.
+7. SoulsGym validation, once the game is available on the laptop.
