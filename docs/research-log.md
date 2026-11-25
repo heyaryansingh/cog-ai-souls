@@ -469,6 +469,15 @@ T3 (never-seen move) re-drawn with 80 bosses × 4 attempts (`--n_test 80`). Thes
 
 **Pooled law counts (Entry 19 follow-up): no gain.** Attempts 3–6 win 30.0% [23–38] vs 33.8% for the default. The law-context exclusion is not what makes laws unhelpful; dropped.
 
+## 2026-11-25 · Entry 21: a playable human version (instrument for the human baseline)
+
+`web/minisouls.html` is a faithful JavaScript port of MiniSouls: the same rules, step order, wind-up pmfs, transitions, laws and cue noise, at 20 ticks/s. It uses the first 8 training bosses, exported in `web/bosses_train0-7.json`, and is published as a private artifact.
+- **Display:** cues are drawn as poses. The agent's symbolic cues map one-to-one to poses, and a toggle shows move names.
+- **Controls:** keyboard, plus touch buttons on phones.
+- **Ledger:** per-boss attempts, wins and first-win attempt, shown next to the slow-mind agent's first win from Entry 14. Results can be copied as JSON.
+
+The protocol for a human comparison is to fight each boss until the first win, or for 12 attempts, and report deaths-to-first-win. Humans bring their own ~200–250 ms latency, which matches the agent's latency-4 setting. Agent reference values for bosses 1–8: first win on attempts 8, 2, 9, 2, 9, —, 7, —.
+
 ## Agenda (living)
 
 Done: latency + laws (E5); M2 slow mind (E6); RL² baseline (E7, E13); empirical Bayes (E7); T4 self-model (E8, E10); T2/T3 generalization (E10–11); M3 intuition net + amortization gap (E12, E18); active scouting (E15).
@@ -479,5 +488,5 @@ Next, in priority order:
 3. **Replications at n ≥ 80 per cell**: net-superset done (E20, p = 0.007). Within-fight learning (E9–10) is still pending.
 4. **Hold out boss families** (T2f: a primitive pair always co-occurring in training appears split).
 5. **Multi-hit combo primitive** (realism audit, E4), then re-check the ladder.
-6. **Human comparison:** a playable terminal or web version of MiniSouls at 20 Hz, to log human deaths-to-first-win on the same bosses.
+6. **Human comparison:** the playable version is built (E21). Next, collect human ledgers.
 7. SoulsGym validation, once the game is available on the laptop.
