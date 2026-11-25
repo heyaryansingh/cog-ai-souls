@@ -34,6 +34,8 @@ class BossSpec:
     aggression: float        # chance to attack (vs reposition) when in range
     hp: float = 800.0
     phase2: bool = True
+    idles: list = None       # unit indices: slow motions played as recovery / stalking (punish windows)
+    p_recover: float = 0.7
 
 
 def danger_frame(u, scale, v_min=4.0, z_lo=0.25, z_hi=1.8):
@@ -53,6 +55,9 @@ def sample_boss(rng, units, allowed, name="boss", n_strikes=None):
     n = int(n_strikes or rng.integers(6, 14))
     strikes = [int(i) for i in rng.choice(pool_s, n, replace=False)]
     walks = [int(i) for i in rng.choice(pool_w, min(6, len(pool_w)), replace=False)]
+    pool_i = [i for i in allowed if units[i].kind == "move" and units[i].peak_speed < 3.0
+              and units[i].travel / (units[i].length * 0.03) < 0.3 and units[i].length >= 15]
+    idles = [int(i) for i in rng.choice(pool_i, min(6, len(pool_i)), replace=False)]
     # motion-matching cost end(i) -> start(j)
     S0 = np.stack([units[i].pose0 for i in strikes])
     S1 = np.stack([units[i].pose1 for i in strikes])
@@ -67,8 +72,8 @@ def sample_boss(rng, units, allowed, name="boss", n_strikes=None):
                     combo=np.vstack([opener, A]), p_end=rng.uniform(0.25, 0.8, n),
                     speed=rng.uniform(0.7, 1.15, n) / np.sqrt(scale / 1.6),
                     hold_med=np.where(rng.random(n) < 0.45, rng.uniform(6, 30, n), 0.0), hold_sig=0.45,
-                    track=float(rng.uniform(0.01, 0.06)), aggression=float(rng.uniform(0.5, 0.95)),
-                    hp=float(500 + 250 * scale))
+                    track=float(rng.uniform(0.01, 0.06)), aggression=float(rng.uniform(0.35, 0.8)),
+                    hp=float(500 + 250 * scale), idles=idles, p_recover=float(rng.uniform(0.5, 0.9)))
 
 
 def _qz(a):
@@ -107,6 +112,8 @@ class BossRunner:
         if self.combo_last >= 0 and rng.random() > s.p_end[self.combo_last]:
             j = int(rng.choice(len(s.strikes), p=s.combo[self.combo_last + 1]))
             return "strike", j
+        if self.combo_last >= 0 and s.idles and rng.random() < s.p_recover:
+            return "idle", int(rng.choice(len(s.idles)))      # recovery after a combo: the punish window
         if dist < reach + 1.5 and rng.random() < s.aggression * (1.25 if phase else 1.0):
             return "strike", int(rng.choice(len(s.strikes), p=s.combo[0]))
         return "walk", int(rng.choice(len(s.walks)))
@@ -114,7 +121,7 @@ class BossRunner:
     def _start(self, player_xy, phase):
         kind, j = self._choose(player_xy, phase)
         s, U = self.s, self.U
-        u = U[s.strikes[j]] if kind == "strike" else U[s.walks[j]]
+        u = U[s.strikes[j]] if kind == "strike" else (U[s.idles[j]] if kind == "idle" else U[s.walks[j]])
         self.unit, self.kind, self.move_id = u, kind, (j if kind == "strike" else -1)
         self.combo_last = j if kind == "strike" else -1
         self.f = 0.0
@@ -135,6 +142,8 @@ class BossRunner:
             p = u.tip_rel[k, :2] * s.scale
             # attack warping: rotate so the tip's position at the danger frame points at the player
             self.yaw_off = want - self.q0yaw - np.arctan2(p[1], p[0])
+        elif kind == "idle":
+            self.yaw_off = want - self.q0yaw
         else:   # aim the unit's travel (not its facing) at the player
             dp = c.pos[u.end - 1, :2] - c.pos[u.start, :2]
             self.yaw_off = want - np.arctan2(dp[1], dp[0]) + rng_ang(self.rng, 0.25)

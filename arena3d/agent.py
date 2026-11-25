@@ -155,13 +155,14 @@ class BayesAgent3D:
                                              (5, ROLL), (3, ROLL), (7, ROLL), (1, ROLL), (4, ROLL), (6, ROLL),
                                              (0, LIGHT), (0, GUARD), (0, HEAL)]]
 
-    def __init__(self, lib, memory, latency=6, learn=True, seed=0, w_dmg=2.0, horizon=30, sensor="model"):
+    def __init__(self, lib, memory, latency=6, learn=True, seed=0, w_dmg=1.5, horizon=30, sensor="model"):
         self.lib, self.mem, self.L, self.learn = lib, memory, latency, learn
         self.rng = np.random.default_rng(seed)
         self.w_dmg, self.H, self.sensor_kind = w_dmg, horizon, sensor
 
     def reset(self, env):
         self.env = env
+        self.boss_max = env.spec.hp       # the boss HP bar: its fraction is visible; max known after one hit
         self.sensor = Sensor(env, self.L, seed=int(self.rng.integers(1 << 30)))
         self.logq = self.lib.logpi.copy()
         self.prev_x = None
@@ -282,17 +283,17 @@ class BayesAgent3D:
                 local = self.local + (rot @ (own_now + dpos)) / max(self.height, 0.5)
                 pd = haz[k] * self.mem.p_hit(q, local)
                 pd *= 0.05 if inv else (0.3 if guard else 1.0)
-                exp_dmg += pd * 22.0
+                exp_dmg += pd * 22.0 / 100.0                     # fraction of my HP
                 if hit:
                     dd = np.linalg.norm(env.p_xy + dpos - self.hip)
                     if dd <= reach:
                         safe = 1.0 - haz[max(0, k - 6):k + 6].sum()
-                        exp_deal += 40.0 * max(0.0, safe)
-            v = exp_deal - self.w_dmg * exp_dmg - 0.05 * cost
+                        exp_deal += 40.0 / self.boss_max * max(0.0, safe)   # fraction of boss HP (HP bar)
+            v = exp_deal - self.w_dmg * exp_dmg * (100.0 / max(env.hp, 20.0)) ** 0.5 - 0.0005 * cost
             if btn == HEAL:
-                v += 0.6 * (100 - env.hp) if env.hp < 50 else -20.0
+                v += 0.004 * (100 - env.hp) if env.hp < 50 else -0.2
             if btn == NONE and d == 1 and dist > reach * 0.9:
-                v += 1.5
+                v += 0.004
             vals.append(v)
         vals = np.array(vals)
         return self.CANDS[int(np.argmax(vals + self.rng.normal(0, 1e-3, len(vals))))]
@@ -306,4 +307,138 @@ def run_fight(env, agent):
         a = agent.act(obs, env) if env.player_free() else 0
         obs, r, done, info = env.step(a)
         agent.observe(obs, env)
+    return info["outcome"], env.t, env.boss_hp / env.spec.hp
+
+
+class ThreatAgent:
+    """Agent v2: learned threat network (cross-boss intuition) + per-boss Bayesian last layer, used by the
+    same body-rollout planner. Learns between attempts from its own hits and near misses."""
+
+    CANDS = BayesAgent3D.CANDS
+
+    def __init__(self, ckpt="checkpoints/arena3d_threat.pt", head=None, learn=True, latency=6, seed=0,
+                 w_dmg=1.5, horizon=26, update_every=120):
+        import torch
+        from . import threat as T
+        self.T, self.torch = T, torch
+        d = torch.load(ckpt, weights_only=False)
+        self.net = T.ThreatNet()
+        self.net.load_state_dict(d["net"])
+        self.net.eval()
+        self.mu, self.sd = d["mu"].numpy(), d["sd"].numpy()
+        self.head = head or T.BayesHead(self.net)
+        self.learn, self.L, self.w_dmg, self.H, self.every = learn, latency, w_dmg, horizon, update_every
+        self.rng = np.random.default_rng(seed)
+
+    def _embed(self, X):
+        with self.torch.no_grad():
+            return self.net.embed(self.torch.from_numpy(((X - self.mu) / self.sd).astype(np.float32))).numpy().astype(np.float64)
+
+    def reset(self, env):
+        self.env, self.boss_max = env, env.spec.hp
+        self.sensor = Sensor(env, self.L, seed=int(self.rng.integers(1 << 30)))
+        self.ph = self.T.PoseHistory()
+        self.frame = (env.boss.root.copy(), 0.0)
+        self.hist = []          # per frame: (feat, my xy, boss frame, height, hit, prot)
+        self.buf_E, self.buf_y = [], []
+
+    def observe(self, obs, env, info=None):
+        P, _ = self.sensor()
+        if P is not None:
+            x, hip, fwd, h = centric(P)
+            self.ph.push(x, h)
+            self.frame = (hip[:2].copy(), fwd)
+        else:
+            self.ph.push(None, None)
+        hit = bool(info and info.get("hit"))
+        prot = env.in_iframes() or env.act == GUARD or bool(info and (info.get("blocked") or info.get("dodged")))
+        self.hist.append((self.ph.feat(), env.p_xy.copy(), self.frame, self.ph.height, hit, prot))
+        if not self.learn:
+            return
+        # resolve the sample made 26 frames ago for every horizon
+        t = len(self.hist) - 1 - 26
+        if t >= 0:
+            f, _, (bxy, fwd), h, _, _ = self.hist[t]
+            c, s = np.cos(-fwd), np.sin(-fwd)
+            rows, ys = [], []
+            for ki, k in enumerate(self.T.KS):
+                win = self.hist[t + k:t + k + 3]
+                y = any(w[4] for w in win)
+                if not y and any(w[5] for w in win):
+                    continue
+                rel = self.hist[t + k][1] - bxy
+                local = np.array([c * rel[0] - s * rel[1], s * rel[0] + c * rel[1]]) / max(h, 0.5)
+                rows.append(np.concatenate([f, self.T.query_feats(local, ki)]))
+                ys.append(float(y))
+            if rows:
+                self.buf_E.append(self._embed(np.array(rows, np.float32)))
+                self.buf_y.append(np.array(ys))
+        if len(self.buf_y) >= self.every:
+            self.flush()
+
+    def flush(self):
+        if self.buf_y:
+            self.head.update(np.vstack(self.buf_E), np.concatenate(self.buf_y))
+        self.buf_E, self.buf_y = [], []
+
+    def _p_hits(self, locals_):
+        """locals_: (n_cands, len(KS), 2) -> probabilities (n_cands, len(KS))."""
+        f = self.ph.feat()
+        nC, nK = locals_.shape[:2]
+        ki = np.tile(np.arange(nK), nC)
+        X = np.concatenate([np.repeat(f[None], nC * nK, 0), self.T.query_feats(locals_.reshape(-1, 2), ki)], 1)
+        E = self._embed(X.astype(np.float32))
+        return (1 / (1 + np.exp(-self.head.logits(E)))).reshape(nC, nK)
+
+    def act(self, obs, env):
+        bxy, fwd = self.frame
+        self.hip = bxy
+        h = max(self.ph.height, 0.5)
+        c, s = np.cos(-fwd), np.sin(-fwd)
+        dist = np.linalg.norm(env.p_xy - bxy)
+        reach = 0.75 + 0.18 * h
+        cands, rolls = [], []
+        for a in self.CANDS:
+            d, btn = divmod(a, N_BUTTONS)
+            cost = {ROLL: 18, LIGHT: 12}.get(btn, 0)
+            if env.stamina < cost or (btn == HEAL and env.flasks <= 0):
+                continue
+            cands.append(a)
+            rolls.append(BayesAgent3D._rollout(self, a))
+        L = np.zeros((len(cands), len(self.T.KS), 2))
+        for i, ro in enumerate(rolls):
+            for j, k in enumerate(self.T.KS):
+                rel = env.p_xy + ro[min(k, len(ro)) - 1][0] - bxy
+                L[i, j] = np.array([c * rel[0] - s * rel[1], s * rel[0] + c * rel[1]]) / h
+        P = self._p_hits(L)
+        vals = []
+        for i, a in enumerate(cands):
+            d, btn = divmod(a, N_BUTTONS)
+            ro = rolls[i]
+            exp_dmg = exp_deal = 0.0
+            for j, k in enumerate(self.T.KS):
+                inv = any(ro[min(kk, len(ro)) - 1][1] for kk in range(k, k + 3))
+                guard = ro[min(k, len(ro)) - 1][2]
+                exp_dmg += P[i, j] * (0.05 if inv else (0.15 if guard else 1.0)) * 0.22
+            if btn == LIGHT and dist <= reach:
+                exp_deal = 40.0 / self.boss_max * (1.0 - P[i, :3].max())
+            v = exp_deal - self.w_dmg * exp_dmg * (100.0 / max(env.hp, 20.0)) ** 0.5 - 0.0005 * {ROLL: 18, LIGHT: 12}.get(btn, 0)
+            if btn == HEAL:
+                v += 0.004 * (100 - env.hp) if env.hp < 50 else -0.2
+            if btn == NONE and d == 1 and dist > reach * 0.9:
+                v += 0.004
+            vals.append(v)
+        return cands[int(np.argmax(np.array(vals) + self.rng.normal(0, 1e-4, len(vals))))]
+
+
+def run_fight_v2(env, agent):
+    obs = env.reset()
+    agent.reset(env)
+    done, info = False, {}
+    while not done:
+        a = agent.act(obs, env) if env.player_free() else 0
+        obs, r, done, info = env.step(a)
+        agent.observe(obs, env, info)
+    if hasattr(agent, "flush") and agent.learn:
+        agent.flush()
     return info["outcome"], env.t, env.boss_hp / env.spec.hp

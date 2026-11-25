@@ -88,6 +88,18 @@ def fight_series(args):
     return out, agent.mem
 
 
+def fight_series_v2(args):
+    spec_fn, i, learn, attempts, seed = args
+    env = Arena3D(spec_fn(i), U, clips(), seed=seed, player_strike=pstrike())
+    agent = A.ThreatAgent(learn=learn, seed=seed)
+    out = []
+    for k in range(attempts):
+        env.rng = np.random.default_rng(seed * 100 + k)
+        o, t, bhp = A.run_fight_v2(env, agent)
+        out.append((o, t, bhp, env.hp))
+    return out
+
+
 if __name__ == "__main__":
     stage = sys.argv[1]
     procs = int(os.environ.get("PROCS", 3))
@@ -128,3 +140,17 @@ if __name__ == "__main__":
             print(c, "win by attempt", W.mean(0).round(2), "won ever", W.any(1).mean().round(2), "boss hp left",
                   np.round(out[c]["boss_hp_left"], 2), round(time.time() - t0), flush=True)
         json.dump(out, open("results/arena3d_agent_v1.json", "w"), indent=1)
+    elif stage == "test2":
+        out = {}
+        for c in os.environ.get("CONDS", "learn,frozen").split(","):
+            jobs = [(test_boss, i, c == "learn", ATT, 7000 + i) for i in range(NB_TEST)]
+            with Pool(procs) as p:
+                res = p.map(fight_series_v2, jobs)
+            W = np.array([[o[0] == "win" for o in r] for r in res])
+            out[c] = {"win_by_attempt": W.mean(0).tolist(),
+                      "first_win": [int(np.argmax(w)) + 1 if w.any() else None for w in W],
+                      "boss_hp_left": np.mean([[o[2] for o in r] for r in res], 0).tolist(),
+                      "outcomes": [[o[0] for o in r] for r in res], "secs": [[o[1] * 0.03 for o in r] for r in res]}
+            print(c, "win by attempt", W.mean(0).round(2), "won ever", W.any(1).mean().round(2), "boss hp left",
+                  np.round(out[c]["boss_hp_left"], 2), round(time.time() - t0), flush=True)
+        json.dump(out, open("results/arena3d_agent_v2.json", "w"), indent=1)

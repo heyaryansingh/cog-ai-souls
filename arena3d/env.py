@@ -224,7 +224,11 @@ class Arena3D:
             if (shield_touch or body_touch is not None) and tip_v > 2.5 and ("b", boss_serial) not in self.hit_lock:
                 self.hit_lock[("b", boss_serial)] = 1
                 self.audio[2] = 1
-                if shield_touch and self.act == GUARD:
+                # souls rule: a raised guard blocks any hit from the front half (angle check, as in
+                # Elden Ring), not only blade-on-shield contact
+                to_b = self.boss.root - self.p_xy
+                front = np.cos(np.arctan2(to_b[1], to_b[0]) - self.p_yaw) > 0.0
+                if self.act == GUARD and (shield_touch or front):
                     self.stamina -= 25 + 2 * tip_v
                     info["blocked"] = True
                     if self.stamina < 0:

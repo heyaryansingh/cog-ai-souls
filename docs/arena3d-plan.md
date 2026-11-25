@@ -14,7 +14,7 @@ library like a real souls game, and hitboxes that are not simplified. He owns El
 | Combos | hand-set matrix | motion-matching cost between the end pose of one move and the start of the next |
 | Delays | log-normal holds | log-normal windup freeze just before the weapon's fastest frame |
 | Hitboxes | 2D arcs/discs, one impact tick | **per-substep 3D contact** of the weapon capsule and boss limbs with the player's 19 body capsules, 4 substeps per 30 ms frame, damage by contact speed and body part |
-| Blocking | rule | geometric: a shield box on the forearm must be touched first |
+| Blocking | rule | souls rule: a raised guard blocks hits from the front half, costs stamina by impact speed, guard break at 0 stamina (the shield box also blocks from other angles) |
 | Agent sees | 88 floats of noisy keypoints | **rendered pixels** from a lock-on camera, 3 sounds, proprioception |
 | Test bosses | new random draws | bosses built only from **held-out mocap subjects** (motions never seen) |
 
