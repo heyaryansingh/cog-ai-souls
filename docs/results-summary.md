@@ -40,7 +40,8 @@ Further results for the slow mind:
 3. **Amortized intuition helps under structural novelty and hurts under parametric shift.** The intuition net beats SMC on a novel move but under-proposes moves on out-of-range timings. The cause is the net's *structure*, and SMC repairs it slowly, because adding moves mixes more slowly than deleting them. **Over-propose, then prune:** a superset proposal (the net's moves plus everything it omitted) gets the best of both (E18). In play on 80 new novel-move bosses it lifts attempts 2–4 from 55.0% to 64.6% (paired p = 0.007, E20).
 4. **Information is not value of information.** Information-seeking rolls doubled the speed of self-identification but got the agent killed in early fights, for a parameter that barely affects winning (E15).
 5. **Learning inside the fight doubles first-encounter wins.** Re-learning the boss every 10 s mid-fight lifts attempt-1 wins from 10.7% to 20.7% (pooled over three experiments, n = 150 each; replication on 80 new bosses p = 0.013, E22).
-6. **Averaging over programs ≈ committing to the MAP program**, once a few fights are in (E6). Uncertainty that matters for acting is *within-fight state* uncertainty. Keeping dormant moves alive for hedging hurts (E17).
+6. **Averaging pays over state, not over programs.** Planning from the single most probable boss *state* costs 6–8 points (E27). Planning from the single best boss *program* costs 2.5 points or less, even with 16 particles (E6, E26). Keeping dormant moves alive as a hedge hurts (E17).
+7. **Optimism about one's own future skill is load-bearing.** Making the imagined player's defence realistic in planning rollouts makes the agent passive and halves its win rate (E24–25).
 
 ## Ablations (E19)
 

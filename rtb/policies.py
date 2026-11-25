@@ -120,7 +120,7 @@ class OraclePlanner:
     """
 
     def __init__(self, n_rollouts=12, horizon=30, seed=0, actions=(IDLE, APPROACH, RETREAT, LIGHT, HEAVY, DODGE, BLOCK, HEAL),
-                 model_boss=None, utility="linear", humble=False):
+                 model_boss=None, utility="linear", humble=False, state_map=False):
         """utility: "linear" = env reward (boss damage - 2 x player damage, +-100 win/death);
         "concave" = boss damage + value(hp_end) - value(hp_start), with value concave in HP, so losing
         HP when low is worse and heals are worth more when low.
@@ -128,6 +128,7 @@ class OraclePlanner:
         Passing a wrong program shows how much a learner has to gain by inferring the boss."""
         self.n, self.h = n_rollouts, horizon
         self.humble = humble
+        self.state_map = state_map      # lesion: plan from the single most probable state (no state averaging)
         self.model_boss = model_boss
         self.utility = utility
         self.latency = 0          # set by run.fight; belief is then projected `latency` ticks ahead
@@ -180,6 +181,18 @@ class OraclePlanner:
             total += 150.0 if sim.outcome == "win" else (-150.0 if sim.outcome == "death" else 0.0)
         return total
 
+    @staticmethod
+    def _state_from_index(f, i):
+        nW, nA = f.W.size, f.A.size
+        if i < nW:
+            p, k, d = np.unravel_index(i, f.W.shape)
+            return (int(k), 0, int(d) + 1, int(p))
+        if i < nW + nA:
+            k, j = np.unravel_index(i - nW, f.A.shape)
+            return (int(k), 1, int(j) + 1, 0)
+        k, j = np.unravel_index(i - nW - nA, f.R.shape)
+        return (int(k), 2, int(j) + 1, 0)
+
     def act(self, obs, env: MiniSouls) -> int:
         # The filter's belief is over the state that will emit the NEXT cue, i.e. env.bs now.
         f = self.filter
@@ -191,6 +204,10 @@ class OraclePlanner:
             for _ in range(self.latency):
                 f.predict(self._last["dist"], self._last["phase"], self._last["ctx"])
         states = f.sample_states(self.n, self.rng)
+        if self.state_map:
+            flat = np.concatenate([f.W.ravel(), f.A.ravel(), f.R.ravel()])
+            i = int(np.argmax(flat))
+            states = [self._state_from_index(f, i)] * self.n
         best, best_v = IDLE, -np.inf
         seeds = self.rng.integers(1 << 30, size=self.n)
         for a in self.actions:

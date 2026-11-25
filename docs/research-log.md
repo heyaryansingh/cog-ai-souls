@@ -576,12 +576,25 @@ Train 40 × 6 attempts with 16 particles (4 in all earlier runs):
 - **Conclusion for the paper:** across-program uncertainty collapses within a few fights, so committing to the best program costs little. The "averaging beats committing" effect in this domain lives in *within-fight state* uncertainty (the exact filter's belief over the current move and wind-up), which every condition uses.
 - A cleaner test would remove state averaging: plan from the filter's MAP state only. Added to the agenda.
 
+## 2026-11-25 · Entry 27: averaging over *state* is where averaging pays
+
+State-averaging lesion. The true-program oracle plans from the single most probable filter state, not 12 states sampled from the belief. The remaining wind-up is still sampled inside rollouts. 40 bosses × 2, same seeds:
+
+| Planner | Latency 4 | Latency 0 |
+|---|---|---|
+| Averages over sampled states (default) | 41.2% [31–52] | 68.8% [58–78] |
+| Commits to the MAP state | 35.0% [25–46] | 61.3% [50–71] |
+
+**Findings:**
+- Committing to the MAP state costs 6–8 points at both latencies. That is consistent in direction, but each comparison alone is within CI.
+- Compare program averaging, which costs 2.5 points or less (E6, E26).
+- **Synthesis:** in this domain, averaging pays at the level of *what is happening right now*: which move is winding up and how far along it is. It barely pays at the level of *what kind of boss this is*, because evidence about the boss accumulates fast across fights, while state evidence is renewed every few ticks and stays ambiguous. This is the project's version of "averaging beats committing", now localized.
+
 ## Agenda (living)
 
 Done: latency + laws (E5); M2 slow mind (E6); RL² baseline (E7, E13); empirical Bayes (E7); T4 self-model (E8, E10); T2/T3 generalization (E10–11); M3 intuition net + amortization gap (E12, E18); active scouting (E15).
 
 Next, in priority order:
-0. **State-averaging lesion:** plan from the MAP filter state only, to measure the value of averaging over state (E26).
 1. **Linear opponent-model planner baseline** (FightingICE-style: per-move frequency counts with no timing model). This shows how much the *timing/HSMM* structure buys over a simpler opponent model.
 2. **VOI-based scouting** in place of the IG bonus (E15): plan under posterior samples of rules or program and measure the value of resolving each uncertainty.
 3. **Replications at n ≥ 80 per cell**: net-superset done (E20, p = 0.007). Within-fight learning is done too (E22, p = 0.013).
