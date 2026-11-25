@@ -425,7 +425,7 @@ class RulesBelief:
 
     def __init__(self, base, p_base: float = 0.5, noise: float = 0.02):
         self.base = base
-        self.starts = np.arange(0, 6)
+        self.starts = np.arange(1, 6)          # roll tick 0 never occurs at an impact, so start 0 is not identifiable
         self.lens = np.arange(1, 9)
         S, L = np.meshgrid(self.starts, self.lens, indexing="ij")
         self.S, self.L = S, L

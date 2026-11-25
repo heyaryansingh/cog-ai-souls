@@ -170,6 +170,28 @@ The planner averages over particles: each rollout samples a program, then a stat
 - The i-frame window is inferred on a grid from every in-reach impact the agent experienced mid-roll: a hit at roll tick τ excludes τ, a clean dodge includes it.
 - Planner rollouts imagine with the believed body. Runs comparing a body model fixed at training rules, a learned one and the true one on T4 are in progress.
 
+## 2026-11-25 · Entry 8: T4, a different game's body rules
+
+T4 bosses come from the training distribution, but the *player rules* change, as when moving to another souls-like:
+- i-frames go from ticks 2–5 to ticks 1–3;
+- dodge cost 15 → 22;
+- regen 1.0 → 0.8;
+- heal 30 → 40 ticks.
+
+30 bosses × 8 attempts, latency 4. The slow mind learns the boss in every condition. Only the body model differs:
+
+| Body model in the planner's imagination | Attempt 1 | Attempts 5–8 | Never beaten |
+|---|---|---|---|
+| Fixed at training rules (no self-model learning) | 3.3% | 20.0% [14–28] | 14/30 |
+| **Learned self-model** (`RulesBelief`) | 3.3% | **42.5%** [34–51] | 9/30 |
+| True rules (oracle body) | 3.3% | 40.0% [32–49] | 6/30 |
+
+**Findings:**
+1. **A wrong self-model halves the win rate**, even with a correctly learned boss: 20% vs 40%. The agent's imagined rolls succeed when the real ones fail.
+2. **Learning the self-model recovers all of it** (42.5% vs 40% for the oracle body) in 1–2 fights. This is the T4 claim: transfer to a new game's rules by inference, with no retraining.
+3. **Identifiability bug, now fixed.** The learned i-frame windows were often (start 0, length 4), which is *observationally identical* to the true (1, 3), because roll tick 0 never coincides with an impact. The grid now starts at 1. Many particles stayed at the training prior (2, 4) through attempt 8: discriminating evidence (an impact landing exactly on roll tick 1 or 4–5) is rare.
+4. Hypothesis to test: much of the gain comes from the proprioceptive quantities (dodge cost, regen, heal time), not the i-frames. Ablation queued: learn proprioception only vs i-frames only.
+
 ## Agenda (living)
 
 1. ~~Add reaction latency and reactive laws; re-measure at latency 4.~~ Done (Entry 5).
