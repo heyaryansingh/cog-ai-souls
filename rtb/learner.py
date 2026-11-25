@@ -288,6 +288,15 @@ def propose_structure(boss: Boss, stats, traces, theta: Theta, rng):
     retypable = [k for k in range(1, boss.K) if names[k] in SIBLINGS]
     if retypable:
         kinds.append("retype")
+    # residual-guided birth: wind-ups the current program finds very unlikely (timing outliers)
+    # suggest a missing copy of that move with a different tempo
+    outliers = {}
+    pmf = boss.windup_pmf()
+    for (k, p, D, c) in windups:
+        if k > 0 and not c and pmf[p, k, min(D, D_MAX) - 1] < 0.01:
+            outliers.setdefault(k, []).append(np.log(D / (boss.phase2_speed if p == 1 else 1.0)))
+    if outliers and n_att < 8:
+        kinds += ["birth", "birth"]               # up-weighted: this is the move the trap needs
     # novel groups: cue groups seen in the logs that no move in the program can produce
     have = {m.primitive.group for m in boss.moves}
     seen = {}
@@ -306,6 +315,12 @@ def propose_structure(boss: Boss, stats, traces, theta: Theta, rng):
     if kind == "delete":
         k = unused[rng.integers(len(unused))]
         return _drop(boss, k), lp_move, f"delete {names[k]}"
+    if kind == "birth":
+        ks = list(outliers)
+        k = ks[rng.integers(len(ks))]
+        m = boss.moves[k]
+        med = float(np.exp(np.mean(outliers[k])))
+        return _add(boss, Move(m.primitive, med, m.sigma), copy_of=k), -lp_move, f"birth {names[k]}@{med:.0f}"
     if kind == "split":
         k = splittable[rng.integers(len(splittable))]
         ld = np.sort(_phase_free_logD(windups, k, boss.phase2_speed))

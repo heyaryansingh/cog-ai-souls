@@ -321,6 +321,23 @@ Unlike latency 0 (Entry 3), more rollouts seem to help under latency, presumably
 
 5× more training took RL² from about 4% to about 13%, which is *the frozen generic-prior planner's level* (12.8%), but it shows **no in-context adaptation** across attempts. The slow mind, with zero pretraining, reaches 37% after 3–4 fights. Next RL steps, if pursued: longer trials (12 fights) and a larger GRU. Model-free meta-RL is known to need far more tasks (Algorithm Distillation used >1000 tasks and millions of steps).
 
+## 2026-11-25 · Entry 14: residual-guided birth move (idea (b))
+
+- **What it does:** a new structure proposal. Wind-ups that the current program finds very unlikely (p(D) < 0.01 under their move's pmf) propose a new copy of that move, at the outliers' tempo. It is up-weighted 2× among the proposals.
+- **Amortization-gap re-run** (held-out log-evidence per tick vs the true program, 30 bosses per row):
+
+| Bosses | SMC from prior, before → after | Net + SMC, before → after |
+|---|---|---|
+| T1 | −0.130 → −0.118 | −0.201 → −0.199 |
+| T3 | −0.431 → −0.452 | −0.279 → −0.259 |
+| OOD | −0.128 → −0.118 | −0.253 → −0.245 |
+
+- **Findings:**
+  - Birth slightly helps SMC from the prior on T1 and OOD, and is neutral elsewhere.
+  - It does **not** release the structural trap. In the diagnosed cases the missing move's wind-ups are absorbed by a sibling move whose median shifts to cover both, so few wind-ups are outliers by the time the birth step looks.
+  - The trap is a *mode*: escaping it needs a joint move (birth + reassign wind-ups + re-fit), e.g. a split-merge Gibbs step with restricted reassignment (Jain–Neal style). Added to the agenda.
+- **Re-check:** the main train-40 learning curve is being re-run with birth enabled, to confirm it does not hurt.
+
 ## Agenda (living)
 
 1. ~~Add reaction latency and reactive laws; re-measure at latency 4.~~ Done (Entry 5).
