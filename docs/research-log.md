@@ -478,6 +478,31 @@ T3 (never-seen move) re-drawn with 80 bosses × 4 attempts (`--n_test 80`). Thes
 
 The protocol for a human comparison is to fight each boss until the first win, or for 12 attempts, and report deaths-to-first-win. Humans bring their own ~200–250 ms latency, which matches the agent's latency-4 setting. Agent reference values for bosses 1–8: first win on attempts 8, 2, 9, 2, 9, —, 7, —.
 
+## 2026-11-25 · Entry 22: within-fight learning, now replicated at n = 80
+
+T1 re-drawn with 80 new bosses × 3 attempts, same seeds in both conditions:
+
+| Condition | Attempt 1 | Attempt 2 | Attempt 3 |
+|---|---|---|---|
+| Between-fight learning only | 8.8% | 22.5% | 30.0% |
+| **+ within-fight learning** (re-learn every 10 s) | **21.2%** | 30.0% | 31.2% |
+
+- Attempt 1, paired by boss and seed: 12 fights won only with within-fight learning, 2 only without it (sign test **p = 0.013**).
+- Attempts 1–3 together: 34 vs 17 (p = 0.024).
+
+**All three experiments on attempt 1:**
+
+| Experiment | Between-fight only | + within-fight |
+|---|---|---|
+| E9, train (40) | 5/40 | 10/40 |
+| E10, T1 (30) | 4/30 | 4/30 |
+| E22, T1 (80) | 7/80 | 17/80 |
+| **Pooled** | **16/150 (10.7%)** | **31/150 (20.7%)** |
+
+The E10 null now looks like a small-sample miss.
+
+**Claim:** running the slow mind's clock inside the fight roughly **doubles first-encounter wins**. Its benefit shrinks as between-fight learning catches up by attempt 3. This upgrades Entry 10's "modest, not robust" verdict.
+
 ## Agenda (living)
 
 Done: latency + laws (E5); M2 slow mind (E6); RL² baseline (E7, E13); empirical Bayes (E7); T4 self-model (E8, E10); T2/T3 generalization (E10–11); M3 intuition net + amortization gap (E12, E18); active scouting (E15).
@@ -485,7 +510,7 @@ Done: latency + laws (E5); M2 slow mind (E6); RL² baseline (E7, E13); empirical
 Next, in priority order:
 1. **Linear opponent-model planner baseline** (FightingICE-style: per-move frequency counts with no timing model). This shows how much the *timing/HSMM* structure buys over a simpler opponent model.
 2. **VOI-based scouting** in place of the IG bonus (E15): plan under posterior samples of rules or program and measure the value of resolving each uncertainty.
-3. **Replications at n ≥ 80 per cell**: net-superset done (E20, p = 0.007). Within-fight learning (E9–10) is still pending.
+3. **Replications at n ≥ 80 per cell**: net-superset done (E20, p = 0.007). Within-fight learning is done too (E22, p = 0.013).
 4. **Hold out boss families** (T2f: a primitive pair always co-occurring in training appears split).
 5. **Multi-hit combo primitive** (realism audit, E4), then re-check the ladder.
 6. **Human comparison:** the playable version is built (E21). Next, collect human ledgers.
