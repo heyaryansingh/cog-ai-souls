@@ -455,6 +455,20 @@ Lesion flags (`RTB_LESION`) switch off one part of the slow mind's learning. Tra
 
    Precision is 85% and recall 61%. A plausible cost: contexts that carry a law are excluded from the transition counts, which throws away data. Laws matter for *interpretability* and for punishing heals, but the planner rarely heals into a law. To test: law inference with pooled counts.
 
+## 2026-11-25 · Entry 20: net-superset seeding replicates (p = 0.007)
+
+T3 (never-seen move) re-drawn with 80 bosses × 4 attempts (`--n_test 80`). These are new bosses, independent of Entry 18.
+
+| Condition | Attempt 1 | Attempt 2 | Attempt 3 | Attempt 4 | Attempts 2–4 |
+|---|---|---|---|---|---|
+| Slow mind | 11% | 39% | 55% | 71% | 55.0% [49–61] |
+| **+ intuition-net superset seed** | 11% | **50%** | **62%** | **81%** | **64.6%** [58–70] |
+
+- Paired over the same boss, attempt and seed: 45 fights won only with the net and 22 only without it (sign test **p = 0.007**).
+- This is the first M3 claim that holds at the win-rate level. Amortized structural intuition, used as an *over-complete* proposal that SMC prunes, speeds up adaptation to a novel move by about 10 points per attempt. In distribution it costs nothing (Entry 18).
+
+**Pooled law counts (Entry 19 follow-up): no gain.** Attempts 3–6 win 30.0% [23–38] vs 33.8% for the default. The law-context exclusion is not what makes laws unhelpful; dropped.
+
 ## Agenda (living)
 
 Done: latency + laws (E5); M2 slow mind (E6); RL² baseline (E7, E13); empirical Bayes (E7); T4 self-model (E8, E10); T2/T3 generalization (E10–11); M3 intuition net + amortization gap (E12, E18); active scouting (E15).
@@ -462,7 +476,7 @@ Done: latency + laws (E5); M2 slow mind (E6); RL² baseline (E7, E13); empirical
 Next, in priority order:
 1. **Linear opponent-model planner baseline** (FightingICE-style: per-move frequency counts with no timing model). This shows how much the *timing/HSMM* structure buys over a simpler opponent model.
 2. **VOI-based scouting** in place of the IG bonus (E15): plan under posterior samples of rules or program and measure the value of resolving each uncertainty.
-3. **Replications at n ≥ 80 per cell** for the within-fight learning (E9–10) and net-superset (E18) win-rate effects.
+3. **Replications at n ≥ 80 per cell**: net-superset done (E20, p = 0.007). Within-fight learning (E9–10) is still pending.
 4. **Hold out boss families** (T2f: a primitive pair always co-occurring in training appears split).
 5. **Multi-hit combo primitive** (realism audit, E4), then re-check the ladder.
 6. **Human comparison:** a playable terminal or web version of MiniSouls at 20 Hz, to log human deaths-to-first-win on the same bosses.

@@ -38,6 +38,7 @@ P_NO_LAW = float(np.exp(-0.4))
 import os as _os
 DELETE_BIAS = float(_os.environ.get("RTB_DELETE_BIAS", "0"))   # extra log-prior for deleting a move; -inf = never delete (dormant reservoir)
 LESION = set(filter(None, _os.environ.get("RTB_LESION", "").split(",")))   # ablations: timing, structure, transitions, laws
+POOL_LAW_COUNTS = _os.environ.get("RTB_POOL_LAW_COUNTS", "0") == "1"   # Entry 19 test: keep law-context transitions in the counts
 USE_REGROUP = False   # Entry 16: the regroup move did not help and diluted the proposal budget                                   # Poisson(0.8) split over 2 contexts
 
 
@@ -212,7 +213,7 @@ def gibbs_params(boss: Boss, stats, theta: Theta, rng) -> Boss:
     law_ctx = {l[0] for l in boss.laws}
     counts = np.zeros((K, N_DIST_BINS, K))
     for (kp, b, c, kn) in trans:
-        if c not in law_ctx:
+        if c not in law_ctx or POOL_LAW_COUNTS:
             counts[kp, b, kn] += 1
     pi = np.zeros_like(counts)
     for b in range(N_DIST_BINS):

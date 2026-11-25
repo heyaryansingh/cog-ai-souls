@@ -33,9 +33,13 @@ Further results for the slow mind:
 
 1. **Prediction replaces reaction under latency.** Human-like delay costs the true-model planner 30 points (69% → 41%) but makes boss knowledge 2.5× more valuable (E5).
 2. **The timing prior barely matters; the structure prior does.** An empirical-Bayes hyperprior fitted from the agent's own 40 learned bosses recovers the true one, but one fight swamps any reasonable timing prior (E7). Structure (which moves exist) is where priors and intuition pay off (E12, E18).
-3. **Amortized intuition helps under structural novelty and hurts under parametric shift.** The intuition net beats SMC on a novel move but under-proposes moves on out-of-range timings. The cause is the net's *structure*, and SMC repairs it slowly, because adding moves mixes more slowly than deleting them. **Over-propose, then prune:** a superset proposal (the net's moves plus everything it omitted) gets the best of both (E18).
+3. **Amortized intuition helps under structural novelty and hurts under parametric shift.** The intuition net beats SMC on a novel move but under-proposes moves on out-of-range timings. The cause is the net's *structure*, and SMC repairs it slowly, because adding moves mixes more slowly than deleting them. **Over-propose, then prune:** a superset proposal (the net's moves plus everything it omitted) gets the best of both (E18). In play on 80 new novel-move bosses it lifts attempts 2–4 from 55.0% to 64.6% (paired p = 0.007, E20).
 4. **Information is not value of information.** Information-seeking rolls doubled the speed of self-identification but got the agent killed in early fights, for a parameter that barely affects winning (E15).
 5. **Averaging over programs ≈ committing to the MAP program**, once a few fights are in (E6). Uncertainty that matters for acting is *within-fight state* uncertainty. Keeping dormant moves alive for hedging hurts (E17).
+
+## Ablations (E19)
+
+A move-frequency opponent model (FightingICE-style) reaches only 16.9%, against 13.8% frozen and 33.8% for the full slow mind. Learning *timing* and *structure* carries the gains, and the two partly substitute for each other. Reactive-law inference does not raise win rate (law precision 85%, recall 61%).
 
 ## Honest negatives and caveats
 
