@@ -123,10 +123,11 @@ class OraclePlanner:
         self.filter.predict(obs["dist"], obs["phase"], obs["ctx"])
         self._last = obs
 
-    def _rollout(self, env: MiniSouls, state, first: int, seed: int) -> float:
+    def _rollout(self, env: MiniSouls, state, first: int, seed: int, model=None) -> float:
         sim = env.clone(seed)
-        if self.model is not env.boss:          # imagine with the believed program, not the real one
-            sim.boss, sim._pmf = self.model, self.model.windup_pmf()
+        model = model or self.model
+        if model is not env.boss:          # imagine with the believed program, not the real one
+            sim.boss, sim._pmf = model, model.windup_pmf()
         k, stage, j, p0 = state
         pmf = sim._pmf[p0, k]
         D = j
@@ -163,6 +164,60 @@ class OraclePlanner:
         seeds = self.rng.integers(1 << 30, size=self.n)
         for a in self.actions:
             v = np.mean([self._rollout(env, s, a, int(sd)) for s, sd in zip(states, seeds)])
+            if v > best_v:
+                best, best_v = a, v
+        return best
+
+
+class MixturePlanner(OraclePlanner):
+    """MPC over a weighted set of boss programs (the slow mind's particles).
+
+    One exact filter runs per program. At decision time the program posterior is
+    prior weight x in-fight evidence; each imagined rollout first samples a program, then a
+    state from that program's filter, and imagines the future under that program
+    (Bayesian model averaging). mode="map" keeps only the single best program (MAP lesion).
+    """
+
+    def __init__(self, bosses, weights, mode="mixture", **kw):
+        super().__init__(**kw)
+        self.bosses = list(bosses)
+        self.prior_logw = np.log(np.maximum(np.asarray(weights, float), 1e-300))
+        self.mode = mode
+
+    def reset(self, env: MiniSouls):
+        if self.mode == "map":
+            i = int(np.argmax(self.prior_logw))
+            self.bosses, self.prior_logw = [self.bosses[i]], np.zeros(1)
+        self.filters = [BossFilter(b) for b in self.bosses]
+        self.model = self.bosses[0]
+
+    def observe(self, obs):
+        for f in self.filters:
+            f.update(obs["cue"])
+            f.predict(obs["dist"], obs["phase"], obs["ctx"])
+        self._last = obs
+
+    def act(self, obs, env: MiniSouls) -> int:
+        import copy
+        lw = self.prior_logw + np.array([f.log_evidence for f in self.filters])
+        w = np.exp(lw - lw.max())
+        w /= w.sum()
+        which = self.rng.choice(len(self.filters), size=self.n, p=w)
+        states, models = [], []
+        for i in np.unique(which):
+            f = self.filters[i]
+            if self.latency and self._last is not None:
+                f = copy.copy(f)
+                f.W, f.A, f.R = f.W.copy(), f.A.copy(), f.R.copy()
+                for _ in range(self.latency):
+                    f.predict(self._last["dist"], self._last["phase"], self._last["ctx"])
+            n_i = int((which == i).sum())
+            states += f.sample_states(n_i, self.rng)
+            models += [self.bosses[i]] * n_i
+        best, best_v = IDLE, -np.inf
+        seeds = self.rng.integers(1 << 30, size=self.n)
+        for a in self.actions:
+            v = np.mean([self._rollout(env, s, a, int(sd), m) for s, m, sd in zip(states, models, seeds)])
             if v > best_v:
                 best, best_v = a, v
         return best

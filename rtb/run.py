@@ -20,6 +20,7 @@ def fight(boss, policy, rules: Rules = Rules(), seed=0, log_every: int = 0, max_
     pending = deque()
     lines, t0 = [], time.time()
     decisions = 0
+    trace = []      # full (undelayed) boss-observation stream, for learning between fights
     while True:
         if obs["free"]:
             a = policy.act(obs, env)
@@ -28,6 +29,7 @@ def fight(boss, policy, rules: Rules = Rules(), seed=0, log_every: int = 0, max_
             a = 0
         obs, _, done, info = env.step(a)
         pending.append(obs)
+        trace.append((obs["cue"], obs["dist"], obs["phase"], obs["ctx"]))
         if hasattr(policy, "observe") and len(pending) > latency:
             policy.observe(pending.popleft())
         if latency:   # what the agent sees now: its own state, the boss cue from `latency` ticks ago
@@ -40,4 +42,4 @@ def fight(boss, policy, rules: Rules = Rules(), seed=0, log_every: int = 0, max_
         if done:
             break
     return {"outcome": info["outcome"], "ticks": env.t, "boss_hp_frac": max(env.boss_hp, 0) / boss.max_hp,
-            "hp": max(env.player.hp, 0), "seconds": time.time() - t0, "decisions": decisions, "log": lines}
+            "hp": max(env.player.hp, 0), "seconds": time.time() - t0, "decisions": decisions, "log": lines, "trace": trace}

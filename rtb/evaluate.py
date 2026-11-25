@@ -57,6 +57,7 @@ def _job(args):
     rules = T4_RULES if split == "T4" else Rules()
     r = fight(boss, make_agent(agent, boss, seed, **kw), rules=rules, seed=seed, latency=latency)
     r.pop("log", None)
+    r.pop("trace", None)
     r.update(split=split, boss=idx, agent=agent, seed=seed)
     return r
 

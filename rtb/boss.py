@@ -166,6 +166,19 @@ class Boss:
         return "\n".join(lines)
 
 
+def reach_pref(moves, b: int, reach_bias: float) -> np.ndarray:
+    """Reach-aware base preference over next moves for distance bin b (normalised)."""
+    pref = np.ones(len(moves))
+    for j, m in enumerate(moves):
+        eff = 2.0 if m.primitive.feint else (m.primitive.reach + m.primitive.lunge)
+        in_reach = eff >= (1.5 if b == 0 else 3.5)
+        if m.primitive.name == "idle":
+            pref[j] = 1.0 if b == 0 else 2.0
+        else:
+            pref[j] = np.exp(reach_bias * (1.0 if in_reach else -1.0))
+    return pref / pref.sum()
+
+
 def sample_boss(theta: Theta, rng: np.random.Generator, primitives: list | None = None,
                 name: str = "boss", tell_ticks: int = 3, cue_noise: float = 0.03,
                 dmg_scale: float = 1.0) -> Boss:
@@ -186,15 +199,7 @@ def sample_boss(theta: Theta, rng: np.random.Generator, primitives: list | None 
         for b in range(N_DIST_BINS):
             # Reach-aware base preference: near bin likes short-reach moves, far bin likes
             # long-reach moves and idling (approach). Dirichlet noise gives each boss its habits.
-            pref = np.ones(K)
-            for j, m in enumerate(moves):
-                eff = 2.0 if m.primitive.feint else (m.primitive.reach + m.primitive.lunge)
-                in_reach = eff >= (1.5 if b == 0 else 3.5)
-                if m.primitive.name == "idle":
-                    pref[j] = 1.0 if b == 0 else 2.0
-                else:
-                    pref[j] = np.exp(theta.reach_bias * (1.0 if in_reach else -1.0))
-            pref /= pref.sum()
+            pref = reach_pref(moves, b, theta.reach_bias)
             pi[k, b] = rng.dirichlet(theta.dirichlet_alpha * K * pref + 1e-3)
     speed = float(rng.uniform(*theta.phase2_speed))
     # Reactive laws: the boss reads the player. Heals get punished by a fast in-reach attack,
