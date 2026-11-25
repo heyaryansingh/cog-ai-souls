@@ -498,3 +498,18 @@ class RulesBelief:
                       heal_ticks=true_rules.heal_ticks)
         self.current = replace(self.base, **kw)
         return self.current
+
+    def p_inside(self, tau: int) -> float:
+        w = np.exp(self.logp - logsumexp(self.logp))
+        return float(w[(self.S <= tau) & (tau < self.S + self.L)].sum())
+
+    def info_gain(self, tau: int) -> float:
+        """Expected bits learned about the i-frame window by taking an impact at roll tick tau."""
+        if tau <= 0:
+            return 0.0
+        p = min(max(self.p_inside(tau), 1e-9), 1 - 1e-9)
+        return float(-(p * np.log2(p) + (1 - p) * np.log2(1 - p)))
+
+    def map_window(self):
+        i = np.unravel_index(np.argmax(self.logp), self.S.shape)
+        return int(self.S[i]), int(self.L[i])

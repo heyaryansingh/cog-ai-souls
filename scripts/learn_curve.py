@@ -59,8 +59,10 @@ def run_boss(args):
             pol = OnlineMixturePlanner(sm, every=200, n_rollouts=n_rollouts, horizon=horizon, seed=seed)
         if self_model != "true":           # believed body rules (T4); "true" = agent knows its body
             pol.believed_rules = rb.current
+        if self_model == "active":         # learned self-model + information-seeking rolls
+            pol.rules_belief, pol.info_weight = rb, 15.0
         r = fight(boss, pol, rules=rules, seed=seed, latency=latency)
-        if self_model in ("learned", "proprio", "iframes"):     # ablations learn one part each
+        if self_model in ("learned", "proprio", "iframes", "active"):     # ablations learn one part each
             rb.update(r["events"], true_rules=rules if self_model != "iframes" else None,
                       learn_iframes=self_model != "proprio")
         t0 = time.time()
@@ -77,7 +79,7 @@ def run_boss(args):
             sm.update(r["trace"])
         out.append({"boss": idx, "attempt": a + 1, "outcome": r["outcome"], "boss_hp_frac": r["boss_hp_frac"],
                     "hp": r["hp"], "ticks": r["ticks"], "fight_s": r["seconds"], "learn_s": time.time() - t0,
-                    "K_map": sm.map_particle().K, "iframes": [rb.current.iframe_start, rb.current.iframe_len], "K_true": boss.K,
+                    "K_map": sm.map_particle().K, "iframes": [rb.current.iframe_start, rb.current.iframe_len], "true_iframes": [rules.iframe_start, rules.iframe_len], "K_true": boss.K,
                     "accepted": sm.history[-1]["accepted"] if sm.history else []})
     mp = sm.map_particle()
     out[-1]["map_describe"] = mp.describe()

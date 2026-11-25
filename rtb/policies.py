@@ -145,6 +145,13 @@ class OraclePlanner:
             if done:
                 break
             a = oracle_continuation(sim) if sim.player_free() else IDLE
+        rb = getattr(self, "rules_belief", None)
+        if rb is not None and first == DODGE and self.info_weight > 0:
+            # active self-identification: value the information a roll-timed impact gives about i-frames
+            for (dt, _hit) in sim.events:
+                if dt > 0:
+                    total += self.info_weight * rb.info_gain(dt)
+                    break
         if self.utility == "concave":
             v = lambda h: 60.0 * np.log1p(max(h, 0.0) / 20.0)
             total = (boss0 - max(sim.boss_hp, 0.0)) + v(sim.player.hp) - v(hp0)
