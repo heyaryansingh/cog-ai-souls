@@ -1,0 +1,3 @@
+numpy>=1.26
+pytest>=8
+# later milestones: torch (intuition net, M3), stable-baselines3 + sb3-contrib + gymnasium (baselines, M5), pygame (viewer/human study, M6)
