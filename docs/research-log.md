@@ -260,7 +260,7 @@ Latency 4. Win rate on the late attempts: 4–12 for train, 5–8 for the test s
 **Reading:**
 - The model-based learner transfers to every kind of novelty tested.
 - T3 shows why structure learning matters: without grab in the program the agent wins 13%, and after the novelty proposal adds it, 72%.
-- T2 is the weakest (63%). Hypothesis: unseen combinations include more overhead-group pairs (slam + delayed slam share a wind-up cue), which take longer to separate. To check: a per-boss gap vs number of same-group moves.
+- T2 is the weakest (63%). Hypothesis: unseen combinations include more overhead-group pairs (slam + delayed slam share a wind-up cue), which take longer to separate. Checked: the correlation between the per-boss oracle−learner gap and the number of overhead-group moves is r = 0.14 (n = 30). This is **not supported**; the two bosses with 4–5 overhead moves have large gaps, but most of the gap is spread out. Hypothesis dropped for now.
 
 ## Agenda (living)
 
