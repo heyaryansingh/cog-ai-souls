@@ -244,6 +244,24 @@ All runs: 30 held-out bosses × 8 attempts, latency 4.
 
 The attempt-1 doubling from Entry 9 did **not** replicate. The benefit appears in attempts 2–3 instead. Pooled over both experiments (210 fights per condition in attempts 1–3): 26.2% vs 20.0%. **Revised claim:** within-fight learning gives a modest speed-up of early learning, and its timing is not robust. It stays an option, not a headline.
 
+## 2026-11-25 · Entry 11: generalization summary with matched controls
+
+Latency 4. Win rate on the late attempts: 4–12 for train, 5–8 for the test splits. Same seeds within a row.
+
+| Split | What is new | Frozen prior | Slow mind | Oracle | Gap closed |
+|---|---|---|---|---|---|
+| train (40 bosses) | nothing; same distribution as training | 12.8% | 37.2% | 42.5% | 82% |
+| T2 (30) | move combinations never seen together | 11.7% | 25.8% | 34.2% | 63% |
+| T3 (30) | a never-seen move (grab) | 13.3% | 71.7% | 80.0% | 88% |
+| T4 (30) | the player's body rules | 20.0%* | 48.3% | 40.0%† | ≥100% |
+
+\* T4 "frozen" = slow mind with the body model fixed at training rules. † T4 "oracle" = slow mind with the true body. Gap closed = (slow − frozen) / (oracle − frozen).
+
+**Reading:**
+- The model-based learner transfers to every kind of novelty tested.
+- T3 shows why structure learning matters: without grab in the program the agent wins 13%, and after the novelty proposal adds it, 72%.
+- T2 is the weakest (63%). Hypothesis: unseen combinations include more overhead-group pairs (slam + delayed slam share a wind-up cue), which take longer to separate. To check: a per-boss gap vs number of same-group moves.
+
 ## Agenda (living)
 
 1. ~~Add reaction latency and reactive laws; re-measure at latency 4.~~ Done (Entry 5).
