@@ -805,6 +805,32 @@ This responds to review point 2: E30–31 picked winners from several variants a
 - **Leakage check (done before viewing results):** every split-seed-1 T1/T3 boss program (moves, timings, transition matrix, phase-2 speed, laws) was hashed against all split-seed-0 bosses, including the 40 training bosses the reflex and net learned from. There were 0 duplicates in T1, 0 in T3 and 0 within either split.
 
 
+## 2026-11-25 · P1 results (pre-registered replication, split seed 1, n = 80 bosses per split)
+
+Analysis: `scripts/analyze_P1.py` → `results/P1_analysis.json`. Primary outcome as registered: per-boss total wins, one-sided Wilcoxon, Holm over H1–H5, bootstrap 95% CI of the mean per-boss win-rate difference.
+
+| Split | Condition | Win by attempt | Overall |
+|---|---|---|---|
+| T1 | (a) planner, 12 rollouts | 11 / 18 / 33% | 20.4% |
+| T1 | (b) planner, 48 rollouts | 8 / 25 / 31% | 21.2% |
+| T1 | (c) reflex | 23 / 34 / 40% | **32.1%** |
+| T1 | (d) blend λ = 3 | 11 / 29 / 44% | 27.9% |
+| T3 | (a) planner, 12 | 15 / 49 / 64 / 74% | 50.3% |
+| T3 | (b) planner, 48 | 15 / 61 / 61 / 66% | 50.9% |
+| T3 | (c) reflex | 44 / 36 / 54 / 48% | 45.3% |
+| T3 | (d) blend λ = 3 | 25 / 56 / 70 / 70% | 55.3% |
+| T3 | (e) reflex on attempt 1, then planner | 44 / 60 / 56 / 70% | **57.5%** |
+
+| Hypothesis | Mean diff [95% CI] | p | Holm p | Verdict |
+|---|---|---|---|---|
+| H1 blend > planner-12, T1 | +7.5 pts [+1.3, +13.8] | 0.012 | 0.048 | supported |
+| H2 blend > planner-12, T3 | +5.0 [−1.6, +11.6] | 0.043 | 0.086 | not supported |
+| H3 blend > planner-48, T3 | +4.4 [−0.9, +9.7] | 0.043 | 0.086 | not supported |
+| H4 reflex > planner-48, T1 | +10.8 [+4.6, +17.5] | 0.001 | 0.006 | **supported** |
+| H5 reflex-then-planner > planner-12, T3 | +7.2 [+0.6, +13.4] | 0.014 | 0.048 | supported |
+
+**Reading.** The strongest replicated result is H4: on new bosses with new timings, the distilled reflex beats even a 4× compute planner (32% vs 21%), so its advantage is not just a stronger teacher. The planner's extra rollouts buy nothing on T1 (20.4 → 21.2%). The E31 blend win on T3 shrinks to a +5-point trend that does not survive Holm, so that earlier claim was partly selection. The crossover from E29 replicates as H5: on novel-move bosses, the reflex is best on attempt 1 (44% vs 15%) and the planner is best once the model has learned.
+
 ## Agenda (living)
 
 Done: latency + laws (E5); M2 slow mind (E6); RL² baseline (E7, E13); empirical Bayes (E7); T4 self-model (E8, E10); T2/T3 generalization (E10–11); M3 intuition net + amortization gap (E12, E18); active scouting (E15).
