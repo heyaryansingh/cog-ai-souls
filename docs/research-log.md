@@ -262,6 +262,42 @@ Latency 4. Win rate on the late attempts: 4–12 for train, 5–8 for the test s
 - T3 shows why structure learning matters: without grab in the program the agent wins 13%, and after the novelty proposal adds it, 72%.
 - T2 is the weakest (63%). Hypothesis: unseen combinations include more overhead-group pairs (slam + delayed slam share a wind-up cue), which take longer to separate. Checked: the correlation between the per-boss oracle−learner gap and the number of overhead-group moves is r = 0.14 (n = 30). This is **not supported**; the two bosses with 4–5 overhead moves have large gaps, but most of the gap is spread out. Hypothesis dropped for now.
 
+## 2026-11-25 · Entry 12: M3 intuition net, and the amortization gap as a structural trap
+
+**Ceiling probe** (`scripts/ceiling_probe.py`; oracle, latency 4, 40 bosses × 2):
+
+| Rollouts / horizon | 12 / 45 | 24 / 45 | 48 / 45 | 24 / 90 |
+|---|---|---|---|---|
+| Win rate | 41.2% [31–52] | 47.5% [37–58] | 50.0% [39–61] | 40.0% [30–51] |
+
+Unlike latency 0 (Entry 3), more rollouts seem to help under latency, presumably because the projected belief is wider and needs more samples. The CIs overlap, so this is a trend, not a result. A longer horizon does not help. The 12-rollout setting used everywhere else is therefore conservative for every agent alike.
+
+**Intuition net** (`rtb/intuition.py`, `scripts/train_intuition.py`).
+- Architecture: a 3-layer transformer (d = 96) over run-length cue tokens (about 90 per fight). For each library primitive, including grab, it predicts the move count (0/1/2+) and log wind-up.
+- Training: inference compilation on 40k fights simulated from the broad META prior. 20% of those bosses may use the full library. 15 epochs take 74 min on 3 cores.
+- Validation: count accuracy 0.80; log-median MAE 0.19, about 20% timing error.
+- Speed: one proposal takes 5 ms; one SMC update takes 1.7 s.
+
+**Amortization gap** (`scripts/amortization_gap.py`). After observing **one** fight, the held-out log-evidence per tick on 3 unseen fights, relative to the true program (0 = as good as truth). 30 bosses per row; ± is the s.e.m., about 0.06.
+
+| Bosses | Prior | Net only | SMC from prior | SMC seeded by net | Mixture, resample first | Mixture, rejuvenate then weigh |
+|---|---|---|---|---|---|---|
+| T1 (in distribution) | −0.20 | −0.21 | **−0.13** | −0.20 | −0.18 | −0.18 |
+| T3 (novel move) | −0.70 | −0.29 | −0.43 | −0.28 | −0.28 | **−0.24** |
+| OOD (all timings ×1.8) | −0.56 | −0.25 | **−0.13** | −0.25 | −0.25 | −0.20 |
+
+**Findings:**
+1. **Amortized intuition wins under *structural* novelty and loses under *parametric* shift.**
+   - On T3 the net, which saw grab during pretraining, is far better than SMC after one fight (−0.29 vs −0.43). SMC must first discover grab through the novelty proposal.
+   - On timings stretched beyond the meta-prior, SMC from the generic prior is best, and anything seeded by the net is worse.
+2. **The mechanism is a structural trap.** Case-by-case diagnosis (6 OOD bosses): the net *under-proposes* moves. It merges two lunges, or drops a slow slam it never saw at that tempo. Local SMC moves can easily *delete* unused moves but cannot easily *add back* a missing copy, so a net-seeded chain stays wrong. Lowering the split threshold from 4 to 2 observed wind-ups did not help.
+3. **Mixture proposals only work if weighing happens after rejuvenation.** With the standard reweight → resample → move order, prior-seeded particles are killed before they can adapt; the "resample first" column equals net-only. Rejuvenating all particles first and then weighing them on all logs recovers part of the gap: T3 is best overall, and OOD improves from −0.25 to −0.20. It is still behind pure SMC, because weighing on the single fight that was fitted favours the net's compact programs.
+
+**New ideas from this:**
+- (a) **Predictive weighting.** Weigh particles by evidence on the *later* part of a fight after fitting only the *earlier* part (prequential / cross-validated evidence). This penalizes overfit structure.
+- (b) A **birth move guided by residuals**: propose a new copy where the filter's surprise (per-tick −log z) is concentrated.
+- (c) The amortization gap as the paper's E6 figure: net vs SMC across a novelty axis (structural vs parametric). This matches the plan's prediction that amortization fails under novelty; but the *direction* depends on the kind of novelty, which the plan did not anticipate.
+
 ## Agenda (living)
 
 1. ~~Add reaction latency and reactive laws; re-measure at latency 4.~~ Done (Entry 5).

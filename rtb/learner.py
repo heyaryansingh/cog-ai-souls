@@ -278,7 +278,7 @@ def propose_structure(boss: Boss, stats, traces, theta: Theta, rng):
     unused = [k for k in range(1, boss.K) if uses[k] == 0]
     if unused and n_att > 1:
         kinds.append("delete")
-    splittable = [k for k in range(1, boss.K) if len(_phase_free_logD(windups, k, boss.phase2_speed)) >= 4]
+    splittable = [k for k in range(1, boss.K) if len(_phase_free_logD(windups, k, boss.phase2_speed)) >= 2]
     if splittable and n_att < 8:
         kinds.append("split")
     names = [m.primitive.name for m in boss.moves]
@@ -341,11 +341,17 @@ def propose_structure(boss: Boss, stats, traces, theta: Theta, rng):
 # ----------------------------------------------------------------------------- SMC
 class SlowMind:
     def __init__(self, template: Boss, theta: Theta | None = None, n_particles: int = 4, sweeps: int = 3,
-                 seed: int = 0):
+                 seed: int = 0, init=None):
         self.theta = theta or theta_star(SPREAD)
         self.rng = np.random.default_rng(seed)
         b0 = initial_belief(self.theta, template.tell_ticks, template.cue_noise, template.dmg_scale)
-        self.particles = [b0 for _ in range(n_particles)]
+        if init is None:
+            self.particles = [b0 for _ in range(n_particles)]
+        elif isinstance(init, (list, tuple)):        # mixture proposal: e.g. half net, half prior
+            self.particles = [init[i % len(init)] if init[i % len(init)] is not None else b0
+                              for i in range(n_particles)]
+        else:
+            self.particles = [init for _ in range(n_particles)]
         self.logw = np.zeros(n_particles)
         self.traces = []
         self.sweeps = sweeps
@@ -359,7 +365,20 @@ class SlowMind:
         w = self.weights
         return float(1.0 / np.sum(w ** 2))
 
-    def update(self, trace):
+    def update(self, trace, weigh_after_move: bool = False):
+        """weigh_after_move: rejuvenate first, then weight each particle by its evidence on all
+        logs. Not a valid SMC weight (it favours fitted particles), but symmetric across particles
+        seeded from different proposals, so a bad proposal cannot win by being resampled first."""
+        if weigh_after_move:
+            self.traces.append(trace)
+            accepted = []
+            for i in range(len(self.particles)):
+                self.particles[i], acc = self._rejuvenate(self.particles[i])
+                accepted += acc
+            self.logw = np.array([evidence(b, self.traces) for b in self.particles])
+            self.history.append({"n_fights": len(self.traces), "resampled": False, "ess": self.ess(),
+                                 "accepted": accepted, "K": [b.K for b in self.particles]})
+            return
         self.traces.append(trace)
         # 1. reweight by the new fight's evidence
         self.logw = self.logw + np.array([fight_evidence(b, trace) for b in self.particles])
