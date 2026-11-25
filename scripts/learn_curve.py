@@ -31,15 +31,17 @@ def run_boss(args):
     out = []
     for a in range(attempts):
         seed = 5000 + 101 * idx + a
-        pol = MixturePlanner(sm.particles, sm.weights, mode=mode, n_rollouts=n_rollouts, horizon=horizon,
+        bosses, weights = ([boss], [1.0]) if mode == "oracle" else (sm.particles, sm.weights)
+        pol = MixturePlanner(bosses, weights, mode="map" if mode in ("oracle", "frozen") else mode, n_rollouts=n_rollouts, horizon=horizon,
                              seed=seed)
         r = fight(boss, pol, rules=rules, seed=seed, latency=latency)
         t0 = time.time()
-        sm.update(r["trace"])
+        if mode not in ("oracle", "frozen"):      # control conditions: no learning
+            sm.update(r["trace"])
         out.append({"boss": idx, "attempt": a + 1, "outcome": r["outcome"], "boss_hp_frac": r["boss_hp_frac"],
                     "hp": r["hp"], "ticks": r["ticks"], "fight_s": r["seconds"], "learn_s": time.time() - t0,
                     "K_map": sm.map_particle().K, "K_true": boss.K,
-                    "accepted": sm.history[-1]["accepted"]})
+                    "accepted": sm.history[-1]["accepted"] if sm.history else []})
     out[-1]["map_describe"] = sm.map_particle().describe()
     out[-1]["true_describe"] = boss.describe()
     return out

@@ -85,6 +85,48 @@ Prompted by advisor review. Simplifications compared with real souls-like fights
 - Latency 4 is the headline setting from now on. Latency 0 is reported as a secondary row.
 - **M2 target:** close the 41% (oracle) vs 16% (prior) gap from deaths alone, at latency 4.
 
+## 2026-11-25 · Entry 6: M2, the slow mind learns bosses from deaths
+
+**Built** (`rtb/learner.py`, `rtb/policies.py: MixturePlanner`). Belief = 4 particles, each a full boss program. After every fight:
+- **Reweight** each particle by the exact evidence of the fight.
+- **Resample** when ESS < N/2.
+- **Rejuvenate** with 3 sweeps of:
+  - FFBS over all logged fights (the final move of each fight is right-censored);
+  - one structure proposal (delete an unused move, split, merge, retype within a visual group, or add a novel move for an unexplained cue group), accepted by exact evidence ratio × structure prior;
+  - Gibbs on wind-up medians (grid, exact discretised log-normal likelihood with censoring), phase-2 speed (grid), Dirichlet transition rows, and reactive laws (enumeration).
+
+The planner averages over particles: each rollout samples a program, then a state from that program's filter. Learning takes 1–7 s between fights.
+
+**Tests:**
+- FFBS recovers the true move on 100% of ticks when given the true program.
+- 3 fights move held-out evidence more than 70% of the way from prior to truth.
+- Offline, 6 fights take held-out log-evidence from −788 to −457; the true program scores −442.
+
+**Experiment** (`scripts/learn_curve.py`). 40 training bosses × 12 consecutive attempts, latency 4, 12 rollouts × 45 ticks. All four conditions use the same fight seeds.
+
+| Condition | Attempt 1 | Attempts 2–3 | Attempts 4–12 | Bosses never beaten in 12 |
+|---|---|---|---|---|
+| Frozen prior (no learning) | 12.5% [5–26] | 13.8% [8–23] | 12.8% [10–17] | 20/40 |
+| **Slow mind, mixture** | 12.5% [5–26] | 30.0% [21–41] | **37.2%** [32–42] | 7/40 |
+| Slow mind, MAP lesion | 12.5% [5–26] | 25.0% [17–35] | 37.5% [33–43] | 5/40 |
+| True-program oracle | 42.5% [29–58] | 51.2% [40–62] | 42.5% [37–48] | 3/40 |
+
+**Findings:**
+1. **Learning from deaths closes about 80% of the prior→oracle gap within 3–4 attempts** (12.8% → 37.2% vs 43–44%). Median deaths-to-first-win is 2. Per-boss late win rates correlate with the oracle's at r = 0.77, so what remains is mostly boss difficulty, not learning failure.
+2. **Recovered programs are interpretable and mostly right.**
+   - The move count is exact for 19/40 bosses and within one move for 34/40.
+   - Reactive laws are discovered, e.g. train00 "heal → slam" with the right target.
+   - Errors are extra near-duplicate copies (train02 gets two lunges and three slams), which are nearly harmless for acting.
+3. **No mixture-over-MAP benefit yet** (37.2 vs 37.5). With 4 particles that agree after a few fights, posterior averaging has little to average. The "averaging beats committing" effect lives *within* a fight (state uncertainty), not across programs, at least at this particle count. This is still open: test more particles, early attempts only, and T3 novelty, where hypotheses genuinely disagree.
+4. **The learner now sits near the ceiling, so the ceiling is the bottleneck.** The oracle itself only wins about 44% at latency 4.
+
+**Next (agenda updated):**
+- (a) RL² baseline (GRU-PPO, memory across attempts) on the same protocol.
+- (b) Empirical-Bayes transfer: fit the hyperprior from the 40 learned training programs, and test whether attempt-1/2 performance on T1–T4 improves (learning to learn).
+- (c) Raise the latency-4 acting ceiling: predictive commitment, better continuation policy.
+- (d) Generalization splits T2/T3 (novel move) and T4 (rule change) for the slow mind.
+- (e) Stronger Occam pressure on duplicate moves.
+
 ## Agenda (living)
 
 1. ~~Add reaction latency and reactive laws; re-measure at latency 4.~~ Done (Entry 5).
