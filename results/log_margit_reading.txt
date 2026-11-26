@@ -1,0 +1,10 @@
+442 strikes Counter({'staff_sweep': 161, 'staff_thrust': 125, 'staff_sweep_b': 81, 'delayed_overhead': 75})
+k 1 {'acc': 0.342, 'chance': 0.364, 'mae_identity': 16.45, 'mae_knn': 15.475, 'mae_none': 13.724}
+k 4 {'acc': 0.342, 'chance': 0.364, 'mae_identity': 15.814, 'mae_knn': 15.161, 'mae_none': 13.724}
+k 8 {'acc': 0.4, 'chance': 0.364, 'mae_identity': 14.502, 'mae_knn': 14.867, 'mae_none': 13.724}
+k 12 {'acc': 0.656, 'chance': 0.364, 'mae_identity': 6.898, 'mae_knn': 6.441, 'mae_none': 13.724}
+k 16 {'acc': 0.704, 'chance': 0.364, 'mae_identity': 4.604, 'mae_knn': 5.097, 'mae_none': 13.724}
+k 20 {'acc': 0.683, 'chance': 0.364, 'mae_identity': 5.756, 'mae_knn': 5.188, 'mae_none': 13.724}
+k 24 {'acc': 0.611, 'chance': 0.364, 'mae_identity': 6.217, 'mae_knn': 4.837, 'mae_none': 13.724}
+k 30 {'acc': 0.624, 'chance': 0.364, 'mae_identity': 7.649, 'mae_knn': 6.385, 'mae_none': 13.724}
+danger offset by move (median, IQR frames): {'delayed_overhead': (np.float64(40.0), np.float64(27.0)), 'staff_sweep': (np.float64(14.0), np.float64(0.0)), 'staff_sweep_b': (np.float64(15.0), np.float64(0.0)), 'staff_thrust': (np.float64(49.0), np.float64(0.0))}

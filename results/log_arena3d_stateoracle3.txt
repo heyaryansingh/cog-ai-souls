@@ -1,0 +1,1 @@
+state_oracle win 0.5 boss hp left 0.23 ['win', 'timeout', 'timeout', 'win', 'win', 'death', 'timeout', 'win', 'win', 'death', 'win', 'timeout'] s/fight 117.9

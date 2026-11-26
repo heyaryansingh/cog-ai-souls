@@ -1,40 +1,21 @@
 {
  "state_oracle": {
-  "win": 0.0,
-  "boss_hp_left": 0.6958352983722541,
-  "outcomes": [
-   "death",
-   "death",
-   "death",
-   "death",
-   "death",
-   "death",
-   "timeout",
-   "death",
-   "death",
-   "death",
-   "death",
-   "death"
-  ],
-  "sec_per_fight": 36.67026950915655
- },
- "oracle_dodger": {
-  "win": 0.75,
-  "boss_hp_left": 0.1007553679710967,
+  "win": 0.5,
+  "boss_hp_left": 0.22650711077089847,
   "outcomes": [
    "win",
-   "win",
+   "timeout",
    "timeout",
    "win",
    "win",
-   "win",
+   "death",
    "timeout",
    "win",
    "win",
+   "death",
    "win",
-   "win",
-   "death"
+   "timeout"
   ],
-  "sec_per_fight": 18.525592982769012
+  "sec_per_fight": 117.88349999984105
  }
 }

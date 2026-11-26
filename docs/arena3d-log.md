@@ -122,3 +122,20 @@ Coarser label (any hit in the next 24 frames), perfect pose, 8 training bosses:
 | Boss variety | hundreds of authored bosses | unlimited procedural bosses from 14k mocap units | Different (advantage for generalisation studies) | keep as training distribution |
 
 **Grounding source check.** Public boss frame data barely exists. The Fextralife Margit page gives a move list and structure but no frame counts: phase 1 opens with staff strings, then a delayed spinning windup, dagger throws (often punishing heals), a leaping stab and a tail swipe; phase 2 adds hammer moves that always end the string; HP 4,174 (NG). A community guide gives parry windows only. So the timings must come from **footage**: frame-by-frame annotation of windup, active and recovery per move. The perception tool (`scripts/video_perception.py`) can mark windup onsets and contact times semi-automatically once Aryan's recordings arrive.
+
+## B11 · Margit-like program boss works; state oracle fixed; how early can a move be read?
+- **State-oracle control fixed.** Using a 30-frame horizon for the attack decision (an attack commits the body for ~30 frames) moved the state oracle from 0–8% to **50% wins** on the 12 held-out bosses (6 wins, 4 timeouts, 2 deaths), against 75% for the clairvoyant oracle. So the gap between "knows the boss's current state perfectly" and "knows the future" is 25 points: that is the part of the problem that is genuinely unpredictable (hold lengths, next-move draws).
+- **Boss programs (`arena3d/program.py`).** Margit-like boss built from held-out mocap: named moves (staff sweep ×2, staff thrust, delayed overhead with a 24-frame median delay and mix-up, dagger throw, leaping stab), strings with a branch point (after the sweeps: thrust or delayed overhead), ender moves followed by recovery, a heal punish (dagger throw with p = 0.7), and a phase-2 set (hammer slam with a 4 m ring, sword spin, hammer leap with a 5 m ring). Checked with a kiting, healing player and infinite HP: phase 1 fired 22 throws (20 projectile hits), phase 2 fired hammer leaps (4 shockwave hits) and the new moves. Multi-hit per move now works through swing ids.
+- **Move-reading study (`scripts/margit_reading.py`, 442 strikes, 6 attempts, aggro player, perceived keypoints with 6% noise, dropout, 180 ms latency, leave-one-attempt-out 5-NN).** Results:
+
+| frames since onset | move identity acc. (chance .36) | danger-time MAE, frames (no reading: 13.7) |
+|---|---|---|
+| 4 | .34 | 15.2 |
+| 8 | .40 | 14.9 |
+| 12 | .66 | 6.4 |
+| 16 | .70 | 4.6 |
+| 24 | .61 | 4.8 |
+
+  Danger offsets by move: sweeps 14–15 frames (no spread), thrust 49, delayed overhead 40 (IQR 27).
+- **Reading.** Identity becomes readable about 12 frames after the move starts (6 frames of seen motion plus the 6-frame perception lag). That is *after* the sweeps have already landed (14 frames), but well before the thrust (49) and the delayed overhead (40). So pose reading alone can only answer the slow and delayed moves. The fast openers must be **predicted before they start**, from context: distance, the position in a string, the rhythm since the last swing. This is the same split a human player makes: you react to the delayed slam, you learn the timing of the fast string.
+- Next: an episodic reader that learns this boss's timing between deaths from context + pose (`arena3d/reader.py`), compared with a memoryless control.
