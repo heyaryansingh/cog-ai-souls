@@ -37,10 +37,19 @@ def series(rep):
     maps, g = pickle.load(open(CK, "rb")); out = []
     maps.update = g.update = os.environ.get("LEARN", "1") == "1"
     multi = maps if isinstance(maps, Multi) else None
+    rets = [[] for _ in (multi.ms if multi else [])]
     pl = LearnedModelPlanner(maps.best() if multi else maps, g, seed=rep)
     for k in range(int(os.environ.get("N", 6))):
-        if multi:
-            pl.maps = multi.best(); print("SELECT", rep, k, int(np.argmax(multi.scores())), [round(x, 4) for x in multi.scores()], flush=True)
+        if multi and os.environ.get("WM_SELECT_BY") == "return":     # bandit over world models, scored by damage dealt
+            n_ = [len(v) for v in rets]
+            if min(n_) == 0:
+                sel = int(np.argmin(n_))
+            else:
+                ucb = [np.mean(v) + 0.3 * np.sqrt(2 * np.log(k + 1) / len(v)) for v in rets]; sel = int(np.argmax(ucb))
+            pl.maps = multi.ms[sel]; print("SELECT", rep, k, sel, [round(float(np.mean(v)), 3) if v else None for v in rets], flush=True)
+        elif multi:
+            sel = int(np.argmax(multi.scores()))
+            pl.maps = multi.best(); print("SELECT", rep, k, sel, [round(x, 4) for x in multi.scores()], flush=True)
         seed = 8 + rep * 100 + k if rep else 8 + k
         env = Arena3D(spec(), U, clips(), seed=seed, player_strike=pstrike()); env.reset(); pl.reset(env)
         if multi: multi.reset(env)
@@ -49,6 +58,7 @@ def series(rep):
             a = pl.act(env)
             _, _, done, info = env.step(a); maps.observe(env, info)
         r = ("worldmodel", rep, seed, info["outcome"], round(1 - env.boss_hp / env.spec.hp, 3), env.t)
+        if multi: rets[sel].append(r[4])
         print("FIGHT", *r, flush=True); out.append(r)
     return out
 
