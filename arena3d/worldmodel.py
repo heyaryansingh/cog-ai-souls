@@ -29,24 +29,28 @@ def _bins(tau, rel):
 
 
 class DangerMaps:
-    def __init__(self, n_moves, prior_hit=0.005, prior_n=2.0, seed=0, read_k=12, acc=0.7):
+    def __init__(self, n_moves, prior_hit=0.005, prior_n=2.0, seed=0, read_k=12, acc=0.7, cfg=None):
         self.N = np.zeros((n_moves, TB, RB, AB)); self.H = np.zeros((n_moves, TB, RB, AB))
         self.D = np.zeros((n_moves, 3 * TB, 2)); self.Dn = np.zeros((n_moves, 3 * TB))   # boss travel (onset frame)
         import os
-        self.cur = os.environ.get('WM_FRAME', 'onset') == 'current'
+        E = dict(os.environ); E.update(cfg or {})     # per-instance config (B47 model selection) overrides env
+        self.persist = E.get("WM_PERSIST", "0") == "1"
+        self.hier_k = float(E.get("WM_HIER", 0))
+        self.ll, self.ll_n = 0.0, 0                   # predictive log-likelihood of felt contacts (B47)
+        self.cur = E.get('WM_FRAME', 'onset') == 'current'
         # B33 aim model: the boss keeps turning toward you until its swing commits. Frame = onset origin, rotated
         # by the boss's perceived turn since onset; the planner imagines that turn toward its imagined position.
-        self.track = os.environ.get('WM_TRACK') == '1'
+        self.track = E.get('WM_TRACK') == '1'
         if self.track:
             self.cur = False
         self.turn, self.dturn = 0.0, []          # perceived turn since onset; per-frame turn magnitudes seen
         self.peak_obs = {}                       # move -> taus at which turning was last seen (commit time)
         # B43 motion-phase clock: index danger by how far the swing has progressed (pose progress), not by time
         # since onset, so a delayed windup doesn't smear timing; learn each move's hold (delay) lengths
-        self.phase_idx = os.environ.get('WM_PHASEIDX') == '1'
+        self.phase_idx = E.get('WM_PHASEIDX') == '1'
         self.hold_obs, self.hold_ph = {}, {}
         self.ph, self.hold_el, self.cur_hold, self.cur_hold_ph, self.holding = 0, 0, 0, None, False
-        self.geom = os.environ.get('WM_GEOM') == '1'; self.trajs = {}; self.cur_traj = []; self.prev_label = None
+        self.geom = E.get('WM_GEOM') == '1'; self.trajs = {}; self.cur_traj = []; self.prev_label = None
         self.a, self.b = prior_hit * prior_n, prior_n
         self.rng = np.random.default_rng(seed); self.read_k, self.acc, self.n = read_k, acc, n_moves
         self.update = True
@@ -87,7 +91,7 @@ class DangerMaps:
                     self.hold_ph.setdefault(self.prev_label, []).append(self.cur_hold_ph)
             self.ph, self.hold_el, self.cur_hold, self.cur_hold_ph, self.holding = 0, 0, 0, None, False
         import os
-        persist = os.environ.get("WM_PERSIST", "0") == "1"   # B30: keep attending to a move's effects after the swing
+        persist = self.persist   # B30: keep attending to a move's effects after the swing
         if self.origin is None or s != self.serial or (b.kind != "strike" and not persist):
             return
         tau = env.t - self.onset
@@ -129,9 +133,17 @@ class DangerMaps:
             else:
                 self.cur_traj.append((tau, np.r_[self.rel(env, tip) - bdisp, self.rel(env, hand) - bdisp]))
         r = self.rel(env) - bdisp if self.cur else self.rel(env, fwd=fwd_now)       # my position relative to the boss now
-        self.pend.append((tau_m, r, hit, bdisp))
+        self.pend.append((tau_m, r, hit, bdisp, b.kind == "strike" and tau < 3 * TB))
         if self.label is not None and self.update:
-            for (t0, r0, h0, d0) in self.pend:
+            sc = [(t0, r0, h0) for (t0, r0, h0, d0, k0) in self.pend if k0]
+            if sc:     # score each felt/unfelt frame BEFORE learning from it (prequential likelihood)
+                T0 = np.array([x[0] for x in sc]); R0 = np.array([x[1] for x in sc]); H0 = np.array([x[2] for x in sc], float)
+                p = self.hazard(self.label, T0, R0)
+                if self.geom:
+                    p = np.maximum(p, self.geom_hazard(self.label, T0, R0))
+                p = np.clip(p, 1e-3, 1 - 1e-3)
+                self.ll += float((H0 * np.log(p) + (1 - H0) * np.log(1 - p)).sum()); self.ll_n += len(sc)
+            for (t0, r0, h0, d0, k0) in self.pend:
                 ti, ri, ai, ok = _bins(t0, r0)
                 if ok:
                     self.N[self.label, ti, ri, ai] += 1; self.H[self.label, ti, ri, ai] += h0
@@ -230,7 +242,7 @@ class DangerMaps:
         ti, ri, ai, ok = _bins(tau, rel)
         Ns, Hs = self._smoothed()
         import os
-        k = float(os.environ.get("WM_HIER", 0))
+        k = getattr(self, "hier_k", float(os.environ.get("WM_HIER", 0)))
         if k > 0:   # hierarchical back-off (B30): sparse places borrow this move's hazard-at-this-time over all places
             Hm, Nm = Hs[m].sum((1, 2)), Ns[m].sum((1, 2))
             pm = (Hm[ti] + self.a) / (Nm[ti] + self.b)
@@ -279,7 +291,7 @@ class LearnedModelPlanner:
     def _move_samples(self, env):
         """(move id, tau) samples for the current boss move; None if the boss isn't attacking."""
         b = env.boss; mp = self.maps
-        persist = __import__("os").environ.get("WM_PERSIST", "0") == "1"
+        persist = getattr(mp, "persist", False)
         if (b.kind != "strike" and not persist) or mp.origin is None or env.t - mp.onset > 3 * TB:
             # boss between moves: imagine the next move starting soon (opener anticipation), frame of
             # reference = now, start delay 0-15 frames, identity from the learned strings
