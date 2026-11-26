@@ -477,3 +477,8 @@ Keypoint noise alone removes almost all of the reading; 6-frame latency costs ne
 
 ## B42 · 4× more scouting doesn't help the aim-model agent either
 - Same 18 bosses × 2 fights, 6,000 instead of 1,500 scouting frames: 44.0% damage, 6/36 wins, 2412 frames (vs 45.4%, 8/36, 2166; Wilcoxon p = .64). Same plateau as B23 and B32: more data of the same kind doesn't move this learner.
+
+## B43 · A motion-phase clock for delayed swings (running)
+- Death diagnosis of the aim-model agent (`scripts/wm_death_diag.py`, 6 bosses, 59 hits): 76% of hits land on moves already identified, and ~60% while the agent was free to act. So knowledge of *which* move was there and the agent could have moved. Many land late in the move (40–96 frames after onset). Procedural bosses (like Margit) freeze in a log-normal windup hold before the fast part of a swing, so the same move's danger arrives at very different times since onset. Maps indexed by time since onset smear it, and the agent can't time a dodge.
+- `WM_PHASEIDX=1`: index danger by **motion phase** (how far the swing has progressed through its motion; perceivable from pose progression, with the windup freeze seen as the body stopping), not by time since onset. Each move's hold lengths and hold point are learned from watching. In imagination, each of the 8 sampled futures draws its own remaining hold from the learned lengths, conditioned on how long the boss has already held. Timing uncertainty is represented while the boss is frozen and collapses when it resumes, which is the human strategy against delayed attacks ("wait for it, then roll").
+- 18 bosses × 2 paired fights, against the aim-model agent (45.4%, 8/36 wins, 2166 frames).

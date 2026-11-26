@@ -41,6 +41,11 @@ class DangerMaps:
             self.cur = False
         self.turn, self.dturn = 0.0, []          # perceived turn since onset; per-frame turn magnitudes seen
         self.peak_obs = {}                       # move -> taus at which turning was last seen (commit time)
+        # B43 motion-phase clock: index danger by how far the swing has progressed (pose progress), not by time
+        # since onset, so a delayed windup doesn't smear timing; learn each move's hold (delay) lengths
+        self.phase_idx = os.environ.get('WM_PHASEIDX') == '1'
+        self.hold_obs, self.hold_ph = {}, {}
+        self.ph, self.hold_el, self.cur_hold, self.cur_hold_ph, self.holding = 0, 0, 0, None, False
         self.geom = os.environ.get('WM_GEOM') == '1'; self.trajs = {}; self.cur_traj = []; self.prev_label = None
         self.a, self.b = prior_hit * prior_n, prior_n
         self.rng = np.random.default_rng(seed); self.read_k, self.acc, self.n = read_k, acc, n_moves
@@ -76,6 +81,11 @@ class DangerMaps:
             self.origin = b.root + self.rng.normal(0, 0.1, 2)
             self.fwd = float(np.arctan2(to_p[1], to_p[0])) + self.rng.normal(0, 0.1)   # bosses face you at onset
             self.yaw0, self.turn, self.last_turn_tau = float(b.yaw_off), 0.0, 0
+            if self.phase_idx and getattr(self, 'prev_label', None) is not None:
+                self.hold_obs.setdefault(self.prev_label, []).append(self.cur_hold)
+                if self.cur_hold_ph is not None:
+                    self.hold_ph.setdefault(self.prev_label, []).append(self.cur_hold_ph)
+            self.ph, self.hold_el, self.cur_hold, self.cur_hold_ph, self.holding = 0, 0, 0, None, False
         import os
         persist = os.environ.get("WM_PERSIST", "0") == "1"   # B30: keep attending to a move's effects after the swing
         if self.origin is None or s != self.serial or (b.kind != "strike" and not persist):
@@ -86,13 +96,26 @@ class DangerMaps:
         if tau >= self.read_k and self.label is None:
             self.label = b.move_id if self.rng.random() < self.acc else int(self.rng.integers(self.n))
             self.prev_label = self.label
+        if self.phase_idx:
+            if b.kind == "strike":
+                self.holding = bool(b.hold > 0 and int(b.f) >= b.hold_at)     # seen as the body freezing mid-windup
+                if self.holding:
+                    if self.cur_hold == 0: self.cur_hold_ph = self.ph
+                    self.cur_hold += 1; self.hold_el = self.cur_hold
+                else:
+                    self.ph = int(round(b.f / max(b.speed, 1e-3)))
+            else:
+                self.holding = False; self.ph += 1
+            tau_m = self.ph
+        else:
+            tau_m = tau
         fwd_now = None
         if self.track:
             if b.kind == "strike":
                 new = float(b.yaw_off) - self.yaw0 + self.rng.normal(0, 0.003)   # seen body rotation since onset
                 d = abs(new - self.turn)
                 if d > 0.004:
-                    self.dturn.append(d); self.dturn = self.dturn[-2000:]; self.last_turn_tau = tau
+                    self.dturn.append(d); self.dturn = self.dturn[-2000:]; self.last_turn_tau = tau_m
                 self.turn = new
             fwd_now = self.fwd + self.turn
         hit = bool(info.get("hit") is not None or info.get("blocked") or info.get("dodged"))
@@ -102,11 +125,11 @@ class DangerMaps:
             tip = env.d.site_xpos[env.tip][:2] + self.rng.normal(0, sd, 2)
             hand = env.d.xpos[env.m.body('b_rhand').id][:2] + self.rng.normal(0, sd, 2)
             if self.track:
-                self.cur_traj.append((tau, np.r_[self.rel(env, tip, fwd=fwd_now), self.rel(env, hand, fwd=fwd_now)]))
+                self.cur_traj.append((tau_m, np.r_[self.rel(env, tip, fwd=fwd_now), self.rel(env, hand, fwd=fwd_now)]))
             else:
                 self.cur_traj.append((tau, np.r_[self.rel(env, tip) - bdisp, self.rel(env, hand) - bdisp]))
         r = self.rel(env) - bdisp if self.cur else self.rel(env, fwd=fwd_now)       # my position relative to the boss now
-        self.pend.append((tau, r, hit, bdisp))
+        self.pend.append((tau_m, r, hit, bdisp))
         if self.label is not None and self.update:
             for (t0, r0, h0, d0) in self.pend:
                 ti, ri, ai, ok = _bins(t0, r0)
@@ -115,6 +138,28 @@ class DangerMaps:
                 if t0 < 3 * TB:
                     self.D[self.label, t0] += d0; self.Dn[self.label, t0] += 1
             self.pend = []
+
+    def future_phases(self, m, H, rng):
+        """Imagined motion-phase clock for the next H frames of move m: progress pauses for a sampled remaining
+        windup hold (learned hold lengths of this move; conditioned on the hold already seen)."""
+        L = self.hold_obs.get(m, [])
+        hp = float(np.median(self.hold_ph[m])) if self.hold_ph.get(m) else 1e9
+        if self.holding:
+            longer = [x for x in L if x > self.hold_el]
+            rem = (int(rng.choice(longer)) - self.hold_el) if longer else 3
+            hp = self.ph
+        elif L and self.ph < hp:
+            rem = int(rng.choice(L))
+        else:
+            rem = 0
+        out = np.zeros(H, int); p = self.ph
+        for i in range(H):
+            if rem > 0 and p >= hp:
+                rem -= 1
+            else:
+                p += 1
+            out[i] = p
+        return out
 
     def track_rate(self):
         return float(np.percentile(self.dturn, 90)) if len(self.dturn) > 20 else 0.03
@@ -277,7 +322,11 @@ class LearnedModelPlanner:
                 rel = np.array([self.maps.rel(env, q, *self.ref) for q in pos])
                 taus = tau0 + np.arange(1, self.H + 1)
                 rs = []
+                taus_all = taus
                 for m in ms:
+                    taus = taus_all
+                    if self.maps.phase_idx and self.ref[0] is None:
+                        taus = self.maps.future_phases(m, self.H, self.rng)
                     rr = rel
                     if self.maps.track and self.ref[0] is None:
                         rr = self.maps.rel_tracked(env, pos, taus, tau0, m)
