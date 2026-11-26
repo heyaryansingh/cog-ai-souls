@@ -74,8 +74,10 @@ class DangerMaps:
         hit = bool(info.get("hit") is not None or info.get("blocked") or info.get("dodged"))
         bdisp = self.rel(env, b.root + self.rng.normal(0, 0.1, 2))      # boss travel since onset (perceived)
         if getattr(self, 'geom', False):        # seen weapon tip (noisy keypoint), relative to the boss now
-            tip = env.d.site_xpos[env.tip][:2] + self.rng.normal(0, 0.06 * 1.75 * env.spec.scale, 2)
-            self.cur_traj.append((tau, self.rel(env, tip) - bdisp))
+            sd = 0.06 * 1.75 * env.spec.scale
+            tip = env.d.site_xpos[env.tip][:2] + self.rng.normal(0, sd, 2)
+            hand = env.d.xpos[env.m.body('b_rhand').id][:2] + self.rng.normal(0, sd, 2)
+            self.cur_traj.append((tau, np.r_[self.rel(env, tip) - bdisp, self.rel(env, hand) - bdisp]))
         r = self.rel(env) - bdisp if self.cur else self.rel(env)       # my position relative to the boss now
         self.pend.append((tau, r, hit, bdisp))
         if self.label is not None and self.update:
@@ -102,14 +104,14 @@ class DangerMaps:
             self._key = key
         return self._Ns, self._Hs
 
-    def geom_hazard(self, m, tau, rel, reach=0.55):
+    def geom_hazard(self, m, tau, rel, reach=0.4):
         """Fraction of remembered tip trajectories of move m passing within `reach` of rel at tau (+-1)."""
         T = self.trajs.get(m)
         if not T:
             return np.zeros(len(tau))
         key = (m, len(T), id(T[-1]))
         if getattr(self, "_gk", {}).get(m) != key:
-            A = np.full((len(T), 3 * TB + 2, 2), np.nan)
+            A = np.full((len(T), 3 * TB + 2, 4), np.nan)
             for j, tr in enumerate(T):
                 for t, p in tr:
                     if 0 <= t < 3 * TB:
@@ -120,7 +122,11 @@ class DangerMaps:
         ti = np.clip(np.asarray(tau), 0, 3 * TB - 1) + 1
         best = np.full((A.shape[0], len(ti)), np.inf)
         for o in (-1, 0, 1):
-            d = np.hypot(*(A[:, ti + o] - rel[None]).transpose(2, 0, 1))
+            P = A[:, ti + o]                                   # (traj, tau, 4): tip xy, hand xy
+            tip, hand = P[..., :2], P[..., 2:]
+            seg = tip - hand; w = rel[None] - hand
+            u = np.clip((seg * w).sum(-1) / np.maximum((seg * seg).sum(-1), 1e-6), 0, 1)
+            d = np.hypot(*(w - u[..., None] * seg).transpose(2, 0, 1))   # distance to the blade segment
             best = np.fmin(best, d)
         return (best < reach).mean(0) * 0.5
 

@@ -300,3 +300,5 @@ Coarser label (any hit in the next 24 frames), perfect pose, 8 training bosses:
 
 ## B25 · Learning from what you see, not only what hits you (R3 v6), running
 - Felt contacts are sparse: ~200 in 18k frames. A player also learns from *watching the weapon*: every swing that passes near you shows its reach and timing. v6 (`WM_GEOM=1`) stores each move's perceived weapon-tip trajectory (tip keypoint with 6%-of-height noise: a weapon-aware detector, which the MediaPipe pipeline doesn't have yet) relative to the boss. Hazard = the fraction of remembered trajectories whose tip passes within reach of the imagined player position at that moment, combined with the felt-contact map.
+- **v6 result (tip trajectories + felt contacts, 12 fights):** 0/12 wins, **42.9% damage**, the best simulator-free result so far (v5: 35.6%), with shorter fights (3,156 frames). Seeing the weapon makes it more willing to engage where swings don't reach.
+- **v7 (running):** hazard from the distance to the whole *blade segment* (perceived hand → tip), not only the tip point, reach 0.4 m.

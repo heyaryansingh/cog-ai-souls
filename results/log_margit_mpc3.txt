@@ -14,3 +14,7 @@ FIGHT mpc_learned_online 8 win -0.067 3962
 FIGHT mpc_learned_online 10 win -0.067 1530
 FIGHT mpc_learned_online 9 win -0.067 1108
 FIGHT mpc_learned_online 12 win -0.067 2178
+FIGHT mpc_learned_online 14 death 0.289 958
+FIGHT mpc_learned_online 15 win -0.067 896
+FIGHT mpc_learned_online 13 win -0.067 1786
+FIGHT mpc_learned_online 11 win -0.067 2425
