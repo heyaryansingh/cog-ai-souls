@@ -46,7 +46,8 @@ def train_library(K, frames):
     if os.path.exists(path): return pickle.load(open(path, "rb"))
     lib = {}
     for b in range(100, 100 + K):
-        sp = pboss(b); n = len(sp.program.moves); maps = DangerMaps(n, seed=b); g = SC.LearnedGrammarPlanner(n, seed=b)
+        sp = pboss(b); n = len(sp.program.moves); acc = float(os.environ.get("WM_ACC", 0.7))
+    maps = DangerMaps(n, seed=b, acc=acc); g = SC.LearnedGrammarPlanner(n, seed=b, acc=acc)
         scout(sp, frames, maps, g, 900 + b)
         for i, m in enumerate(sp.program.moves):
             k = proto(m); N0, H0 = lib.get(k, (0, 0))
@@ -57,7 +58,8 @@ def train_library(K, frames):
 def one(args):
     cond, b, K = args
     sp = pboss(b); n = len(sp.program.moves); W = int(os.environ.get("WATCH", 1500))
-    maps = DangerMaps(n, seed=b); g = SC.LearnedGrammarPlanner(n, seed=b)
+    acc = float(os.environ.get("WM_ACC", 0.7))
+    maps = DangerMaps(n, seed=b, acc=acc); g = SC.LearnedGrammarPlanner(n, seed=b, acc=acc)
     if K > 0:
         lib = train_library(K, int(os.environ.get("LIB_WATCH", 4500))); c = float(os.environ.get("PRIOR_N", 0.25))
         for i, m in enumerate(sp.program.moves):
@@ -78,7 +80,7 @@ if __name__ == "__main__":
     Ks = [int(x) for x in os.environ.get("KS", "0,12").split(",")]
     for K in Ks:
         if K: train_library(K, int(os.environ.get("LIB_WATCH", 4500)))
-    tests = range(int(os.environ.get("NB", 6)))
+    tests = [int(x) for x in os.environ["BS"].split(",")] if os.environ.get("BS") else range(int(os.environ.get("NB", 6)))
     with Pool(int(os.environ.get("PROCS", 2))) as p:
         res = sum(p.map(one, [(f"K{K}", b, K) for b in tests for K in Ks]), [])
     json.dump(res, open(os.environ.get("OUT", "results/general_learner.json"), "w"))

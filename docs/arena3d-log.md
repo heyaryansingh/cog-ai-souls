@@ -379,3 +379,15 @@ The real sequence lifts label-free move identification by +.11 NMI; a fake seque
 
   None of the pairwise differences is significant at n = 12 (best: p1h4 vs no drive, Wilcoxon one-sided p = .064; p1h4 vs h1, p = .23). Attending after the swing alone *hurt*: more recorded contacts at late taus make the planner see danger everywhere, and with too few data that pushes it into bad dodges. Back-off rescues it by pooling. First non-zero damage on boss 4 (27%, 18%) and boss 5 (9%). Every fight still ends in death: the simulator-free learner's bottleneck is survival, not aggression.
 - **Next (B31).** The real souls test: does the learner improve *across attempts*, as a player does after each death? 6 attempts per boss, learning carried over, p1h4 config, learning curves of damage and survival per attempt.
+
+## B31 · Learning across attempts (the souls loop) for the simulator-free learner
+- 6 procedural bosses × 6 consecutive attempts, danger maps and strings carried across deaths (p1h4 config + drive). 5/36 wins, 43.6% mean damage (vs 38.8% over 2 attempts in B30b).
+
+| attempt | 1 | 2 | 3 | 4 | 5 | 6 |
+|---|---|---|---|---|---|---|
+| mean damage | 28.7% | 48.9% | 42.1% | 50.2% | 47.4% | 44.5% |
+| mean frames survived | 1464 | 2111 | 1874 | 2795 | 2400 | 2213 |
+| wins | 0 | 1 | 1 | 2 | 0 | 1 |
+
+- Per boss the picture splits. Bosses 0 and 1 show a human-like curve (36→53→62→107→98→98% and 53→71→18→62→98→107%, beaten on the last attempts). Boss 3 is beaten on attempts 2–4, then *regresses* (53%, 36%). Boss 2 *gets worse* (66→0%). Bosses 4 and 5 stay near the floor. No overall monotonic trend (Spearman ρ = .04); the gain is mostly first attempt → rest.
+- **Hypothesis for the regressions: superstition.** Each fight adds contacts recorded under noisy (70%) move labels, plus hazard pooled by back-off, so danger leaks onto safe places and times, and the planner becomes over-cautious or mistimes rolls. Test (B32): bosses 2 and 3 with perfect move identification (`WM_ACC=1`). If regressions vanish, label noise drives them, and the fix is credit assignment (e.g. relabel past contacts once the move is identified with more confidence, or B27's expectation-guided labelling).
