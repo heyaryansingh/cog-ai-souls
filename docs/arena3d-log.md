@@ -581,3 +581,19 @@ Damage ×2.2 again (Wilcoxon one-sided p = 4.5e-6), wins 8 vs 2 (Fisher one-side
   - **Margit 3 × 12:** 43.0% (family prior 40.7%, combined selector 47.2%, v6 alone 52.3%). Final exchange ratios favour v6 in 2 of 3 series by a wide margin (0.48 vs 0.25, 0.45 vs 0.16); the third series settled on the stack (0.44 vs 0.37). The signal is strong once collected; the cost is the time spent mixing.
   - **Held-out procedural 18 × 6:** 54.5%, 20 wins: between v6 (47.9%, p = .06) and the stack (56.5%, n.s.); the stack held only 55% of frames.
 - **Reading.** Exchange ratio is a much sharper outcome signal than end-of-fight damage (2–3× gaps on Margit vs 12-point damage gaps), so segment-level evidence is the right currency. But Thompson sampling keeps mixing too long on a 6–12-fight budget, and on bosses where the stack is right the mixing costs ~2–3 points. Across B47–B53 no selector beats simply committing to the family's better model on procedural bosses, and none recovers more than half of v6's advantage on Margit. **Practical rule for the final agent: use the family default (stack) and switch on a strong exchange-ratio signal** (B54 candidate: switch only when posterior P(other better) > 0.9, otherwise exploit). The line of work has given a clear scientific result (prediction ≠ control; outcome evidence needed) and is now at diminishing returns; next priority moves to sleep/replay (R6).
+
+## B54 · Mostly-greedy segment trials: the first selector that matches the better model on both families
+- Same as B53 (re-pick the world model every 300 frames, scored by hits dealt / hits taken while in control, family prior as pseudo-counts) but greedy on the posterior mean, with Thompson exploration in only 20% of segments (`WM_IL_EPS=0.2`).
+
+| selector | Margit (3 × 12) | held-out procedural (18 × 6) |
+|---|---|---|
+| plain v6 | **52.3%** (B46) | 47.9% |
+| stack | 34–40% (B46) | **56.5%** |
+| likelihood (B47) | 43.5% | – |
+| combined likelihood + return (B49/B50) | 47.2% | 39.7% (bosses 0–17) |
+| family prior on returns (B52) | 40.7% | 57.9% |
+| interleave, Thompson (B53) | 43.0% | 54.5% |
+| **interleave, ε = 0.2 (B54)** | **52.3%** | **56.3%** (vs v6 p = .02; vs stack p = .95) |
+
+- Margit: v6 holds 77–91% of frames by the end in two series (exchange ratio 0.54 vs 0.32, 0.57 vs 0.35); in the third the two models score the same (0.58 vs 0.57), so it doesn't matter which one plays. Procedural: the stack holds 70% of frames.
+- **Reading.** The selection problem from B47–B53 is solved by two choices together: (1) a dense outcome signal (exchange ratio per 5-second segment instead of final damage per fight, ~10× more evidence per fight), and (2) exploit what that evidence says rather than probability-matching on it. This is close to how a player tests a tactic: try something for a few exchanges, keep it if the trades go your way. It is now the default selector for the full agent (`WM_SELECT=1 WM_SELECT_BY=interleave WM_IL_EPS=0.2`). B55 (Godrick-like boss) tests it on a third family.
