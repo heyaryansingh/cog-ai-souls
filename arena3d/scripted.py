@@ -331,7 +331,12 @@ def _rollout_value(env, a, H, seed, read_k, grammar, hold=6):
         _, _, done, info = sim.step(a if (k == 0 or (mv and k < hold)) else 0)
         if done:
             break
-    return (b0 - sim.boss_hp) - 2.5 * (hp0 - sim.hp) - (100 if sim.hp <= 0 else 0)
+    v = (b0 - sim.boss_hp) - 2.5 * (hp0 - sim.hp) - (100 if sim.hp <= 0 else 0)
+    w = getattr(env, "_close_w", 0.0)
+    if w:     # drive to engage: imagined end distance beyond own reach costs w per metre (B28)
+        reach = 0.8 + 0.25 * env.spec.scale
+        v -= w * max(0.0, float(np.linalg.norm(sim.boss.root - sim.p_xy)) - reach)
+    return v
 
 
 def mpc_planner(env, rng, H=24, n=3, grammar="learned"):
@@ -349,6 +354,15 @@ def mpc_planner(env, rng, H=24, n=3, grammar="learned"):
             LIGHT, 3 * N_BUTTONS + ROLL, 7 * N_BUTTONS + ROLL, 5 * N_BUTTONS + ROLL]
     if env.flasks and env.hp < 60:
         acts.append(HEAL)
+    # Engagement drive (B28): a short horizon makes standing off look safe and free, so a boss that is always
+    # swinging is never approached. MPC_CLOSE sets a per-metre cost on ending out of reach; MPC_HUNGER makes it
+    # grow with time since the agent last dealt damage (frustration -> pressure), reset by each hit landed.
+    w0 = float(os.environ.get("MPC_CLOSE", 0))
+    if w0:
+        if getattr(env, "_last_bhp", None) != env.boss_hp:
+            env._last_bhp, env._last_dmg_t = env.boss_hp, env.t
+        hung = float(os.environ.get("MPC_HUNGER", 0))
+        env._close_w = w0 * (1 + hung * (env.t - env._last_dmg_t) / 300.0)
     seeds = [int(s) for s in rng.integers(1 << 30, size=n)]
     vals = [np.mean([_rollout_value(env, a, H, s, int(os.environ.get("READ_K", 12)), g) for s in seeds]) for a in acts]
     a = acts[int(np.argmax(vals))]
