@@ -211,6 +211,11 @@ class LearnedModelPlanner:
             acts.append(HEAL)
         ms, tau0 = self._move_samples(env)
         dist = np.linalg.norm(env.boss.root - env.p_xy); reach = 0.8 + 0.25 * env.spec.scale
+        # engagement drive (B28/B30): the approach weight grows with time since this agent last landed a hit
+        import os
+        if getattr(self, "_bhp", None) != env.boss_hp or getattr(self, "_env", None) is not env:
+            self._bhp, self._dmg_t, self._env = env.boss_hp, env.t, env
+        w_close = float(os.environ.get("WM_CLOSE", 2.0)) * (1 + float(os.environ.get("WM_HUNGER", 0)) * (env.t - self._dmg_t) / 300.0)
         best, bv = NONE, -1e9
         for a in acts:
             pos, inv = self_model(env, a, self.H)
@@ -240,7 +245,7 @@ class LearnedModelPlanner:
                 gain = 0.6 * min(60, 100 - env.hp)
             # shaping: prefer ending near striking range when it is safe
             dend = np.linalg.norm(env.boss.root - pos[-1])
-            v = gain - self.hc * risk - 2.0 * max(0.0, dend - reach)
+            v = gain - self.hc * risk - w_close * max(0.0, dend - reach)
             if btn in (LIGHT, HEAL):
                 v -= self.hc * risk * 0.5        # commitment: cannot roll out
             if v > bv:
