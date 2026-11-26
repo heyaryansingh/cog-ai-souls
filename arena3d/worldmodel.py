@@ -39,6 +39,10 @@ class DangerMaps:
 
     # --- learning from felt contacts -----------------------------------------------------------------
     def reset(self, env):
+        import os
+        # body-size units: positions in units of the boss's (perceived) size, Margit-like scale 1.9 = 1, so hit
+        # volumes transfer across bosses of different size
+        self.unit = env.spec.scale / 1.9 if os.environ.get('WM_NORM') == '1' else 1.0
         self.serial, self.origin, self.fwd, self.label, self.onset = -1, None, 0.0, None, 0
         self.pend = []                      # (tau, rel) for the current move before it is identified
 
@@ -46,7 +50,7 @@ class DangerMaps:
         p = env.p_xy if p is None else p
         origin = self.origin if origin is None else origin; fwd = self.fwd if fwd is None else fwd
         d = p - origin; c, s = np.cos(-fwd), np.sin(-fwd)
-        return np.array([c * d[0] - s * d[1], s * d[0] + c * d[1]])
+        return (np.array([c * d[0] - s * d[1], s * d[0] + c * d[1]])) / getattr(self, 'unit', 1.0)
 
     def observe(self, env, info):
         b = env.boss

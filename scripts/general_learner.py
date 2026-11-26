@@ -42,7 +42,7 @@ def scout(sp, frames, maps, g, seed):
 
 
 def train_library(K, frames):
-    path = f"checkpoints/general_library_K{K}_W{frames}.pkl"
+    path = f"checkpoints/general_library_K{K}_W{frames}_{os.environ.get('WM_FRAME', 'onset')}_n{os.environ.get('WM_NORM', '0')}.pkl"
     if os.path.exists(path): return pickle.load(open(path, "rb"))
     lib = {}
     for b in range(100, 100 + K):
