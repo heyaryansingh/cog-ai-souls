@@ -7,3 +7,4 @@ runs/
 checkpoints/
 *.egg-info/
 data/mocap/
+data/*.npz

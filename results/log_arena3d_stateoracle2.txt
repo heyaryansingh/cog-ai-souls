@@ -1,0 +1,1 @@
+state_oracle win 0.08 boss hp left 0.54 ['death', 'death', 'death', 'death', 'death', 'death', 'death', 'win', 'death', 'death', 'death', 'death'] s/fight 23.4

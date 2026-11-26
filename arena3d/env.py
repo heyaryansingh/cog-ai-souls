@@ -56,7 +56,12 @@ class Arena3D:
 
     # ------------------------------------------------------------------------------------------------
     def reset(self):
-        self.boss = BossRunner(self.spec, self.U, self.C, self.rng)
+        if getattr(self.spec, "program", None) is not None:
+            from .program import ProgramRunner
+            self.boss = ProgramRunner(self.spec, self.U, self.C, self.rng)
+        else:
+            self.boss = BossRunner(self.spec, self.U, self.C, self.rng)
+        self.projectiles, self.rings, self.swing_id, self.fired = [], [], 0, -1
         self.boss.reset(np.array([0.0, 5.0 + self.spec.scale]), -np.pi / 2)
         self.p_xy, self.p_yaw = np.array([0.0, 0.0]), np.pi / 2
         self.hp, self.stamina, self.flasks = 100.0, 100.0, 4
@@ -161,6 +166,7 @@ class Arena3D:
             self.stamina = min(100.0, self.stamina + (0.6 if self.act == GUARD else 1.5))
         # boss
         unit_before = self.boss.unit
+        self.boss.player_healing = self.act == HEAL
         qb = self.boss.step(self.p_xy, self.phase)
         self.audio[:] = 0
         if self.boss.unit is not unit_before and self.boss.kind == "strike":
@@ -170,6 +176,7 @@ class Arena3D:
                 self.audio[0] = 1
         q_new = np.concatenate([qb, self._player_q()])
         reward, info = self._resolve(q_new)
+        reward += self._effects(info)
         self.act_t += 1
         if self.act in (ROLL, LIGHT, HEAL) and self.player_free() and self.act != GUARD:
             pass
@@ -206,6 +213,7 @@ class Arena3D:
             fast = tip_v > 5.0 and self.boss.kind == "strike"
             if fast and not getattr(self, "_was_fast", False):
                 self.audio[1] = 1
+                self.swing_id += 1          # a new swing inside the same move can hit again (multi-hit)
             self._was_fast = fast
             shield_touch, body_touch, pbl_touch = False, None, None
             for c in d.contact[:d.ncon]:
@@ -221,8 +229,11 @@ class Arena3D:
                     other = g2 if g1 == self.pblade else g1
                     if other in self.b_geoms:
                         pbl_touch = other
-            if (shield_touch or body_touch is not None) and tip_v > 2.5 and ("b", boss_serial) not in self.hit_lock:
-                self.hit_lock[("b", boss_serial)] = 1
+            mv = getattr(self.boss, "cur_move", None)
+            melee = not (mv is not None and mv.projectile)
+            key = ("b", boss_serial, self.swing_id)
+            if melee and (shield_touch or body_touch is not None) and tip_v > 2.5 and key not in self.hit_lock:
+                self.hit_lock[key] = 1
                 self.audio[2] = 1
                 # souls rule: a raised guard blocks any hit from the front half (angle check, as in
                 # Elden Ring), not only blade-on-shield contact
@@ -253,6 +264,53 @@ class Arena3D:
                 info["boss_hit"] = (part, dmg)
         self.prev_qpos = q_new.copy()
         return reward, info
+
+    def _guarded_front(self):
+        to_b = self.boss.root - self.p_xy
+        return self.act == GUARD and np.cos(np.arctan2(to_b[1], to_b[0]) - self.p_yaw) > 0.0
+
+    def _effects(self, info):
+        """Projectiles (dagger throws) and shockwave rings, spawned at a program move's danger frame."""
+        b, reward = self.boss, 0.0
+        mv = getattr(b, "cur_move", None)
+        serial = getattr(self, "boss_serial", -1)
+        if mv is not None and b.kind == "strike" and b.f >= b.peak and self.fired != serial:
+            self.fired = serial
+            hand = self.d.xpos[self.m.body("b_rhand").id].copy()
+            if mv.projectile:
+                tgt = np.array([self.p_xy[0], self.p_xy[1], 1.1])
+                v = tgt - hand
+                self.projectiles.append({"pos": hand, "vel": v / (np.linalg.norm(v) + 1e-6) * 14.0, "life": 50})
+            if mv.ring > 0:
+                tip = self.d.site_xpos[self.tip] if self.blade >= 0 else hand
+                self.rings.append({"c": tip[:2].copy(), "r": 0.3, "R": mv.ring, "hit": False})
+                self.audio[2] = 1
+        prot = self.in_iframes()
+        for pr in self.projectiles:
+            pr["pos"] = pr["pos"] + pr["vel"] * 0.03
+            pr["life"] -= 1
+            d_xy = np.linalg.norm(pr["pos"][:2] - self.p_xy)
+            if d_xy < 0.35 and 0.1 < pr["pos"][2] < 1.8:
+                pr["life"] = 0
+                if prot:
+                    info["dodged"] = True
+                elif self._guarded_front():
+                    self.stamina = max(0.0, self.stamina - 15); info["blocked"] = True
+                else:
+                    self.hp -= 14; reward -= 14; info["hit"] = ("projectile", 14.0)
+        self.projectiles = [p for p in self.projectiles if p["life"] > 0]
+        for rg in self.rings:
+            rg["r"] += (rg["R"] - 0.3) / 12
+            if not rg["hit"] and abs(np.linalg.norm(self.p_xy - rg["c"]) - rg["r"]) < 0.45:
+                rg["hit"] = True
+                if prot:
+                    info["dodged"] = True
+                elif self._guarded_front():
+                    self.stamina = max(0.0, self.stamina - 30); info["blocked"] = True
+                else:
+                    self.hp -= 20; reward -= 20; info["hit"] = ("shockwave", 20.0)
+        self.rings = [r for r in self.rings if r["r"] < r["R"]]
+        return reward
 
     # --- observation -----------------------------------------------------------------------------
     def observe(self):

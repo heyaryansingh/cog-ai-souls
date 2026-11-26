@@ -129,7 +129,7 @@ def state_oracle(env, rng, horizon=14, n=5):
     if not env.player_free():
         return 0
     seeds = [int(s) for s in rng.integers(1 << 30, size=n)]
-    risk = lambda a: np.mean([_hit_soon(env, a, horizon, s) for s in seeds])
+    risk = lambda a, H=horizon: np.mean([_hit_soon(env, a, H, s) for s in seeds])
     if risk(NONE) >= 0.4:
         best, bv = 5 * N_BUTTONS + ROLL, 2.0
         for d in rng.permutation([5, 3, 7, 4, 6, 2, 8]):
@@ -145,6 +145,6 @@ def state_oracle(env, rng, horizon=14, n=5):
     dist = np.linalg.norm(env.boss.root - env.p_xy)
     if dist > 0.8 + 0.25 * env.spec.scale:
         return 1 * N_BUTTONS + NONE
-    if risk(LIGHT) < 0.34:
+    if risk(LIGHT, 30) < 0.2:          # the attack commits the body for ~30 frames
         return LIGHT
     return 5 * N_BUTTONS + NONE

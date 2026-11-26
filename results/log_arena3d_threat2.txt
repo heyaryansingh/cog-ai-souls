@@ -1,0 +1,12 @@
+train 468757 pos 28651.0 test 223601 pos 4136.0 hits/fight-min 118 s
+data/arena3d_threat.npz position-only (0.726, 0.035) with pose (0.728, 0.036)
+/home/user/cog-ai-souls/scripts/arena3d_threat.py:126: UserWarning: To copy construct from a tensor, it is recommended to use sourceTensor.detach().clone() or sourceTensor.detach().clone().requires_grad_(True), rather than torch.tensor(sourceTensor).
+  pw = torch.tensor((1 - Ytr.mean()) / Ytr.mean() * 0.25)   # neg_keep=0.25 already reweights
+epoch 0 loss 0.2359 test AUC 0.715 AP 0.034 base 0.018
+epoch 1 loss 0.1909 test AUC 0.717 AP 0.034 base 0.018
+epoch 2 loss 0.2146 test AUC 0.719 AP 0.036 base 0.018
+epoch 3 loss 0.1681 test AUC 0.713 AP 0.033 base 0.018
+epoch 4 loss 0.1705 test AUC 0.713 AP 0.033 base 0.018
+epoch 5 loss 0.1937 test AUC 0.715 AP 0.034 base 0.018
+epoch 6 loss 0.1444 test AUC 0.715 AP 0.034 base 0.018
+epoch 7 loss 0.2114 test AUC 0.712 AP 0.034 base 0.018

@@ -1,0 +1,2 @@
+oracle_dodger win 0.17 boss hp left 0.25 ['timeout', 'timeout', 'death', 'death', 'win', 'timeout'] s/fight 26.3
+aggro win 0.0 boss hp left 0.84 ['death', 'death', 'death', 'death', 'death', 'death'] s/fight 0.3

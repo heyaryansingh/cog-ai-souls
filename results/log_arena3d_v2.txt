@@ -1,0 +1,21 @@
+/home/user/cog-ai-souls/arena3d/threat.py:88: RuntimeWarning: overflow encountered in exp
+  p = 1 / (1 + np.exp(-(X @ m)))
+/home/user/cog-ai-souls/arena3d/threat.py:93: RuntimeWarning: overflow encountered in exp
+  p = 1 / (1 + np.exp(-(X @ m)))
+/home/user/cog-ai-souls/arena3d/agent.py:399: RuntimeWarning: overflow encountered in exp
+  return (1 / (1 + np.exp(-self.head.logits(E)))).reshape(nC, nK)
+/home/user/cog-ai-souls/arena3d/threat.py:88: RuntimeWarning: overflow encountered in exp
+  p = 1 / (1 + np.exp(-(X @ m)))
+/home/user/cog-ai-souls/arena3d/threat.py:93: RuntimeWarning: overflow encountered in exp
+  p = 1 / (1 + np.exp(-(X @ m)))
+/home/user/cog-ai-souls/arena3d/agent.py:399: RuntimeWarning: overflow encountered in exp
+  return (1 / (1 + np.exp(-self.head.logits(E)))).reshape(nC, nK)
+/home/user/cog-ai-souls/arena3d/threat.py:88: RuntimeWarning: overflow encountered in exp
+  p = 1 / (1 + np.exp(-(X @ m)))
+/home/user/cog-ai-souls/arena3d/agent.py:399: RuntimeWarning: overflow encountered in exp
+  return (1 / (1 + np.exp(-self.head.logits(E)))).reshape(nC, nK)
+learn win by attempt [0. 0. 0. 0.] won ever 0.0 boss hp left [0.62 0.76 0.81 0.89] 3281
+frozen win by attempt [0. 0. 0. 0.] won ever 0.0 boss hp left [0.94 0.94 0.98 0.93] 6587
+random_policy win 0.0 boss hp left 0.93 ['death', 'death', 'death', 'death', 'death', 'death', 'death', 'death', 'death', 'death', 'death', 'death'] s/fight 0.5
+aggro win 0.0 boss hp left 0.8 ['death', 'death', 'death', 'death', 'death', 'death', 'death', 'death', 'death', 'death', 'death', 'death'] s/fight 0.3
+oracle_dodger win 0.5 boss hp left 0.2 ['win', 'win', 'timeout', 'win', 'death', 'death', 'death', 'win', 'timeout', 'win', 'death', 'win'] s/fight 19.6

@@ -93,3 +93,32 @@ Coarser label (any hit in the next 24 frames), perfect pose, 8 training bosses:
 - Requiring windups of at least 12 frames (360 ms, above human reaction plus roll start-up): clairvoyant 58%, state oracle 0%.
 - Check: imagined futures do track the truth. Over the next 14 frames, mean imagined risk is 0.70 before real hits and 0.05 otherwise. So the state oracle's failure is its decision rule (false alarms drain stamina; rolls into follow-ups), not missing information. Re-running with 5 futures and a 0.4 threshold.
 - Next: PPO restarted on the rebalanced bosses. A hit-risk planner with proper stamina accounting is needed before agent comparisons mean anything.
+
+## B10 · Gap audit: Arena3D vs Elden Ring, mechanic by mechanic (main finding of this entry)
+"Have" = implemented and checked; "Partial" = present but simplified; "Missing" = absent.
+
+| Mechanic | Elden Ring | Arena3D now | Status | Plan |
+|---|---|---|---|---|
+| Space / movement | continuous 3D, free movement, spacing decides everything | continuous 3D plane, 8-direction lock-on movement at walk speed | Partial | add run / sprint, 16 directions, free (non-lock-on) mode |
+| Terrain / arena bounds | walls, pillars, slopes, fog gate | flat ±15 m square | Missing | add walls (corner traps) and a round arena |
+| Lock-on and camera | lock-on toggle, camera lag, boss leaves the screen when close or large | always locked, camera behind the player | Partial | camera lag, field of view, boss partly off-screen when close (pixel track) |
+| Stamina economy | regenerates; roll, attack and block drain it; guard break at 0 | same structure, values hand-set | Have (values unvalidated) | calibrate against footage |
+| Roll timing and i-frames | ~13 i-frames at 30 fps-equivalent for medium roll (to be measured), recovery depends on load | i-frames on frames 2–11, recovery 16–20 frames | Partial | measure from footage; light / medium / heavy load |
+| Hit detection | per-frame 3D hit volumes on weapons and limbs, multi-hit swings | per-substep 3D contact (weapon capsule vs 19 body capsules); one hit per move | Have / Partial | multi-hit per move (spins hit 2–4 times) |
+| Poise and stagger (player) | hits stagger unless poise holds; hyper-armour on some attacks | hits interrupt attacks and heals only | Partial | poise meter and stagger animation |
+| Poise and stance (boss) | stance break after enough damage, then a critical hit | none | Missing | stance meter, stagger window, riposte |
+| Parry | timed parry window (e.g. 8 startup / 12 active frames for medium shields at 60 fps, from a community guide), two parries break Margit | none | Missing | parry with a window; boss parryability per move |
+| Delayed attacks | delayed swings, feints, variable windup | log-normal windup holds before the fastest frame | Have | calibrate delay distributions from footage |
+| Mixed-up / branching strings | fixed strings with branch points (e.g. staff combo → dagger or hammer) | combo matrix with peaked rows ("favourite follow-up") | Partial | explicit named strings with branch points (boss programs) |
+| Combo enders and openings | some moves always end the string (Margit's hammer slam), leaving a punish window | idle recovery after a string with probability 0.85–1.0 | Partial | per-move "ender" flag and authored recovery |
+| Tracking | turns during windup, often stops tracking before the swing | yaw tracking up to the danger frame, capped per frame | Have | per-move tracking strength from footage |
+| Leaps / gap closers | leap slams, lunges, backsteps with throws | lunges warped to reach; no leaps | Partial | airborne leap units (CMU jumps) with slam AoE |
+| Projectiles / ranged | dagger throws, magic, punishes healing | none in Arena3D | Missing | projectile moves; heal-punish rule |
+| AoE / shockwaves | hammer shockwave rings | none in Arena3D | Missing | ring hit volumes |
+| Phases | phase 2 at ~60–65% HP with new moves | +20% speed below 50% | Partial | new move set in phase 2 |
+| Input reading | heals and attacks get punished | none in Arena3D (was in Arena 2D) | Missing | port input-reading laws |
+| Input buffering | buffered inputs during recovery | none (actions only when free) | Missing | short input buffer |
+| Animation source | hand-authored combat animation | real human motion capture, mostly non-combat | Partial | combat mocap (blocked download; retry) and retiming to frame data |
+| Boss variety | hundreds of authored bosses | unlimited procedural bosses from 14k mocap units | Different (advantage for generalisation studies) | keep as training distribution |
+
+**Grounding source check.** Public boss frame data barely exists. The Fextralife Margit page gives a move list and structure but no frame counts: phase 1 opens with staff strings, then a delayed spinning windup, dagger throws (often punishing heals), a leaping stab and a tail swipe; phase 2 adds hammer moves that always end the string; HP 4,174 (NG). A community guide gives parry windows only. So the timings must come from **footage**: frame-by-frame annotation of windup, active and recovery per move. The perception tool (`scripts/video_perception.py`) can mark windup onsets and contact times semi-automatically once Aryan's recordings arrive.

@@ -80,7 +80,7 @@ def sample_boss(rng, units, allowed, name="boss", n_strikes=None, clips=None, ve
     S1 = np.stack([units[i].pose1 for i in strikes])
     D = np.linalg.norm(S1[:, None] - S0[None], axis=2)
     D = D / (np.median(D) + 1e-6)
-    taste = rng.normal(0, 1.0, (n, n))
+    taste = rng.normal(0, 2.5, (n, n))            # peaked rows: each strike has a favourite follow-up (learnable chains)
     A = np.exp(-2.0 * D + taste)
     np.fill_diagonal(A, A.diagonal() * 0.3)
     A /= A.sum(1, keepdims=True)
@@ -90,7 +90,7 @@ def sample_boss(rng, units, allowed, name="boss", n_strikes=None, clips=None, ve
                     speed=rng.uniform(0.7, 1.15, n) / np.sqrt(scale / 1.6),
                     hold_med=np.where(rng.random(n) < 0.45, rng.uniform(6, 30, n), 0.0), hold_sig=0.45,
                     track=float(rng.uniform(0.01, 0.06)), aggression=float(rng.uniform(0.35, 0.8)),
-                    hp=float(350 + 150 * scale), idles=idles, p_recover=float(rng.uniform(0.5, 0.9)))
+                    hp=float(350 + 150 * scale), idles=idles, p_recover=float(rng.uniform(0.85, 1.0)))
 
 
 def _qz(a):
