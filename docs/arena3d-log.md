@@ -358,3 +358,7 @@ The real sequence lifts label-free move identification by +.11 NMI; a fake seque
 
   Drive vs no drive, pooled: 35/48 vs 7/24 wins (Fisher one-sided p = .0005); every timeout disappears and wins take 400–2000 frames instead of 2000–6000. Among drive arms the differences are inside noise at n = 12 (hierarchical 10 vs guessing 9). The hard cases are bosses 4 and 5 (most deaths).
 - **Reading.** On unseen bosses the binding constraint was motivation, not knowledge: an agent with a short imagined horizon needs a drive that turns lack of progress into pressure, much as a frustrated player starts trading hits. Program knowledge has to be tested where the drive alone is not enough: B29 runs 12 fresh bosses (7006–7017) to get the power to separate the learners.
+
+## B29 · 12 fresh procedural bosses with the drive: the suite saturates
+- Bosses 7006–7017 × 2 paired fights, `MPC_CLOSE=3 MPC_HUNGER=1`. Guessing 23/24 wins, true strings 21/24, from-scratch hierarchical learner 20/24 (all ~100% damage).
+- **Reading (honest).** With a perfect per-move physics simulator inside the planner, the drive alone beats almost every procedural boss, so knowing the strings has nothing left to add. The extra stochasticity of string sampling may even cost a little (no arm differs significantly). This is a ceiling effect, and it says where the real generalisation test lies: an agent that must also *learn the physics* of each new boss (the simulator-free world-model planner, R3). B30 puts the drive into that planner.
