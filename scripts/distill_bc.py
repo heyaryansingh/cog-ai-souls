@@ -110,8 +110,8 @@ def evaluate(pol, phase, n=8, seed0=0):
         while not done:
             lg.observe(w.env); o = obs_plus(w, lg)
             with torch.no_grad():
-                lg, _, h = pol(torch.from_numpy(o)[None, None], h)
-            r, done, out, nfr = w.step(int(lg[0, 0].argmax()))
+                logit, _, h = pol(torch.from_numpy(o)[None, None], h)
+            r, done, out, nfr = w.step(int(logit[0, 0].argmax()))
         h0 = getattr(w.env, "h0", w.env.spec.hp); res.append((out, 1 - w.env.boss_hp / h0))
     return res
 
