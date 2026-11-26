@@ -183,7 +183,12 @@ def _blind(sim, env, rng, read_k=12, grammar=False):
     if since < read_k:
         prog = getattr(s, "program", None)
         cands = [i for i, m in enumerate(prog.moves) if m.phase <= (2 if env.phase else 1)] if prog else list(range(len(s.strikes)))
-        j = grammar_prior(env, rng) if (grammar and prog) else int(rng.choice(cands))
+        if grammar == "learned":
+            j = _LGP.sample(env, rng)
+        elif grammar and prog:
+            j = grammar_prior(env, rng)
+        else:
+            j = int(rng.choice(cands))
         u = sim.U[s.strikes[j]]
         b.unit, b.move_id, b.combo_last = u, j, j
         b.c = sim.C[u.clip]
@@ -255,3 +260,61 @@ def grammar_oracle(env, rng):
     """Perceptual oracle that also knows the boss program (string grammar): unreadable moves are anticipated
     from the string so far and the distance instead of guessed uniformly. Upper bound for a learned program model."""
     return perceptual_oracle(env, rng, grammar=True)
+
+
+class LearnedGrammarPlanner:
+    """Planner with realistic perception that LEARNS the boss program between deaths. Moves are identified
+    READ_K frames after onset with READ_ACC accuracy (B11: ~.7 at 12-16 frames); each identification updates
+    Dirichlet counts over the current move given (previous move in the string or 'opener', near/far, phase).
+    Imagined futures draw unreadable moves from these counts (instead of uniform, or the true grammar).
+    Counts persist across attempts. Physics/hitboxes of each move are assumed known (its own simulator)."""
+
+    def __init__(self, n_moves, read_k=12, acc=0.7, alpha=0.5, seed=0, learn=True):
+        self.n, self.read_k, self.acc, self.alpha, self.learn = n_moves, read_k, acc, alpha, learn
+        self.counts = {}
+        self.rng = np.random.default_rng(seed)
+
+    def reset(self, env):
+        self.prev, self.prev_end, self.seen_serial, self.ctx_cur = None, -999, -1, None
+        if not self.learn:
+            self.counts = {}
+
+    def _ctx(self, env):
+        b = env.boss
+        opener = self.prev is None or env.t - self.prev_end > 45
+        dist = np.linalg.norm(env.p_xy - b.origin)
+        return ("open" if opener else self.prev, dist > 4.0, bool(env.phase))
+
+    def observe(self, env):
+        b = env.boss
+        serial = getattr(env, "boss_serial", -1)
+        if b.kind == "strike" and serial != self.seen_serial:
+            since = env.t - getattr(env, "boss_onset_t", env.t)
+            if since == 0:
+                self.ctx_cur = self._ctx(env)
+            if since >= self.read_k:
+                self.seen_serial = serial
+                lab = b.move_id if self.rng.random() < self.acc else int(self.rng.integers(self.n))
+                if self.ctx_cur is not None:
+                    c = self.counts.setdefault(self.ctx_cur, np.zeros(self.n))
+                    c[lab] += 1
+                self.prev, self.prev_end = lab, env.t + 30
+        elif b.kind == "strike":
+            self.prev_end = env.t
+
+    def sample(self, env, rng):
+        ctx = self.ctx_cur or self._ctx(env)
+        c = self.counts.get(ctx, np.zeros(self.n)) + self.alpha
+        prog = env.spec.program
+        ok = np.array([m.phase <= (2 if env.phase else 1) for m in prog.moves], float)
+        p = c * ok
+        return int(rng.choice(self.n, p=p / p.sum()))
+
+
+_LGP = None
+
+
+def learned_grammar_planner(env, rng):
+    global _LGP
+    _LGP.observe(env)
+    return perceptual_oracle(env, rng, grammar="learned")

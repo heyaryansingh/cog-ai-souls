@@ -1,0 +1,1 @@
+grammar_oracle win 0.0 boss hp left 0.54 mean secs 145 events {'hit': 84, 'dodged': 156, 'blocked': 0, 'proj': 0, 'ring': 11}
