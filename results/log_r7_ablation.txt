@@ -1,0 +1,20 @@
+== clean
+k=12 unseen bosses: mean 0.586  ridge10 0.561  ridge100 0.533  ridge1000 0.531  knn10 0.563
+k=12 seen bosses, held-out swings: mean 0.520  ridge10 0.354  ridge100 0.384  ridge1000 0.424  knn10 0.307
+k=20 unseen bosses: mean 0.586  ridge10 0.561  ridge100 0.530  ridge1000 0.529  knn10 0.565
+k=20 seen bosses, held-out swings: mean 0.520  ridge10 0.344  ridge100 0.372  ridge1000 0.414  knn10 0.285
+== noiseonly
+k=12 unseen bosses: mean 0.586  ridge10 0.555  ridge100 0.554  ridge1000 0.560  knn10 0.591
+k=12 seen bosses, held-out swings: mean 0.520  ridge10 0.472  ridge100 0.474  ridge1000 0.487  knn10 0.513
+k=20 unseen bosses: mean 0.586  ridge10 0.550  ridge100 0.549  ridge1000 0.555  knn10 0.573
+k=20 seen bosses, held-out swings: mean 0.520  ridge10 0.467  ridge100 0.469  ridge1000 0.483  knn10 0.503
+== latonly
+k=12 unseen bosses: mean 0.586  ridge10 0.616  ridge100 0.570  ridge1000 0.540  knn10 0.552
+k=12 seen bosses, held-out swings: mean 0.520  ridge10 0.376  ridge100 0.394  ridge1000 0.427  knn10 0.326
+k=20 unseen bosses: mean 0.586  ridge10 0.536  ridge100 0.518  ridge1000 0.522  knn10 0.568
+k=20 seen bosses, held-out swings: mean 0.520  ridge10 0.355  ridge100 0.379  ridge1000 0.417  knn10 0.297
+== droponly
+k=12 unseen bosses: mean 0.586  ridge10 0.558  ridge100 0.546  ridge1000 0.545  knn10 0.573
+k=12 seen bosses, held-out swings: mean 0.520  ridge10 0.420  ridge100 0.432  ridge1000 0.455  knn10 0.377
+k=20 unseen bosses: mean 0.586  ridge10 0.554  ridge100 0.544  ridge1000 0.544  knn10 0.562
+k=20 seen bosses, held-out swings: mean 0.520  ridge10 0.406  ridge100 0.418  ridge1000 0.445  knn10 0.351
