@@ -68,6 +68,10 @@ def one(args):
     if W > 0: scout(sp, W, maps, g, 500 + b)
     pl = LearnedModelPlanner(maps, g, seed=b); out = []
     for k in range(int(os.environ.get("NF", 2))):
+        if k and os.environ.get("NOCARRY") == "1":     # control: a fresh learner (same scouting) for every attempt
+            maps = DangerMaps(n, seed=b, acc=acc); g = SC.LearnedGrammarPlanner(n, seed=b, acc=acc)
+            if W > 0: scout(sp, W, maps, g, 500 + b)
+            pl = LearnedModelPlanner(maps, g, seed=b)
         env = Arena3D(sp, U, clips(), seed=100 * b + k, player_strike=pstrike()); env.reset(); pl.reset(env); done = False
         while not done:
             _, _, done, info = env.step(pl.act(env)); maps.observe(env, info)
