@@ -427,7 +427,7 @@ class Interleave:
         self.rng = np.random.default_rng(seed); self.cur = 0; self.trace = []
 
     def start(self, env):
-        self.bhp, self.php, self.t0 = env.boss_hp, env.hp, -10 ** 9
+        self.bhp, self.php, self.t0 = env.boss_hp, env.hp, -10 ** 9; self.hist = {}
 
     def pick(self):
         eps = float(os.environ.get("WM_IL_EPS", 1.0))     # B54: 1 = pure Thompson; <1 = greedy on the posterior mean, Thompson w.p. eps
@@ -438,8 +438,14 @@ class Interleave:
 
     def step(self, env):
         """call after env.step; returns the model index to use for the next frame"""
-        if env.boss_hp < self.bhp - 1e-9: self.D[self.cur] += 1
-        if env.hp < self.php - 1e-9: self.T[self.cur] += 1
+        self.hist[env.t] = self.cur
+        if os.environ.get("WM_IL_CREDIT") == "decision":    # B56: credit the model in control when the decision was made
+            dm = self.hist.get(env.t - 12, self.cur)          # my swing started ~12 frames before it lands
+            tm = self.hist.get(max(getattr(env, "boss_onset_t", env.t), env.t - 90), self.cur)   # the dodge window opened at the boss move's onset
+        else:
+            dm = tm = self.cur
+        if env.boss_hp < self.bhp - 1e-9: self.D[dm] += 1
+        if env.hp < self.php - 1e-9: self.T[tm] += 1
         self.bhp, self.php = env.boss_hp, env.hp; self.F[self.cur] += 1
         if env.t - self.t0 >= self.seg:
             self.cur, self.t0 = self.pick(), env.t; self.trace.append(self.cur)
