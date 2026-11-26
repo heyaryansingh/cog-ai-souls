@@ -442,3 +442,4 @@ Seen-boss held-out swings, tip-path error (kNN-10 / best ridge), k = 20; average
 | calibrated (all three) | .522 | .492 |
 
 Keypoint noise alone removes almost all of the reading; 6-frame latency costs nearly nothing; dropout costs some. Body posture carries the blade path only in fine detail (hand and forearm placement) that 6%-of-height jitter swamps, and averaging over frames (B34b) doesn't recover it. A weapon-aware detector should matter far more than a faster one: running the calibrated sensor plus a noisy weapon-tip keypoint (`SENSE_TIP=1`).
+- **B36: a noisy weapon-tip keypoint doesn't help.** Calibrated sensor + tip as a 14th keypoint (same 6% noise): seen-boss ridge .486, kNN .509 (vs .492 / .522 without). Where the blade *is* during the first frames, seen through the same jitter, says no more about where it will go than the body does. Running a noise sweep (2%, 4%) to find how precise perception must be before early reading works.

@@ -1,0 +1,4 @@
+k=12 unseen bosses: mean 0.586  ridge10 0.570  ridge100 0.567  ridge1000 0.568  knn10 0.600
+k=12 seen bosses, held-out swings: mean 0.520  ridge10 0.503  ridge100 0.499  ridge1000 0.501  knn10 0.527
+k=20 unseen bosses: mean 0.586  ridge10 0.569  ridge100 0.565  ridge1000 0.565  knn10 0.601
+k=20 seen bosses, held-out swings: mean 0.520  ridge10 0.488  ridge100 0.486  ridge1000 0.492  knn10 0.509
