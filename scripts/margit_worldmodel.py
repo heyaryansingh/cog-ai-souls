@@ -5,29 +5,9 @@ import os, sys, pickle
 sys.path.insert(0, "/home/user/cog-ai-souls"); os.chdir("/home/user/cog-ai-souls")
 exec(open("scripts/arena3d_margit.py").read().split('if __name__ == "__main__"')[0].replace("os.path.dirname(os.path.abspath(__file__))", '"scripts"'))
 import arena3d.scripted as SC
-from arena3d.worldmodel import DangerMaps, LearnedModelPlanner
+from arena3d.worldmodel import DangerMaps, LearnedModelPlanner, Multi, VARIANTS
 from arena3d.env import N_BUTTONS, NONE, ROLL, LIGHT
 CK = os.environ.get("WM_CK", "checkpoints/margit_worldmodel.pkl")
-
-
-VARIANTS = [   # B47: the agent's candidate world models; it keeps all and selects by predictive likelihood
-    {"WM_FRAME": "current", "WM_TRACK": "0", "WM_PERSIST": "0", "WM_HIER": "0"},          # plain v6
-    {"WM_FRAME": "onset", "WM_TRACK": "1", "WM_PERSIST": "1", "WM_HIER": "4"},            # aim + attention + back-off
-]
-
-
-class Multi:
-    """Fans perception out to several world-model variants; `best` = highest per-frame predictive log-likelihood."""
-    def __init__(self, ms): self.ms = ms
-    def reset(self, env): [m.reset(env) for m in self.ms]
-    def observe(self, env, info): [m.observe(env, info) for m in self.ms]
-    @property
-    def update(self): return self.ms[0].update
-    @update.setter
-    def update(self, v):
-        for m in self.ms: m.update = v
-    def scores(self): return [m.ll / max(1, m.ll_n) for m in self.ms]
-    def best(self): return self.ms[int(np.argmax(self.scores()))]
 
 
 def watch(frames):

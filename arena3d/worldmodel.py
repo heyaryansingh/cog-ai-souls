@@ -368,3 +368,23 @@ class LearnedModelPlanner:
         if best % N_BUTTONS == NONE and best != NONE:
             self.hold, self.hold_n = best, 5
         return best
+
+
+VARIANTS = [   # B47: the agent's candidate world models; it keeps all and selects by predictive likelihood
+    {"WM_FRAME": "current", "WM_TRACK": "0", "WM_PERSIST": "0", "WM_HIER": "0"},          # plain v6
+    {"WM_FRAME": "onset", "WM_TRACK": "1", "WM_PERSIST": "1", "WM_HIER": "4"},            # aim + attention + back-off
+]
+
+
+class Multi:
+    """Fans perception out to several world-model variants; `best` = highest per-frame predictive log-likelihood."""
+    def __init__(self, ms): self.ms = ms
+    def reset(self, env): [m.reset(env) for m in self.ms]
+    def observe(self, env, info): [m.observe(env, info) for m in self.ms]
+    @property
+    def update(self): return self.ms[0].update
+    @update.setter
+    def update(self, v):
+        for m in self.ms: m.update = v
+    def scores(self): return [m.ll / max(1, m.ll_n) for m in self.ms]
+    def best(self): return self.ms[int(np.argmax(self.scores()))]

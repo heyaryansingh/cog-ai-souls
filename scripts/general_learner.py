@@ -7,7 +7,7 @@ sys.path.insert(0, "/home/user/cog-ai-souls"); os.chdir("/home/user/cog-ai-souls
 __file__ = "/home/user/cog-ai-souls/scripts/margit_worldmodel.py"
 exec(open(__file__).read().rsplit("if __name__", 1)[0])
 from arena3d.program import random_program, build_program_boss
-from arena3d.worldmodel import DangerMaps, LearnedModelPlanner
+from arena3d.worldmodel import Multi, VARIANTS, DangerMaps, LearnedModelPlanner
 BOSSES = {}
 
 
@@ -60,19 +60,25 @@ def one(args):
     sp = pboss(b); n = len(sp.program.moves); W = int(os.environ.get("WATCH", 1500))
     acc = float(os.environ.get("WM_ACC", 0.7))
     maps = DangerMaps(n, seed=b, acc=acc); g = (SC.HierGrammar if os.environ.get("WM_HIERG") == "1" else SC.LearnedGrammarPlanner)(n, seed=b, acc=acc)
+    multi = None
+    if os.environ.get("WM_SELECT") == "1":
+        multi = maps = Multi([DangerMaps(n, seed=b, acc=acc, cfg=c) for c in VARIANTS])
     if K > 0:
         lib = train_library(K, int(os.environ.get("LIB_WATCH", 4500))); c = float(os.environ.get("PRIOR_N", 0.25))
         for i, m in enumerate(sp.program.moves):
             if proto(m) in lib:
                 N0, H0 = lib[proto(m)]; maps.N[i] += c * N0 / max(1, K); maps.H[i] += c * H0 / max(1, K)
     if W > 0: scout(sp, W, maps, g, 500 + b)
-    pl = LearnedModelPlanner(maps, g, seed=b); out = []
+    pl = LearnedModelPlanner(maps.best() if multi else maps, g, seed=b); out = []
     for k in range(int(os.environ.get("NF", 2))):
         if k and os.environ.get("NOCARRY") == "1":     # control: a fresh learner (same scouting) for every attempt
             maps = DangerMaps(n, seed=b, acc=acc); g = (SC.HierGrammar if os.environ.get("WM_HIERG") == "1" else SC.LearnedGrammarPlanner)(n, seed=b, acc=acc)
             if W > 0: scout(sp, W, maps, g, 500 + b)
             pl = LearnedModelPlanner(maps, g, seed=b)
+        if multi:
+            pl.maps = multi.best(); sel = int(np.argmax(multi.scores())); print("SELECT", b, k, sel, [round(x, 4) for x in multi.scores()], flush=True)
         env = Arena3D(sp, U, clips(), seed=100 * b + k, player_strike=pstrike()); env.reset(); pl.reset(env); done = False
+        if multi: multi.reset(env)
         while not done:
             _, _, done, info = env.step(pl.act(env)); maps.observe(env, info)
         r = (cond, b, k, info["outcome"], round(1 - env.boss_hp / sp.hp, 3), env.t); print("FIGHT", *r, flush=True); out.append(r)
