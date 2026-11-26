@@ -10,7 +10,24 @@ from arena3d.boss import sample_boss
 SPECS = {}
 
 
+MARGIT = None
+
+
 def make_train_env(rng):
+    global MARGIT
+    if os.environ.get("PPO_BOSS") == "margit":      # single grounded boss; PPO_PHASE=2 starts fights in phase 2
+        if MARGIT is None:
+            from arena3d.program import build_program_boss
+            MARGIT = build_program_boss(np.random.default_rng(42), U, TEST, clips())
+        env = Arena3D(MARGIT, U, clips(), seed=int(rng.integers(1 << 30)), player_strike=pstrike())
+        if os.environ.get("PPO_PHASE") == "2":
+            r0 = env.reset
+
+            def reset():
+                o = r0(); env.boss_hp = 0.49 * env.spec.hp; env.phase = True; env.h0 = env.boss_hp
+                return o
+            env.reset = reset
+        return env
     # a pool of 200 verified training bosses (sampling+verification is the slow part), drawn at random
     i = int(rng.integers(200))
     if i not in SPECS:
@@ -21,6 +38,9 @@ def make_train_env(rng):
 def train(n_envs=16, T=128, updates=3000, lr=3e-4, gamma=0.995, lam=0.95, clip=0.2, epochs=4, ent=0.01, seed=0):
     torch.manual_seed(seed); torch.set_num_threads(2)
     pol = R.Policy(); opt = torch.optim.Adam(pol.parameters(), lr=lr)
+    if os.environ.get("PPO_INIT"):
+        pol.load_state_dict(torch.load(os.environ["PPO_INIT"]))
+    ck = os.environ.get("PPO_CKPT", "checkpoints/arena3d_ppo.pt"); dmg = deque(maxlen=100)
     W = [R.Worker(make_train_env, seed * 1000 + i) for i in range(n_envs)]
     obs = np.stack([w.obs() for w in W]); h = torch.zeros(1, n_envs, pol.hidden)
     wins, frames, t0 = deque(maxlen=300), 0, time.time()
@@ -35,7 +55,8 @@ def train(n_envs=16, T=128, updates=3000, lr=3e-4, gamma=0.995, lam=0.95, clip=0
                 for i, w in enumerate(W):
                     r, done, out, n = w.step(int(a[i])); frames += n
                     if done:
-                        wins.append(out == "win"); o = w.new(); h[:, i] = 0
+                        wins.append(out == "win"); h0_ = getattr(w.env, "h0", w.env.spec.hp)
+                        dmg.append(1 - w.env.boss_hp / h0_); o = w.new(); h[:, i] = 0
                     else:
                         o = w.obs()
                     rs.append(r); ds.append(done); no.append(o)
@@ -64,8 +85,8 @@ def train(n_envs=16, T=128, updates=3000, lr=3e-4, gamma=0.995, lam=0.95, clip=0
             opt.zero_grad(); loss.backward(); nn.utils.clip_grad_norm_(pol.parameters(), 0.5); opt.step()
         if u % 10 == 0:
             print(f"update {u} frames {frames/1e6:.2f}M fights {len(wins)} recent win {np.mean(wins) if wins else 0:.3f} "
-                  f"lv {lv.item():.3f} ent {dd.entropy().mean().item():.2f} {frames/(time.time()-t0):.0f} fps", flush=True)
-            torch.save(pol.state_dict(), "checkpoints/arena3d_ppo.pt")
+                  f"dmg {np.mean(dmg) if dmg else 0:.3f} lv {lv.item():.3f} ent {dd.entropy().mean().item():.2f} {frames/(time.time()-t0):.0f} fps", flush=True)
+            torch.save(pol.state_dict(), ck)
     return pol
 
 
