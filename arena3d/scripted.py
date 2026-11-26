@@ -302,8 +302,8 @@ class LearnedGrammarPlanner:
         elif b.kind == "strike":
             self.prev_end = env.t
 
-    def sample(self, env, rng):
-        ctx = self.ctx_cur or self._ctx(env)
+    def sample(self, env, rng, next_move=False):
+        ctx = self._ctx(env) if next_move else (self.ctx_cur or self._ctx(env))
         c = self.counts.get(ctx, np.zeros(self.n)) + self.alpha
         prog = env.spec.program
         ok = np.array([m.phase <= (2 if env.phase else 1) for m in prog.moves], float)

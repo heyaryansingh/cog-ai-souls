@@ -39,9 +39,10 @@ class DangerMaps:
         self.serial, self.origin, self.fwd, self.label, self.onset = -1, None, 0.0, None, 0
         self.pend = []                      # (tau, rel) for the current move before it is identified
 
-    def rel(self, env, p=None):
+    def rel(self, env, p=None, origin=None, fwd=None):
         p = env.p_xy if p is None else p
-        d = p - self.origin; c, s = np.cos(-self.fwd), np.sin(-self.fwd)
+        origin = self.origin if origin is None else origin; fwd = self.fwd if fwd is None else fwd
+        d = p - origin; c, s = np.cos(-fwd), np.sin(-fwd)
         return np.array([c * d[0] - s * d[1], s * d[0] + c * d[1]])
 
     def observe(self, env, info):
@@ -98,7 +99,7 @@ def self_model(env, a, H):
 class LearnedModelPlanner:
     """MPC over own macro-actions using DangerMaps (learned) + learned strings, no boss simulator."""
 
-    def __init__(self, maps, grammar, H=30, hit_cost=125.0, dmg=40.0, seed=0, n=8):
+    def __init__(self, maps, grammar, H=30, hit_cost=200.0, dmg=40.0, seed=0, n=8):
         self.maps, self.g, self.H, self.hc, self.dmg, self.n = maps, grammar, H, hit_cost, dmg, n
         self.rng = np.random.default_rng(seed)
         self.hold, self.hold_n = None, 0
@@ -109,8 +110,16 @@ class LearnedModelPlanner:
     def _move_samples(self, env):
         """(move id, tau) samples for the current boss move; None if the boss isn't attacking."""
         b = env.boss; mp = self.maps
-        if b.kind != "strike" or mp.origin is None:
+        if b.kind != "strike" or mp.origin is None or env.t - mp.onset > 3 * TB:
+            # boss between moves: imagine the next move starting soon (opener anticipation), frame of
+            # reference = now, start delay 0-15 frames, identity from the learned strings
+            import os
+            if os.environ.get("WM_OPENER", "1") == "1":
+                to_p = env.p_xy - b.root
+                self.ref = (b.root.copy(), float(np.arctan2(to_p[1], to_p[0])))
+                return [self.g.sample(env, self.rng, next_move=True) for _ in range(self.n)], -int(self.rng.integers(0, 16))
             return None, 0
+        self.ref = (None, None)
         tau = env.t - mp.onset
         if mp.label is not None:
             return [mp.label] * self.n, tau
@@ -135,11 +144,11 @@ class LearnedModelPlanner:
             if ms is None:
                 risk = 0.0
             else:
-                rel = np.array([self.maps.rel(env, q) for q in pos])
+                rel = np.array([self.maps.rel(env, q, *self.ref) for q in pos])
                 taus = tau0 + np.arange(1, self.H + 1)
                 rs = []
                 for m in ms:
-                    h = self.maps.hazard(m, taus, rel) * (~inv)
+                    h = self.maps.hazard(m, np.maximum(taus, 0), rel) * (~inv) * (taus >= 0)
                     rs.append(1 - np.prod(1 - h))
                 risk = float(np.mean(rs))
             btn = a % N_BUTTONS
