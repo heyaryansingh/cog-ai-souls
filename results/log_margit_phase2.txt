@@ -1,0 +1,27 @@
+P2 online 0 0 death 0.181 1251 26
+P2 frozen 0 0 death 0.0 2344 0
+P2 online 1 0 death 0.181 2971 66
+P2 grammar 0 0 death 0.181 3830 0
+P2 online 0 1 death 0.544 3373 99
+P2 online 0 2 death 0.181 1589 131
+P2 grammar 0 1 death 0.0 2607 0
+P2 online 1 1 death 0.544 3222 133
+P2 frozen 0 1 death 0.181 4848 0
+P2 frozen 0 2 death 0.0 1008 0
+P2 frozen 0 3 death 0.0 947 0
+P2 online 1 2 death 0.0 3683 213
+P2 grammar 0 2 death 0.363 3854 0
+P2 frozen 0 4 death 0.0 2789 0
+P2 online 1 3 death 0.0 1804 252
+P2 online 0 3 death 0.726 5500 257
+P2 frozen 0 5 death 0.0 1170 0
+P2 online 0 4 death 0.0 1742 293
+P2 grammar 0 3 death 0.0 4749 0
+P2 online 1 4 death 0.0 3197 321
+P2 online 0 5 death 0.181 2127 341
+P2 grammar 0 4 death 0.363 2356 0
+P2 online 1 5 death 0.181 3714 400
+P2 grammar 0 5 death 0.0 2272 0
+online phase-2 damage by attempt [0.181 0.544 0.09  0.363 0.    0.181] mean 0.227
+frozen phase-2 damage by attempt [0.    0.181 0.    0.    0.    0.   ] mean 0.03
+grammar phase-2 damage by attempt [0.181 0.    0.363 0.    0.363 0.   ] mean 0.151

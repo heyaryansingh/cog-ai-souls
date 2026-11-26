@@ -226,3 +226,12 @@ Coarser label (any hit in the next 24 frames), perfect pose, 8 training bosses:
 - **How we differ.** Their agent reads game memory and adapts by gradient fine-tuning over many steps. Ours perceives from pose keypoints with realistic noise and latency, and adapts by updating an explicit boss-program model from a handful of observations. Their result is the right foil for "how many deaths to recover after a phase change". SoulsGym / DS3 is not available (Aryan owns Elden Ring and Hollow Knight only), so the real-game timing check stays on Elden Ring footage.
 - **Our phase 2 already switches the moveset** (not only timing): hammer slam with a 4 m shockwave, sword spin, hammer leap with a 5 m shockwave, and new strings (sweep → spin → spin, sweep → slam).
 - **Running (`scripts/margit_phase2.py`):** strings learned by watching phase 1 only; then 6 fights that start in phase 2. Conditions: frozen phase-1 counts; online updating from perception across attempts (the slow mind); true program (ceiling). Metric: share of phase-2 HP removed per attempt. A PPO fine-tune arm is next: PPO from scratch made no progress in 1M frames here (0 wins), so the comparison will start PPO from a phase-1-trained policy.
+- **Result, phase-shift recovery (fights start in phase 2; one player hit = 18% of phase-2 HP, so the metric is coarse):**
+
+| condition | fights | phase-2 HP removed, by attempt | mean |
+|---|---|---|---|
+| frozen (phase-1 strings only) | 6 | 0 .18 0 0 0 0 | **3.0%** |
+| online (slow mind: keeps updating) | 2 × 6 | .18 .54 .09 .36 0 .18 | **22.7%** |
+| true program | 6 | .18 0 .36 0 .36 0 | 15.1% |
+
+  Online > frozen, Mann-Whitney one-sided p = .026; online vs true program p = .62 (no difference). The slow mind collected 26–66 phase-2 identifications during its *first* phase-2 fight and was already at ceiling level in that fight. **Deaths to recover ≈ 0–1**: it adapts to the new moveset within the fight where it first sees it. For comparison, Najar (2026) recovered phase 2 by gradient fine-tuning two skills with an unreported "limited" budget. Small samples; a 3-series replication and the PPO fine-tune arm are next.
