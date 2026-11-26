@@ -51,5 +51,5 @@ if __name__ == "__main__":
         pickle.dump(watch(int(os.environ.get("WATCH", 9000))), open(CK, "wb"))
         m, _ = pickle.load(open(CK, "rb")); print("exposures", int(m.N.sum()), "contacts", int(m.H.sum()), flush=True)
     with Pool(int(os.environ.get("PROCS", 2))) as p:
-        res = sum(p.map(series, range(int(os.environ.get("R", 2)))), [])
+        res = sum(p.map(series, range(int(os.environ.get("R0", 0)), int(os.environ.get("R0", 0)) + int(os.environ.get("R", 2)))), [])
     print("worldmodel wins", sum(r[3] == "win" for r in res), "/", len(res), "damage", np.mean([r[4] for r in res]).round(3))
