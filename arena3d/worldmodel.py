@@ -10,6 +10,7 @@ readable (12 frames, 70% accurate: same perception limits as before). No boss si
 """
 from __future__ import annotations
 
+import os
 import numpy as np
 
 from .env import HEAL, LIGHT, N_BUTTONS, NONE, ROLL
@@ -104,14 +105,14 @@ class DangerMaps:
             self._key = key
         return self._Ns, self._Hs
 
-    def geom_hazard(self, m, tau, rel, reach=0.4):
+    def geom_hazard(self, m, tau, rel, reach=None):
         """Fraction of remembered tip trajectories of move m passing within `reach` of rel at tau (+-1)."""
         T = self.trajs.get(m)
         if not T:
             return np.zeros(len(tau))
         key = (m, len(T), id(T[-1]))
         if getattr(self, "_gk", {}).get(m) != key:
-            A = np.full((len(T), 3 * TB + 2, 4), np.nan)
+            A = np.full((len(T), 3 * TB + 2, len(T[0][0][1]) if T[0] else 2), np.nan)
             for j, tr in enumerate(T):
                 for t, p in tr:
                     if 0 <= t < 3 * TB:
@@ -121,7 +122,13 @@ class DangerMaps:
         A = self._ga[m]
         ti = np.clip(np.asarray(tau), 0, 3 * TB - 1) + 1
         best = np.full((A.shape[0], len(ti)), np.inf)
+        seg_mode = os.environ.get("WM_SEG", "0") == "1" and A.shape[2] == 4   # B25: blade segment hurt (12.6%)
+        if reach is None:
+            reach = 0.4 if seg_mode else 0.55                 # v6 tip-only (42.9%) is the default
         for o in (-1, 0, 1):
+            if not seg_mode:
+                best = np.fmin(best, np.hypot(*(A[:, ti + o, :2] - rel[None]).transpose(2, 0, 1)))
+                continue
             P = A[:, ti + o]                                   # (traj, tau, 4): tip xy, hand xy
             tip, hand = P[..., :2], P[..., 2:]
             seg = tip - hand; w = rel[None] - hand
