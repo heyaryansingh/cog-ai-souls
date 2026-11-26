@@ -318,7 +318,7 @@ Coarser label (any hit in the next 24 frames), perfect pose, 8 training bosses:
 - The frozen learned table failed under MPC (B21) for two reasons this run separates. Label noise costs about 3 wins (perfect labels: 10/12). Context mismatch between watching and fighting is the rest: updating the counts from what the boss does *in this fight*, with the same noisy 70% labels, reaches the true-program level. Online vs uniform: Fisher one-sided p = .077 per arm. Pooled, the three program-aware arms win 32/36 vs 14/24 for uniform + frozen-noisy (Fisher one-sided p ≈ .008).
 - This is the clearest evidence yet for the project's thesis: an agent that keeps inferring the boss's program from noisy perception, while fighting, does as well as one handed the true program.
 
-## B27 — Expectation shapes perception: the boss's strings sharpen label-free move discovery
+## B27 · Expectation shapes perception: the boss's strings sharpen label-free move discovery
 
 **Question.** Without any move labels, can the agent learn the boss's strings over moves it discovered itself (R1)? And can knowing the strings help it see the moves better?
 
