@@ -429,3 +429,16 @@ The real sequence lifts label-free move identification by +.11 NMI; a fake seque
 - Running: the same with a clean sensor (no noise, latency or dropout), to separate a perception limit from a transfer limit.
 - **Clean sensor (no noise, latency or dropout):** on held-out swings of *seen* bosses, kNN reaches .285–.307 (close to the same-move mean, .258) and ridge .34–.35, versus .49–.54 with the calibrated sensor. On *unseen* bosses the best is .525 (MLP, k = 20) vs .586 for the average path. So both limits are real: the calibrated sensor destroys most within-boss reading of blade paths from early pose, and even perfect pose transfers only weakly across bosses.
 - **Perceptual denoising doesn't rescue it** (`scripts/r7_denoise.py`): projecting noisy poses onto a pose manifold learned from the agent's own observations (PCA 6–20 dims) plus a constant-velocity fit over the visible frames improves seen-boss kNN only from .522 to .481 (k = 20). The information is missing, not merely buried. Running: one-at-a-time sensor ablations (noise only / latency only / dropout only) to find which limit matters.
+
+## B35 · What limits reading: keypoint noise, not latency
+Seen-boss held-out swings, tip-path error (kNN-10 / best ridge), k = 20; average path .520:
+
+| sensor | kNN | ridge |
+|---|---|---|
+| clean | .285 | .344 |
+| latency 6 only | .297 | .355 |
+| dropout only | .351 | .406 |
+| **6% keypoint noise only** | **.503** | **.467** |
+| calibrated (all three) | .522 | .492 |
+
+Keypoint noise alone removes almost all of the reading; 6-frame latency costs nearly nothing; dropout costs some. Body posture carries the blade path only in fine detail (hand and forearm placement) that 6%-of-height jitter swamps, and averaging over frames (B34b) doesn't recover it. A weapon-aware detector should matter far more than a faster one: running the calibrated sensor plus a noisy weapon-tip keypoint (`SENSE_TIP=1`).

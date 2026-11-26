@@ -10,7 +10,8 @@ torch.manual_seed(0); rng = np.random.default_rng(0)
 def feat(r, k):
     o = [(i, x) for i, x in enumerate(r["obs"][:k]) if x is not None]
     if not o:
-        return np.zeros(39 * 3 + 5)
+        D = next(len(x) for q in rows for x in q['obs'] if x is not None)
+        return np.zeros(D * 3 + 5)
     i1, a1 = o[-1]; i0, a0 = o[0]
     v = (a1 - a0) / max(1, i1 - i0)
     mid = o[len(o) // 2][1]
