@@ -59,7 +59,7 @@ def one(args):
     cond, b, K = args
     sp = pboss(b); n = len(sp.program.moves); W = int(os.environ.get("WATCH", 1500))
     acc = float(os.environ.get("WM_ACC", 0.7))
-    maps = DangerMaps(n, seed=b, acc=acc); g = SC.LearnedGrammarPlanner(n, seed=b, acc=acc)
+    maps = DangerMaps(n, seed=b, acc=acc); g = (SC.HierGrammar if os.environ.get("WM_HIERG") == "1" else SC.LearnedGrammarPlanner)(n, seed=b, acc=acc)
     if K > 0:
         lib = train_library(K, int(os.environ.get("LIB_WATCH", 4500))); c = float(os.environ.get("PRIOR_N", 0.25))
         for i, m in enumerate(sp.program.moves):
@@ -69,7 +69,7 @@ def one(args):
     pl = LearnedModelPlanner(maps, g, seed=b); out = []
     for k in range(int(os.environ.get("NF", 2))):
         if k and os.environ.get("NOCARRY") == "1":     # control: a fresh learner (same scouting) for every attempt
-            maps = DangerMaps(n, seed=b, acc=acc); g = SC.LearnedGrammarPlanner(n, seed=b, acc=acc)
+            maps = DangerMaps(n, seed=b, acc=acc); g = (SC.HierGrammar if os.environ.get("WM_HIERG") == "1" else SC.LearnedGrammarPlanner)(n, seed=b, acc=acc)
             if W > 0: scout(sp, W, maps, g, 500 + b)
             pl = LearnedModelPlanner(maps, g, seed=b)
         env = Arena3D(sp, U, clips(), seed=100 * b + k, player_strike=pstrike()); env.reset(); pl.reset(env); done = False
