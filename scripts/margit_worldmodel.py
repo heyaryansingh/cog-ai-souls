@@ -5,7 +5,7 @@ import os, sys, pickle
 sys.path.insert(0, "/home/user/cog-ai-souls"); os.chdir("/home/user/cog-ai-souls")
 exec(open("scripts/arena3d_margit.py").read().split('if __name__ == "__main__"')[0].replace("os.path.dirname(os.path.abspath(__file__))", '"scripts"'))
 import arena3d.scripted as SC
-from arena3d.worldmodel import DangerMaps, LearnedModelPlanner, Multi, VARIANTS
+from arena3d.worldmodel import DangerMaps, LearnedModelPlanner, Multi, VARIANTS, family_select
 from arena3d.env import N_BUTTONS, NONE, ROLL, LIGHT
 CK = os.environ.get("WM_CK", "checkpoints/margit_worldmodel.pkl")
 
@@ -37,7 +37,7 @@ def series(rep):
     maps, g = pickle.load(open(CK, "rb")); out = []
     maps.update = g.update = os.environ.get("LEARN", "1") == "1"
     multi = maps if isinstance(maps, Multi) else None
-    rets = [[] for _ in (multi.ms if multi else [])]
+    rets = [[] for _ in (multi.ms if multi else [])]; frng = np.random.default_rng(31 * rep + 5)
     pl = LearnedModelPlanner(maps.best() if multi else maps, g, seed=rep)
     for k in range(int(os.environ.get("N", 6))):
         if multi and os.environ.get("WM_SELECT_BY") == "combined":
@@ -54,6 +54,9 @@ def series(rep):
             else:
                 ucb = [np.mean(v) + 0.3 * np.sqrt(2 * np.log(k + 1) / len(v)) for v in rets]; sel = int(np.argmax(ucb))
             pl.maps = multi.ms[sel]; print("SELECT", rep, k, sel, [round(float(np.mean(v)), 3) if v else None for v in rets], flush=True)
+        elif multi and os.environ.get("WM_SELECT_BY") == "family":     # B52: family prior + Thompson on returns
+            sel, post = family_select(rets, frng); pl.maps = multi.ms[sel]
+            print("SELECT", rep, k, sel, [round(x, 3) for x in post], flush=True)
         elif multi:
             sel = int(np.argmax(multi.scores()))
             pl.maps = multi.best(); print("SELECT", rep, k, sel, [round(x, 4) for x in multi.scores()], flush=True)

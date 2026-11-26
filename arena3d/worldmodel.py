@@ -398,3 +398,14 @@ class Multi:
             return [0.5 * getattr(m, "llh", 0.0) / max(1, getattr(m, "nh", 0)) + 0.5 * getattr(m, "lls", 0.0) / max(1, getattr(m, "ns", 0)) for m in self.ms]
         return [m.ll / max(1, m.ll_n) for m in self.ms]
     def best(self): return self.ms[int(np.argmax(self.scores()))]
+
+
+def family_select(rets, rng):
+    """B52 selector: a prior over models learned from earlier bosses of the family (WM_FAMILY_PRIOR = mean return of
+    each model there, strength WM_FAMILY_N pseudo-fights), updated with this boss's returns; Thompson sampling with a
+    Gaussian posterior (per-fight return sd WM_RET_SD) so a model the prior disfavours still gets tried."""
+    mu0 = [float(x) for x in os.environ.get("WM_FAMILY_PRIOR", "0.36,0.46").split(",")]
+    n0 = float(os.environ.get("WM_FAMILY_N", 3)); sd = float(os.environ.get("WM_RET_SD", 0.2))
+    post = [(m * n0 + sum(v)) / (n0 + len(v)) for m, v in zip(mu0, rets)]
+    draw = [p + sd / np.sqrt(n0 + len(v)) * rng.standard_normal() for p, v in zip(post, rets)]
+    return int(np.argmax(draw)), post
