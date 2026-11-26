@@ -35,6 +35,45 @@ def collect(seed):
     return np.array(O, np.float32), np.array(A), out, 1 - env.boss_hp / env.spec.hp
 
 
+def dagger_collect(args):
+    """Student drives (beta-mix with teacher), teacher labels every visited state."""
+    seed, beta = args
+    torch.set_num_threads(1)
+    pol = R.Policy(); pol.load_state_dict(torch.load("checkpoints/bc_margit.pt"))
+    os.environ.pop("PPO_PHASE", None)
+    w = R.Worker(make_train_env, 50000 + seed); rng = np.random.default_rng(seed)
+    lg = pickle.load(open("checkpoints/margit_grammar_phase1.pkl", "rb")); lg.update = False
+    lg.reset(w.env); SC._LGP = lg; env = w.env; h = torch.zeros(1, 1, pol.hidden)
+    O, A = [], []; done = False
+    while not done:
+        o = w.obs(); ta = to_cand(SC.learned_grammar_planner(env, rng))
+        with torch.no_grad():
+            lgt, _, h = pol(torch.from_numpy(o)[None, None], h)
+        sa = int(lgt[0, 0].argmax())
+        O.append(o); A.append(ta)
+        r, done, out, n = w.step(ta if rng.random() < beta else sa)
+    return np.array(O, np.float32), np.array(A), out, 1 - env.boss_hp / env.spec.hp
+
+
+def bc_train(data, epochs=30, init=None):
+    torch.manual_seed(0); torch.set_num_threads(4)
+    pol = R.Policy()
+    if init: pol.load_state_dict(torch.load(init))
+    opt = torch.optim.Adam(pol.parameters(), 1e-3); L = 64
+    chunks = [(o[i:i + L], a[i:i + L]) for o, a, _, _ in data for i in range(0, len(a) - 8, L // 2)]
+    for ep in range(epochs):
+        np.random.shuffle(chunks); tot, acc, nn_ = 0, 0, 0
+        for i in range(0, len(chunks), 32):
+            B = chunks[i:i + 32]; T = min(len(c[1]) for c in B)
+            X = torch.tensor(np.stack([c[0][:T] for c in B])); Y = torch.tensor(np.stack([c[1][:T] for c in B]))
+            lg, _, _ = pol(X, torch.zeros(1, len(B), pol.hidden))
+            loss = nn.functional.cross_entropy(lg.reshape(-1, lg.shape[-1]), Y.reshape(-1))
+            opt.zero_grad(); loss.backward(); opt.step()
+            tot += loss.item() * len(B); acc += (lg.argmax(-1) == Y).float().sum().item(); nn_ += Y.numel()
+    print("  bc acc", round(acc / nn_, 3), flush=True)
+    return pol
+
+
 def evaluate(pol, phase, n=8, seed0=0):
     if phase == 2: os.environ["PPO_PHASE"] = "2"
     else: os.environ.pop("PPO_PHASE", None)
@@ -58,6 +97,18 @@ if __name__ == "__main__":
             data = p.map(collect, range(int(os.environ.get("NFIGHT", 16))))
         pickle.dump(data, open("data/bc_margit.pkl", "wb"))
         print("teacher wins", sum(d[2] == "win" for d in data), "/", len(data), "dmg", np.mean([d[3] for d in data]).round(3))
+    elif st == "dagger":
+        from multiprocessing import Pool
+        data = pickle.load(open("data/bc_margit.pkl", "rb"))
+        for it in range(int(os.environ.get("ITERS", 3))):
+            beta = 0.5 ** (it + 1)
+            with Pool(int(os.environ.get("PROCS", 4))) as p:
+                new = p.map(dagger_collect, [(100 * it + k, beta) for k in range(int(os.environ.get("NFIGHT", 12)))])
+            print("dagger iter", it, "beta", beta, "rollout dmg", np.mean([d[3] for d in new]).round(3), flush=True)
+            data += new; pickle.dump(data, open("data/bc_margit_dagger.pkl", "wb"))
+            pol = bc_train(data); torch.save(pol.state_dict(), "checkpoints/bc_margit.pt")
+            for ph in (1, 2):
+                r = evaluate(pol, ph); print("  DAgger policy iter", it, "phase", ph, "wins", sum(x[0] == "win" for x in r), "/", len(r), "dmg", np.mean([x[1] for x in r]).round(3), flush=True)
     else:
         data = pickle.load(open("data/bc_margit.pkl", "rb")); torch.manual_seed(0); torch.set_num_threads(4)
         pol = R.Policy(); opt = torch.optim.Adam(pol.parameters(), 1e-3); L = 64
