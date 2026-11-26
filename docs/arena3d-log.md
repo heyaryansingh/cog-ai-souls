@@ -139,3 +139,16 @@ Coarser label (any hit in the next 24 frames), perfect pose, 8 training bosses:
   Danger offsets by move: sweeps 14–15 frames (no spread), thrust 49, delayed overhead 40 (IQR 27).
 - **Reading.** Identity becomes readable about 12 frames after the move starts (6 frames of seen motion plus the 6-frame perception lag). That is *after* the sweeps have already landed (14 frames), but well before the thrust (49) and the delayed overhead (40). So pose reading alone can only answer the slow and delayed moves. The fast openers must be **predicted before they start**, from context: distance, the position in a string, the rhythm since the last swing. This is the same split a human player makes: you react to the delayed slam, you learn the timing of the fast string.
 - Next: an episodic reader that learns this boss's timing between deaths from context + pose (`arena3d/reader.py`), compared with a memoryless control.
+
+## B12 · Learning one boss between deaths: thresholds fail, episodic control learns to survive
+- **Balance.** Margit-like at 1,100 HP: clairvoyant oracle 0/8 wins (timeouts, 44% damage in 169 s), state oracle 0/8, aggro dies in 10 s. At 700 HP and a 4.5-minute limit: clairvoyant 2/8 (26% HP left on average), state oracle 0/8 (33% left, 205 dodges, 93 hits taken). Lowered to 450 HP for the agent studies so the ceiling is informative; rerun pending.
+- **Danger predictor calibration (offline, 30k frames, 6 attempts, leave-one-attempt-out kNN).** Label = a contact the player feels (hit, blocked hit, or passing through i-frames), base rate 10% for the roll window. AUC for "danger lands in frames 3–10": timing context alone (time since whoosh / grunt, distance, healing, phase) **.785**; perceived pose 78-d .66; pose PCA-6 .53; pose + context .70. Perceived pose at frame level adds nothing (noise 6% of height swamps per-frame motion); consistent with the earlier threat-net result. Identity is readable only when the pose window is aligned to the move onset (B11).
+- **Threshold reader (`EpisodicReader`).** kNN predictor + roll / attack / heal thresholds, 10 attempts, roll thresholds .15/.2/.25, contact or near-miss labels, with or without counterfactual spacing ("if I were in reach now, would I get hit?"): no trend in boss damage or survival in any variant. Thresholds tuned on one base rate break when labels change (near-miss labels made it stop attacking entirely).
+- **Episodic control (`EpisodicControl`, after Blundell et al. 2016 / Lengyel & Dayan 2007).** Per action (4 moves, light attack, heal, 4 roll directions), remember (context, own hp / stamina / flasks) → discounted return over the next 60 frames (damage dealt − damage taken − death); act by the best kNN-estimated return, ε = 0.1, optimism for untried actions. 25 attempts, one series each:
+
+| | survival frames, attempts 1–5 | 6–15 | 16–25 | boss damage 1–5 | 16–25 |
+|---|---|---|---|---|---|
+| learn (memory kept across deaths) | 1,984 | 1,948 | **2,507** | 3.4% | 7.4% |
+| forget (memory wiped each attempt) | 949 | 1,021 | 900 | 0.0% | 1.1% |
+
+  Memory across deaths makes it survive 2.5× longer than the memoryless control by the end, and it starts to deal damage; it has not learned to win yet. One series per condition, so this is a pilot; the replicated run (2 series × 30 attempts, 450 HP) is running.

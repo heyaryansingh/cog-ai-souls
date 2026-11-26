@@ -80,7 +80,7 @@ MARGIT_STRINGS = [
 
 
 def build_program_boss(rng, units, allowed, clips, moves=MARGIT_MOVES, strings=MARGIT_STRINGS, scale=1.9,
-                       weapon="greatsword", name="margit_like", verify=True, hp=700.0):
+                       weapon="greatsword", name="margit_like", verify=True, hp=450.0):
     """Pick a verified mocap unit of the right shape for each move slot; returns (spec, program)."""
     from .aim import verify_strikes
     by_shape = {"sweep": [], "overhead": [], "thrust": []}
