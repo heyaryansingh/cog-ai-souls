@@ -6,3 +6,8 @@ FIGHT worldmodel 0 12 death 0.089 3962
 FIGHT worldmodel 0 13 death 0.267 5044
 FIGHT worldmodel 0 14 death 0.622 3031
 FIGHT worldmodel 0 15 death 0.267 1730
+FIGHT worldmodel 0 16 death 0.622 5767
+FIGHT worldmodel 0 17 death 0.356 3516
+FIGHT worldmodel 0 18 death 0.356 1927
+FIGHT worldmodel 0 19 death 0.889 3870
+worldmodel wins 0 / 12 damage 0.356
