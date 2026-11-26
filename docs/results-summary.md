@@ -54,3 +54,37 @@ A move-frequency opponent model (FightingICE-style) reaches only 16.9%, against 
 - Prequential weighting, the residual-birth move and the regroup split-merge move did not help (E13, E14, E16).
 - Environment simplifications are listed in the E4 realism audit: 1D lane, symbolic cues, a single impact tick per move.
 - The state-cheat ceiling ignores latency.
+
+---
+
+# Arena3D: 3D motion-captured bosses (as of 2026-11-26)
+
+Source: `docs/arena3d-log.md` (entries B11–B38). Bosses are MuJoCo bodies driven by CMU motion capture, with real 3D contact hitboxes. The agent perceives noisy, delayed keypoints and sounds. Margit-like boss timings are calibrated against public Elden Ring footage (B22). Procedural bosses are random movesets, strings and phase switches built from held-out mocap subjects.
+
+## Margit-like boss (12 paired fights each, 450 HP)
+
+| agent | wins |
+|---|---|
+| planner, strings guessed (uniform) | 7/12 |
+| planner, strings learned by watching, frozen | 7/12 |
+| planner, strings learned by watching, **keeps updating in the fight** | **11/12** |
+| planner, true program | 11/12 |
+| PPO from scratch (2.1M frames) | 0 (0% damage) |
+
+Learned strings match the true program once they adapt in-fight (B26). Phase switch: the slow mind adapts inside the first phase-2 fight (22.7% of phase-2 HP vs 3.0% frozen, B19). A policy distilled from it starts level, and PPO fine-tuning collapses it to passivity within 0.25M frames (B37).
+
+## Generalising to unseen procedural bosses
+
+| result | numbers | entry |
+|---|---|---|
+| engagement drive (pressure grows with time since the last hit) | 7/24 → 35/48 wins (p = .0005) | B28 |
+| with a perfect per-move simulator, 18 unseen bosses | 20–23/24 wins per arm (saturated) | B29 |
+| learning each boss's physics too (no simulator): drive + after-swing attention + back-off | 21% → 39% damage | B30 |
+| + aim model (boss turns toward where I'll be) | +23% survival over 18 bosses (p = .008), 45% damage, 8/36 wins | B33 |
+| carrying memory across deaths | ≈ fresh learner each attempt (43.6% vs 41.5%) | B32 |
+
+## Perception and learning findings
+
+- Label-free move discovery improves when the boss's own sequence is used as a perceptual prior: NMI .50 → .61 (shuffled control .45–.48) (B27).
+- Early blade-path reading from pose needs near-mocap precision. Clean pose reaches .29 error vs .52 for the average path; 2% keypoint noise already gives .43, and latency costs almost nothing (B34–B36). Hence the design: categorical move identity + per-boss episodic memory of paths.
+- Distilling the planner into a habit fails for want of the planner's imagined physics: neither DAgger nor feeding the habit the planner's beliefs closes the 44% → 12% gap (B37–B38).
