@@ -1,0 +1,73 @@
+SELECT 1 0 1 [0.45, 0.53]
+SELECT 2 0 1 [0.45, 0.53]
+SELECT 0 0 1 [0.45, 0.53]
+FIGHT worldmodel 2 208 death 0.178 2313
+SELECT 2 1 0 [0.45, 0.413]
+FIGHT worldmodel 1 108 death 0.533 2726
+SELECT 1 1 1 [0.45, 0.531]
+FIGHT worldmodel 2 209 death 0.622 2905
+SELECT 2 2 0 [0.507, 0.413]
+FIGHT worldmodel 0 8 death 0.711 4231
+SELECT 0 1 1 [0.45, 0.59]
+FIGHT worldmodel 1 109 death 0.089 3015
+SELECT 1 2 0 [0.45, 0.42]
+FIGHT worldmodel 2 210 death 0.178 5627
+SELECT 2 3 0 [0.465, 0.359]
+FIGHT worldmodel 2 211 death 0.622 2411
+SELECT 2 4 0 [0.496, 0.359]
+FIGHT worldmodel 1 110 death 0.444 5631
+SELECT 1 3 0 [0.448, 0.42]
+FIGHT worldmodel 0 9 death 0.444 5194
+SELECT 0 2 1 [0.45, 0.554]
+FIGHT worldmodel 2 212 death 0.533 4378
+SELECT 2 5 0 [0.503, 0.359]
+FIGHT worldmodel 1 111 death 0.444 3243
+SELECT 1 4 0 [0.487, 0.381]
+FIGHT worldmodel 0 10 death 0.444 3152
+SELECT 0 3 1 [0.45, 0.532]
+FIGHT worldmodel 1 112 death 0.622 4422
+SELECT 1 5 0 [0.514, 0.381]
+FIGHT worldmodel 2 213 death 0.178 5514
+SELECT 2 6 0 [0.456, 0.359]
+FIGHT worldmodel 2 214 death 0.0 718
+SELECT 2 7 0 [0.399, 0.359]
+FIGHT worldmodel 1 113 death 0.622 4867
+SELECT 1 6 0 [0.532, 0.381]
+FIGHT worldmodel 2 215 death 0.711 4315
+SELECT 2 8 0 [0.434, 0.359]
+FIGHT worldmodel 0 11 death 0.089 4844
+SELECT 0 4 1 [0.45, 0.458]
+FIGHT worldmodel 1 114 death 0.356 3431
+SELECT 1 7 0 [0.507, 0.381]
+FIGHT worldmodel 2 216 death 0.711 4024
+SELECT 2 9 0 [0.462, 0.359]
+FIGHT worldmodel 1 115 death 0.711 5133
+SELECT 1 8 0 [0.532, 0.381]
+FIGHT worldmodel 0 12 death 0.178 6243
+SELECT 0 5 0 [0.53, 0.395]
+FIGHT worldmodel 1 116 death 0.444 3142
+SELECT 1 9 0 [0.523, 0.381]
+FIGHT worldmodel 2 217 death 0.444 7930
+SELECT 2 10 0 [0.46, 0.359]
+FIGHT worldmodel 0 13 death 0.533 4684
+SELECT 0 6 0 [0.531, 0.395]
+FIGHT worldmodel 1 117 death 0.622 5267
+SELECT 1 10 0 [0.532, 0.381]
+FIGHT worldmodel 0 14 death 0.267 1402
+SELECT 0 7 0 [0.465, 0.395]
+FIGHT worldmodel 2 218 death 0.356 4226
+SELECT 2 11 0 [0.451, 0.359]
+FIGHT worldmodel 2 219 death 0.533 2917
+FIGHT worldmodel 1 118 death 0.711 3615
+SELECT 1 11 0 [0.549, 0.381]
+FIGHT worldmodel 0 15 death 0.622 3599
+SELECT 0 8 0 [0.496, 0.395]
+FIGHT worldmodel 1 119 death 0.978 6118
+FIGHT worldmodel 0 16 death 0.711 7421
+SELECT 0 9 0 [0.532, 0.395]
+FIGHT worldmodel 0 17 death 0.711 4558
+SELECT 0 10 0 [0.558, 0.395]
+FIGHT worldmodel 0 18 death 0.356 3209
+SELECT 0 11 0 [0.532, 0.395]
+FIGHT worldmodel 0 19 death 0.267 3977
+worldmodel wins 0 / 36 damage 0.472
