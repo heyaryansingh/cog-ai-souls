@@ -597,3 +597,18 @@ Damage ×2.2 again (Wilcoxon one-sided p = 4.5e-6), wins 8 vs 2 (Fisher one-side
 
 - Margit: v6 holds 77–91% of frames by the end in two series (exchange ratio 0.54 vs 0.32, 0.57 vs 0.35); in the third the two models score the same (0.58 vs 0.57), so it doesn't matter which one plays. Procedural: the stack holds 70% of frames.
 - **Reading.** The selection problem from B47–B53 is solved by two choices together: (1) a dense outcome signal (exchange ratio per 5-second segment instead of final damage per fight, ~10× more evidence per fight), and (2) exploit what that evidence says rather than probability-matching on it. This is close to how a player tests a tactic: try something for a few exchanges, keep it if the trades go your way. It is now the default selector for the full agent (`WM_SELECT=1 WM_SELECT_BY=interleave WM_IL_EPS=0.2`). B55 (Godrick-like boss) tests it on a third family.
+
+## B55 · Godrick-like boss: v6 beats the stack again, and the B54 selector fails
+- New hand-authored boss (`BOSS=godrick`, `GODRICK_MOVES`/`GODRICK_STRINGS` in `arena3d/program.py`): heavy axe, 3-hit sweep strings branching into an overhead or a stomp, axe charge, jump slam, delayed whirlwind with a 5.5 m ring; phase 2 adds a dragon-breath projectile, dragon swipe and dragon slam. Timings from general knowledge of the fight, not frame-annotated footage. Sanity: aggro dies in ~12 s (60% boss HP left), state oracle wins 1 of 3.
+- 3 series × 12 fights, same scouting checkpoint for all arms:
+
+| learner | damage | fights 7–12 |
+|---|---|---|
+| plain v6 | **30.1%** | **40.2%** |
+| stack | 15.6% (vs v6 p = .003) | 13.8% |
+| combined likelihood + return | 24.9% | 27.6% |
+| interleave ε = 0.2 (B54 default) | 16.2% (vs v6 p = .005) | 19.6% |
+
+- **Two hand-authored bosses, same verdict: v6 is the better controller, and by a lot on Godrick (2×).** The stack's advantage is specific to the procedural family. Plain v6 also keeps learning on Godrick (30% → 40% in later fights); the stack doesn't.
+- **The B54 selector picked the stack in 2 of 3 series**: segment exchange ratios favoured it (0.14 vs 0.09, 0.21 vs 0.15) even though v6 alone deals twice the damage. Two likely causes: (1) Godrick deals and takes few hits, so the family prior (which favours the stack) dominates the counts for longer; (2) credit leaks across segments: a 3-hit string or a delayed whirlwind that lands in one segment was set up (or failed to be dodged) under the previous model. Under interleaving, the score measures "who is in control when the trade resolves", not "whose decisions caused it".
+- Next (B56): credit each hit to the model that was in control when the decision was made (hit taken → model at the boss move's onset; hit dealt → model when the swing started), and weaken the family prior.
