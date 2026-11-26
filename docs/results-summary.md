@@ -59,7 +59,7 @@ A move-frequency opponent model (FightingICE-style) reaches only 16.9%, against 
 
 # Arena3D: 3D motion-captured bosses (as of 2026-11-26)
 
-Source: `docs/arena3d-log.md` (entries B11–B38). Bosses are MuJoCo bodies driven by CMU motion capture, with real 3D contact hitboxes. The agent perceives noisy, delayed keypoints and sounds. Margit-like boss timings are calibrated against public Elden Ring footage (B22). Procedural bosses are random movesets, strings and phase switches built from held-out mocap subjects.
+Source: `docs/arena3d-log.md` (entries B11–B60). Bosses are MuJoCo bodies driven by CMU motion capture, with real 3D contact hitboxes. The agent perceives noisy, delayed keypoints and sounds. Margit-like boss timings are calibrated against public Elden Ring footage (B22). Procedural bosses are random movesets, strings and phase switches built from held-out mocap subjects.
 
 ## Margit-like boss (24 paired fights each, 450 HP)
 
@@ -85,6 +85,22 @@ Source: `docs/arena3d-log.md` (entries B11–B38). Bosses are MuJoCo bodies driv
 | + motion-phase clock for delayed swings; **full stack vs naive learner** | 22.7% → **49.5%** damage (p = 2.6e-5), 1 → 7 wins of 36 (p = .028) | B43–B44 |
 | decomposition (same 18 bosses): naive 22.7% → + drive 37.7% (p = .002) → + aim/attention/back-off 45.4% → + phase clock 49.5% (n.s.). Over 6 attempts per boss (108 fights per arm), aim/attention/back-off beats plain v6 + drive: 46.0% vs 36.0% (p = .0006), 18 vs 8 wins, better on 17/18 bosses | | B47, B50 |
 | same, replicated on 18 held-out bosses (config frozen) | 27.2% → **60.4%** damage (p = 4.5e-6), 2 → 8 wins of 36 (p = .042); pooled 36 bosses: 25% → 55%, 3 → 15 of 72 wins | B45 |
+
+## Three boss families: which world model, and can the agent choose? (B47–B60)
+
+| learner | Margit (3×12) | held-out procedural (18×6) | Godrick-like (3×12) |
+|---|---|---|---|
+| plain learned world model (v6) + drive | **52.3%** | 47.9% | **30.1%** |
+| + aim, after-swing attention, back-off ("stack") | 34–40% | **56.5%** | 15.6% |
+| stack without the attention window | 53.1% | 44.4% | 20.9% |
+| selector: try models in 5 s segments, keep the better trader (B54) | 52.3% | 56.3% | 16.2% |
+| same, hits credited to the model in control at decision time (B56/B57) | 43.2% | 51.0% | 26.6% |
+| v6 + seen shockwave fronts in imagination (B60) | 52.3% | – | 34.6% (n.s.) |
+
+- **Prediction ≠ control.** Plain v6 predicts felt contacts better on every family, even in the near, decision-relevant frames, yet the stack fights better on procedural bosses. Likelihood-based selection therefore misleads (B47, B51).
+- **The stack's gain is family-specific** and comes almost entirely from the 90-frame after-swing attention window, which is also its main cost on Godrick (B58, B59). Margit is not perceptually unusual (B53), so the agent gets no warning.
+- **Outcome-based selection** works when the outcome signal is dense (hits dealt per hit taken over 5 s segments) and exploited greedily: B54 matches the better model on Margit and procedural bosses. No setting wins on all three families within 6–12 fights; plain v6 + drive is the most robust single choice (mean 43%).
+- Prior over models learned from earlier bosses of the same family transfers to new bosses of that family (57.9%, B52) but misleads on a different family.
 
 ## Perception and learning findings
 
