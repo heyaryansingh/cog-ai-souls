@@ -295,7 +295,7 @@ class LearnedGrammarPlanner:
             if since >= self.read_k:
                 self.seen_serial = serial
                 lab = b.move_id if self.rng.random() < self.acc else int(self.rng.integers(self.n))
-                if self.ctx_cur is not None:
+                if self.ctx_cur is not None and getattr(self, "update", True):
                     c = self.counts.setdefault(self.ctx_cur, np.zeros(self.n))
                     c[lab] += 1
                 self.prev, self.prev_end = lab, env.t + 30
