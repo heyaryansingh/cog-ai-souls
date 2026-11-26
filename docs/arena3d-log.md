@@ -206,3 +206,17 @@ Coarser label (any hit in the next 24 frames), perfect pose, 8 training bosses:
 - 16 new seeds (8–23), same seed for both arms: perceptual oracle **21.1%** boss damage, grammar oracle **33.3%**. Paired difference +12.2 points, bootstrap 95% CI [+1.1, +22.8], one-sided Wilcoxon p = .025. Pooled with B16's 8 seeds: 23.7% vs 37.5%.
 - So a planner that perceives realistically but knows the boss's strings does reliably better than one that guesses unreadable moves uniformly. The effect is smaller than the 8-fight pilot suggested (+17), which is what you'd expect from a small pilot. Neither wins: the shared hand-written action layer still takes ~11 hits per fight.
 - **Running:** strings learned by *watching* (2 × 9,000 frames of a circling player, near and far, phases 1 and 2; identifications 70% accurate at 12 frames), then frozen and used by the same planner on the same 16 seeds. If it lands near 33%, the program is learnable from noisy perception alone.
+
+## B18 · Strings learned by watching are as good as the true program (main result of this chapter so far)
+- **Learning by watching.** 18,000 frames of a circling player (near and far spacing, phases 1 and 2), each move identified 12 frames after onset with 70% accuracy, Dirichlet counts over (previous move, near/far, phase) → move. The learned table recovers Margit's structure without being told it: after `staff_sweep` → `staff_sweep_b` (14 of 23 near, phase 1); after `staff_sweep_b` → `staff_thrust` (7) or `delayed_overhead` (6), the branch point; far openers → `dagger_throw` / `leaping_stab`; phase-2 far → `hammer_leap`.
+- **Planning with the frozen learned strings, same 16 seeds:**
+
+| planner (all with realistic perception) | boss damage | vs perceptual |
+|---|---|---|
+| perceptual (unreadable moves guessed uniformly) | 21.1% | |
+| **learned strings (watched, frozen)** | **32.8%** | +11.7, CI [+1.1, +22.2], p = .032 |
+| true strings (grammar oracle) | 33.3% | +12.2, p = .025 |
+
+  Learned vs true: difference 0.6 points, p = .95, CI [−13, +15].
+- **Reading.** Strings learned from noisy, late, 70%-accurate perception give the same benefit as knowing the true program. The bottleneck identified in B15 (moves can't be read in time) is solvable by learning the boss's program from observation, and this boss's program is learnable from about 10 minutes of watching. This is the concrete version of the project thesis ("reading the boss" = inferring its program), now on a 3D mocap boss with real hitboxes and realistic perception.
+- **Limits.** Physics and hitboxes of each move are taken from the simulator (only the *choice* of move is learned). The action layer is hand-written and weak (no wins). One boss. Next: (1) learn move kinematics too, by imagining with the agent's own library of observed move trajectories instead of the true simulator; (2) more bosses (a Godrick-like program); (3) a better action layer (search over own action sequences) so the ceiling stops being the bottleneck.
