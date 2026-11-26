@@ -34,6 +34,13 @@ class DangerMaps:
         self.D = np.zeros((n_moves, 3 * TB, 2)); self.Dn = np.zeros((n_moves, 3 * TB))   # boss travel (onset frame)
         import os
         self.cur = os.environ.get('WM_FRAME', 'onset') == 'current'
+        # B33 aim model: the boss keeps turning toward you until its swing commits. Frame = onset origin, rotated
+        # by the boss's perceived turn since onset; the planner imagines that turn toward its imagined position.
+        self.track = os.environ.get('WM_TRACK') == '1'
+        if self.track:
+            self.cur = False
+        self.turn, self.dturn = 0.0, []          # perceived turn since onset; per-frame turn magnitudes seen
+        self.peak_obs = {}                       # move -> taus at which turning was last seen (commit time)
         self.geom = os.environ.get('WM_GEOM') == '1'; self.trajs = {}; self.cur_traj = []; self.prev_label = None
         self.a, self.b = prior_hit * prior_n, prior_n
         self.rng = np.random.default_rng(seed); self.read_k, self.acc, self.n = read_k, acc, n_moves
@@ -63,9 +70,12 @@ class DangerMaps:
                 self.trajs.setdefault(self.prev_label, []).append(self.cur_traj[:])
                 self.trajs[self.prev_label] = self.trajs[self.prev_label][-40:]
             self.cur_traj = []
+            if self.track and getattr(self, 'prev_label', None) is not None and getattr(self, 'last_turn_tau', 0) > 0:
+                self.peak_obs.setdefault(self.prev_label, []).append(self.last_turn_tau)
             to_p = env.p_xy - b.root
             self.origin = b.root + self.rng.normal(0, 0.1, 2)
             self.fwd = float(np.arctan2(to_p[1], to_p[0])) + self.rng.normal(0, 0.1)   # bosses face you at onset
+            self.yaw0, self.turn, self.last_turn_tau = float(b.yaw_off), 0.0, 0
         import os
         persist = os.environ.get("WM_PERSIST", "0") == "1"   # B30: keep attending to a move's effects after the swing
         if self.origin is None or s != self.serial or (b.kind != "strike" and not persist):
@@ -76,14 +86,26 @@ class DangerMaps:
         if tau >= self.read_k and self.label is None:
             self.label = b.move_id if self.rng.random() < self.acc else int(self.rng.integers(self.n))
             self.prev_label = self.label
+        fwd_now = None
+        if self.track:
+            if b.kind == "strike":
+                new = float(b.yaw_off) - self.yaw0 + self.rng.normal(0, 0.003)   # seen body rotation since onset
+                d = abs(new - self.turn)
+                if d > 0.004:
+                    self.dturn.append(d); self.dturn = self.dturn[-2000:]; self.last_turn_tau = tau
+                self.turn = new
+            fwd_now = self.fwd + self.turn
         hit = bool(info.get("hit") is not None or info.get("blocked") or info.get("dodged"))
         bdisp = self.rel(env, b.root + self.rng.normal(0, 0.1, 2))      # boss travel since onset (perceived)
         if getattr(self, 'geom', False) and b.kind == "strike":        # seen weapon tip (noisy keypoint), relative to the boss now
             sd = 0.06 * 1.75 * env.spec.scale
             tip = env.d.site_xpos[env.tip][:2] + self.rng.normal(0, sd, 2)
             hand = env.d.xpos[env.m.body('b_rhand').id][:2] + self.rng.normal(0, sd, 2)
-            self.cur_traj.append((tau, np.r_[self.rel(env, tip) - bdisp, self.rel(env, hand) - bdisp]))
-        r = self.rel(env) - bdisp if self.cur else self.rel(env)       # my position relative to the boss now
+            if self.track:
+                self.cur_traj.append((tau, np.r_[self.rel(env, tip, fwd=fwd_now), self.rel(env, hand, fwd=fwd_now)]))
+            else:
+                self.cur_traj.append((tau, np.r_[self.rel(env, tip) - bdisp, self.rel(env, hand) - bdisp]))
+        r = self.rel(env) - bdisp if self.cur else self.rel(env, fwd=fwd_now)       # my position relative to the boss now
         self.pend.append((tau, r, hit, bdisp))
         if self.label is not None and self.update:
             for (t0, r0, h0, d0) in self.pend:
@@ -93,6 +115,24 @@ class DangerMaps:
                 if t0 < 3 * TB:
                     self.D[self.label, t0] += d0; self.Dn[self.label, t0] += 1
             self.pend = []
+
+    def track_rate(self):
+        return float(np.percentile(self.dturn, 90)) if len(self.dturn) > 20 else 0.03
+
+    def commit_tau(self, m):
+        v = self.peak_obs.get(m)
+        return float(np.median(v)) if v else 30.0
+
+    def rel_tracked(self, env, pos, taus, tau_now, m):
+        """Imagined positions relative to the boss as it keeps turning toward each of them until it commits."""
+        c = self.commit_tau(m); w = self.track_rate()
+        out = np.zeros((len(pos), 2)); turn = self.turn
+        for i, (q, t) in enumerate(zip(pos, taus)):
+            if t <= c:
+                to_q = q - self.origin; err = (np.arctan2(to_q[1], to_q[0]) - (self.fwd + turn) + np.pi) % (2 * np.pi) - np.pi
+                turn += float(np.clip(err, -w, w))
+            out[i] = self.rel(env, q, fwd=self.fwd + turn)
+        return out
 
     def _smoothed(self):
         """Kernel-smoothed counts (generalise across neighbouring times, distances and bearings), cached."""
@@ -239,6 +279,8 @@ class LearnedModelPlanner:
                 rs = []
                 for m in ms:
                     rr = rel
+                    if self.maps.track and self.ref[0] is None:
+                        rr = self.maps.rel_tracked(env, pos, taus, tau0, m)
                     if self.maps.cur:     # predicted boss travel for this move (learned mean)
                         ti = np.clip(taus, 0, 3 * TB - 1)
                         disp = self.maps.D[m, ti] / np.maximum(self.maps.Dn[m, ti], 1)[:, None]
