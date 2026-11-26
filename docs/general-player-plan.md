@@ -35,3 +35,20 @@ Each part is an ablatable module grounded in the project's literature reviews (n
 4. R5 + R6: the cross-boss scaling curve.
 5. R4, R7: ablations and the head-to-head.
 6. Footage retiming of Margit and Godrick, in parallel throughout.
+
+## Status after B21–B37 (Nov 26)
+What each component of the Reader has shown so far (details in docs/arena3d-log.md):
+
+| component | finding | entry |
+|---|---|---|
+| R2 strings, learned by watching | Margit: online-updated strings 11/12 wins = true program; frozen 7/12. Context mismatch, not label noise, is the main cost of freezing | B26 |
+| R1 + R2 jointly | expectation-guided discovery: the boss's own sequence lifts label-free move identification NMI .50 → .61 (shuffled control .45–.48) | B27 |
+| Drive (new) | short-horizon planners stall at a safe distance on unseen bosses; a drive that grows with time since the last hit lifts 7/24 → 35/48 wins | B28 |
+| Generalisation suite | with a perfect per-move simulator, 18 procedural bosses are nearly saturated (20–23/24); string knowledge adds nothing there | B29 |
+| R3 learned world model | on unseen bosses: drive + after-swing attention + hierarchical back-off 21% → 39% damage; still dies | B30 |
+| Experience across attempts | carrying memory across deaths ≈ a fresh learner each attempt (43.6% vs 41.5%); the plateau is the model class | B31–B32 |
+| Aim model (new, theory of mind) | imagining the boss turn toward where I will be: +23% survival over 18 bosses (p = .008) | B33 |
+| R7 amortised intuition | blade paths from early pose don't transfer across bosses; within a boss, reading needs near-mocap precision (2% keypoint noise already costs most of it) | B34–B36 |
+| Fast vs slow (phase switch) | distilled habit starts level with the slow mind on phase 2; PPO fine-tuning collapses it to passivity, the slow mind adapts inside one fight; DAgger can't close the gap (information asymmetry) | B37 |
+
+Remaining gap: a learner that must learn each boss's physics wins ~22% of fights where the same agent with a simulator wins ~90%. Next levers: condition remembered blade paths on early speed (delay/hold), and a student that plans (feed beliefs, not just observations).
