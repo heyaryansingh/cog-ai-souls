@@ -667,3 +667,17 @@ Stack without persist ("lite": onset frame + aim + back-off), all three families
 - Removing the attention window takes the stack back to v6 level on Margit, but it also removes the entire procedural gain (56.5 → 44.4). So the 90-frame post-swing window is the double-edged component; aim + back-off add nothing on procedural and cost on Godrick.
 - **Diagnostic** (`scripts/godrick_diag.py`, one 6-fight series each): on Godrick about a third of all hits taken are shockwaves that arrive after the boss has gone back to idle (21–22 of 61–67 hits, for v6 and v6+persist alike), and shockwaves overall are the largest single source. The world models learn rings only as statistics over (time since onset, distance, bearing); a ring is really a visible expanding front.
 - B60 (running): a perceptual "ring reflex": perceive a live shockwave's centre and radius (noisy), learn its expansion speed from consecutive frames, and roll so the i-frames cover the front's arrival (`WM_RING_REFLEX=1`). Intuitive physics for a visible effect instead of a learned hazard map.
+
+## B60 · Seeing shockwaves: small gain on Godrick, not significant
+Shockwaves are visible expanding fronts, so the agent can perceive each live ring's centre and radius (noisy) and learn its expansion speed and the largest radius reached (`_ring_percept`). Two ways to use it, plain v6, 3 × 12 fights:
+
+| | Godrick | Margit |
+|---|---|---|
+| v6 | 30.1% | 52.3% |
+| + reflex (roll so i-frames cover the front's arrival) | 30.0% | 47.4% (n.s.) |
+| + fronts in the planner's imagination (`WM_RING_PLAN=1`) | 33.1% (1 win, the first on Godrick) | 52.3% |
+| + both | 34.6% (p = .51) | – |
+
+- The reflex alone does nothing: in a diagnostic series 13 of 22 shockwave hits landed while the player was already committed (mid-attack or mid-roll), and 25 of 47 triggers had too little stamina to roll. Putting the predicted fronts into imagined futures (so the planner won't start a swing that a ring will cross) helps a little on Godrick; Margit has rings only in phase 2 and doesn't change.
+- **Reading.** Reacting to a visible ring is too late; the cost is set by commitments made before the ring exists, i.e. by *anticipating* the ring from the move (the hazard maps' job). Perceiving live fronts is a small, safe addition; kept as an option.
+- B61: longer series on Godrick (24 fights) to see where v6 + ring perception levels off.
