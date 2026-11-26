@@ -314,34 +314,53 @@ class LearnedModelPlanner:
             return [mp.label] * self.n, tau
         return [self.g.sample(env, self.rng) for _ in range(self.n)], tau
 
-    def _ring_reflex(self, env):
-        """A shockwave is a visible expanding front. Perceive its centre and radius (noisy), learn its expansion
-        speed from consecutive frames, and roll so the i-frames (frames 2-11 of a roll) cover the front's arrival."""
-        rngs = getattr(env, "rings", [])
-        seen = getattr(self, "_ring_seen", {}); v = getattr(self, "_ring_v", 0.3); new_seen = {}
-        roll = False
-        for rg in rngs:
-            if rg["hit"]: continue
+    def _ring_percept(self, env):
+        """B60: a shockwave is a visible expanding front. Perceive each live ring's centre and radius (noisy) and
+        learn the expansion speed and the largest radius reached from consecutive frames."""
+        seen = getattr(self, "_ring_seen", {}); v = getattr(self, "_ring_v", 0.3); rmax = getattr(self, "_ring_rmax", 3.0)
+        new_seen, out = {}, []
+        for rg in getattr(env, "rings", []):
             c = rg["c"] + self.rng.normal(0, 0.1, 2); r = rg["r"] + self.rng.normal(0, 0.05)
             key = (round(float(rg["c"][0]), 2), round(float(rg["c"][1]), 2)); new_seen[key] = r
             if key in seen and r > seen[key]:
                 v = 0.9 * v + 0.1 * (r - seen[key])
+            rmax = max(rmax * 0.999, r)
+            if not rg["hit"]:
+                out.append((c, r))
+        self._ring_seen, self._ring_v, self._ring_rmax = new_seen, v, rmax
+        return out, v, rmax
+
+    def _ring_reflex(self, env, rings):
+        """roll so the i-frames (frames 2-11 of a roll) cover a seen front's arrival"""
+        out, v, rmax = rings
+        for c, r in out:
             d = float(np.linalg.norm(env.p_xy - c))
-            if d + 0.45 < r: continue                      # front already passed outward
-            k = (d - 0.45 - r) / max(v, 1e-3)              # frames until the front's band reaches me
-            if k <= 4:
-                roll = True
-        self._ring_seen, self._ring_v = new_seen, v
-        if roll and env.stamina > 10:
-            return 5 * N_BUTTONS + ROLL
+            if d + 0.45 < r or d > rmax + 0.5: continue    # front already passed / will die before reaching me
+            if (d - 0.45 - r) / max(v, 1e-3) <= 4:
+                self.ring_trig = getattr(self, "ring_trig", 0) + 1
+                if env.stamina > 10:
+                    self.ring_rolls = getattr(self, "ring_rolls", 0) + 1
+                    return 5 * N_BUTTONS + ROLL
         return None
+
+    def _ring_risk(self, pos, inv, rings):
+        """imagined positions vs the predicted fronts: risk 1 if a front's band crosses me while I'm vulnerable"""
+        out, v, rmax = rings
+        t = np.arange(1, len(pos) + 1)
+        for c, r in out:
+            rt = r + v * t
+            d = np.linalg.norm(np.asarray(pos)[:, :2] - c, axis=1)
+            if np.any((np.abs(d - rt) < 0.5) & (rt < rmax + 0.3) & (~inv)):
+                return 1.0
+        return 0.0
 
     def act(self, env):
         self.g.observe(env)
         if not env.player_free():
             return 0
+        rings = self._ring_percept(env) if os.environ.get("WM_RING_REFLEX", "0") != "0" or os.environ.get("WM_RING_PLAN") == "1" else None
         if os.environ.get("WM_RING_REFLEX") == "1":      # B60: intuitive physics of visible shockwaves
-            a = self._ring_reflex(env)
+            a = self._ring_reflex(env, rings)
             if a is not None:
                 self.hold_n = 0
                 return a
@@ -385,6 +404,8 @@ class LearnedModelPlanner:
                     h = h * (~inv) * (taus >= 0)
                     rs.append(1 - np.prod(1 - h))
                 risk = float(np.mean(rs))
+            if rings is not None and rings[0] and os.environ.get("WM_RING_PLAN") == "1":
+                risk = 1 - (1 - risk) * (1 - 0.9 * self._ring_risk(pos, inv, rings))
             btn = a % N_BUTTONS
             gain = 0.0
             if btn == LIGHT and dist <= reach:
