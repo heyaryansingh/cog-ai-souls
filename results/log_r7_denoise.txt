@@ -1,0 +1,14 @@
+k=12 raw              d=12  seen-boss kNN 0.552   unseen-boss kNN 0.600
+k=12 manifold         d= 6  seen-boss kNN 0.563   unseen-boss kNN 0.617
+k=12 manifold         d=12  seen-boss kNN 0.541   unseen-boss kNN 0.605
+k=12 manifold         d=20  seen-boss kNN 0.543   unseen-boss kNN 0.602
+k=12 manifold+smooth  d= 6  seen-boss kNN 0.562   unseen-boss kNN 0.617
+k=12 manifold+smooth  d=12  seen-boss kNN 0.553   unseen-boss kNN 0.603
+k=12 manifold+smooth  d=20  seen-boss kNN 0.548   unseen-boss kNN 0.603
+k=20 raw              d=12  seen-boss kNN 0.522   unseen-boss kNN 0.600
+k=20 manifold         d= 6  seen-boss kNN 0.535   unseen-boss kNN 0.613
+k=20 manifold         d=12  seen-boss kNN 0.515   unseen-boss kNN 0.601
+k=20 manifold         d=20  seen-boss kNN 0.517   unseen-boss kNN 0.604
+k=20 manifold+smooth  d= 6  seen-boss kNN 0.517   unseen-boss kNN 0.605
+k=20 manifold+smooth  d=12  seen-boss kNN 0.487   unseen-boss kNN 0.588
+k=20 manifold+smooth  d=20  seen-boss kNN 0.481   unseen-boss kNN 0.587

@@ -1,0 +1,6 @@
+1846 train swings, 823 test swings on 18 unseen bosses
+k= 4  zero-shot net 0.638  | average path 0.586  | same-boss move mean (needs ID+experience) 0.258  | net on same swings 0.636  | net+experience blend 0.403
+k= 8  zero-shot net 0.639  | average path 0.586  | same-boss move mean (needs ID+experience) 0.258  | net on same swings 0.638  | net+experience blend 0.403
+k=12  zero-shot net 0.614  | average path 0.586  | same-boss move mean (needs ID+experience) 0.258  | net on same swings 0.612  | net+experience blend 0.389
+k=16  zero-shot net 0.603  | average path 0.586  | same-boss move mean (needs ID+experience) 0.258  | net on same swings 0.602  | net+experience blend 0.385
+k=20  zero-shot net 0.594  | average path 0.586  | same-boss move mean (needs ID+experience) 0.258  | net on same swings 0.593  | net+experience blend 0.380
