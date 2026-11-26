@@ -542,3 +542,15 @@ Damage ×2.2 again (Wilcoxon one-sided p = 4.5e-6), wins 8 vs 2 (Fisher one-side
 - Each model gets a Gaussian posterior over its damage per fight (prior mean 0.45, plus 0.08 for the current likelihood favourite, prior weight 2 fights). Pick the higher posterior mean.
 - 3 series × 12 fights on Margit: **47.2% damage** (bandit 45.9%, likelihood 43.5%, v6 alone 52.3%, stack alone 40.0%). Choices: `111110000000`, `110000000000`, `100000000000`. It starts on the likelihood favourite (the stack), and the returns move it to v6 after 1, 2 and 5 fights in every series, with no wrong lock-in. The fastest and most robust of the three selectors, ~5 points below always using the best model (the price of finding out which one it is).
 - Selector series on Margit, B47–B49: prediction only (slow, safe) → returns only (fast, can lock in wrong) → both (fast and safe). This is the metacognitive layer the general learner needs, since B46 showed that no fixed bundle of cognitive biases is best on every boss.
+
+## B50 · Selector on the procedural bosses, 6 attempts each (324 fights)
+18 procedural bosses × 6 attempts, drive on in all arms, learning carried across attempts:
+
+| learner | damage | wins / 108 | attempts 4–6 |
+|---|---|---|---|
+| plain v6 | 36.0% | 8 | 33.9% |
+| aim + attention + back-off (stack) | **46.0%** | **18** | 47.6% |
+| combined selector (keeps both) | 39.7% | 10 | 40.9% |
+
+- **With 3× the data, the stack's advantage over v6 on procedural bosses is clear**: +10 points (Wilcoxon p = .0006), more wins, and better on 17 of 18 bosses. This revises B47's "n.s." (12 points at n = 36). So the world-model refinements do help on this family; the drive is still the larger part of the gain from the naive learner.
+- The combined selector lands in between (better than v6, p = .03; worse than the stack, p = .01). It picks the stack only about half the time: the likelihood prior favours v6 on these bosses too, and per-fight returns are too noisy to overturn it within 6 attempts. Across both families: on Margit the selector gets within 5 points of the better model (B49); on procedural bosses it gives back 6 of the 10. **Model selection by "how well do I predict the hits" misleads in one family and helps in the other**; a selector needs a decision-relevant score, not frame-level likelihood (B47).

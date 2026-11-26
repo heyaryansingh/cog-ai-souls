@@ -83,7 +83,7 @@ Source: `docs/arena3d-log.md` (entries B11–B38). Bosses are MuJoCo bodies driv
 | + aim model (boss turns toward where I'll be) | +23% survival over 18 bosses (p = .008), 45% damage, 8/36 wins | B33 |
 | carrying memory across deaths | ≈ fresh learner each attempt (43.6% vs 41.5%) | B32 |
 | + motion-phase clock for delayed swings; **full stack vs naive learner** | 22.7% → **49.5%** damage (p = 2.6e-5), 1 → 7 wins of 36 (p = .028) | B43–B44 |
-| decomposition (same 18 bosses): naive 22.7% → + drive 37.7% (p = .002) → + aim/attention/back-off 45.4% (n.s.) → + phase clock 49.5% (n.s.); most of the gain is the drive | | B47 |
+| decomposition (same 18 bosses): naive 22.7% → + drive 37.7% (p = .002) → + aim/attention/back-off 45.4% → + phase clock 49.5% (n.s.). Over 6 attempts per boss (108 fights per arm), aim/attention/back-off beats plain v6 + drive: 46.0% vs 36.0% (p = .0006), 18 vs 8 wins, better on 17/18 bosses | | B47, B50 |
 | same, replicated on 18 held-out bosses (config frozen) | 27.2% → **60.4%** damage (p = 4.5e-6), 2 → 8 wins of 36 (p = .042); pooled 36 bosses: 25% → 55%, 3 → 15 of 72 wins | B45 |
 
 ## Perception and learning findings
