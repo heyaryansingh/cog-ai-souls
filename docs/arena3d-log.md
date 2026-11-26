@@ -626,3 +626,16 @@ Godrick 3 × 12, interleave ε = 0.2, varying credit assignment and family-prior
 
 - Crediting a hit taken to the model in control when the boss move *started* (when the dodge decision was made), and a hit dealt to the model in control when my swing started, reverses the misleading ratios: with a weak prior all three series settle on v6 and the damage gap to v6-alone closes (26.6% vs 30.1%, n.s.). Credit assignment to the decision, not the outcome moment, is what makes short within-fight trials valid when moves are long and delayed.
 - B57 (running): the same selector (`WM_IL_CREDIT=decision WM_FAMILY_N=1`) on Margit and held-out procedural bosses, to check it keeps B54's wins there.
+
+## B57 · No selector setting wins on all three families; plain v6 is the most robust single choice
+Same selector as B56's best (decision credit, prior 1, ε = 0.2) on the other two families:
+
+| learner | Margit | held-out procedural | Godrick | mean |
+|---|---|---|---|---|
+| plain v6 | 52.3% | 47.9% | 30.1% | **43.4%** |
+| stack | 34–40% | 56.5% | 15.6% | ~36% |
+| B54 selector (resolution credit, prior 3) | 52.3% | 56.3% | 16.2% | 41.6% |
+| B56 selector (decision credit, prior 1) | 43.2% | 51.0% | 26.6% | 40.3% |
+
+- Decision credit fixes Godrick but costs ~9 points on Margit (one series locked onto the stack: ratios 0.24 vs 0.37) and ~5 on procedural (stack share 63%, vs 70% in B54; vs B54 p = .16). With 6–12 fights per boss, any selector's settings trade one family against another; a 36-fight Margit run has a series-level SE of several points, so the B54-vs-B57 Margit gap is itself only ~2 SE.
+- **Conclusion of the selection line (B47–B57).** (1) Prediction quality does not identify the better controller (B47, B51). (2) Outcome evidence does, but per-boss evidence within a dozen fights is too noisy to beat a robust default on every family. (3) The stack's advantage is family-specific (procedural only); on both hand-authored bosses it hurts, on Godrick by 2×. So the robust agent uses plain v6 + drive and treats the stack's biases as a family-specific option. The scientific question that remains is *why* those biases hurt on hand-authored bosses: B58 ablates the stack's components on Godrick.
