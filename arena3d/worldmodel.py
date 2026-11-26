@@ -314,10 +314,37 @@ class LearnedModelPlanner:
             return [mp.label] * self.n, tau
         return [self.g.sample(env, self.rng) for _ in range(self.n)], tau
 
+    def _ring_reflex(self, env):
+        """A shockwave is a visible expanding front. Perceive its centre and radius (noisy), learn its expansion
+        speed from consecutive frames, and roll so the i-frames (frames 2-11 of a roll) cover the front's arrival."""
+        rngs = getattr(env, "rings", [])
+        seen = getattr(self, "_ring_seen", {}); v = getattr(self, "_ring_v", 0.3); new_seen = {}
+        roll = False
+        for rg in rngs:
+            if rg["hit"]: continue
+            c = rg["c"] + self.rng.normal(0, 0.1, 2); r = rg["r"] + self.rng.normal(0, 0.05)
+            key = (round(float(rg["c"][0]), 2), round(float(rg["c"][1]), 2)); new_seen[key] = r
+            if key in seen and r > seen[key]:
+                v = 0.9 * v + 0.1 * (r - seen[key])
+            d = float(np.linalg.norm(env.p_xy - c))
+            if d + 0.45 < r: continue                      # front already passed outward
+            k = (d - 0.45 - r) / max(v, 1e-3)              # frames until the front's band reaches me
+            if k <= 4:
+                roll = True
+        self._ring_seen, self._ring_v = new_seen, v
+        if roll and env.stamina > 10:
+            return 5 * N_BUTTONS + ROLL
+        return None
+
     def act(self, env):
         self.g.observe(env)
         if not env.player_free():
             return 0
+        if os.environ.get("WM_RING_REFLEX") == "1":      # B60: intuitive physics of visible shockwaves
+            a = self._ring_reflex(env)
+            if a is not None:
+                self.hold_n = 0
+                return a
         if self.hold_n > 0:
             self.hold_n -= 1
             return self.hold

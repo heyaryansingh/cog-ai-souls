@@ -654,3 +654,16 @@ One stack component at a time, Godrick 3 × 12 (each with its own scouting check
 
 - The 90-frame post-swing attention window is the main cost on Godrick (−9 points); the aim model costs a further ~5 (n.s.); back-off and the onset frame are neutral. With persist, scouting records 37% more exposures and 25% more contacts: on a boss whose rings, delayed whirlwind and 3-hit strings land well after a move's own swing, contacts from the *next* move or the shockwave get filed under the previous one. That's the same superstition mechanism hypothesised in B31, now localised to one component.
 - B59: the stack without persist (onset + aim + back-off) on all three families. If it keeps the procedural gain, it's a candidate for a model that's good everywhere.
+
+## B59 · The attention window carries the stack's procedural gain *and* its Godrick cost
+Stack without persist ("lite": onset frame + aim + back-off), all three families:
+
+| model | Margit | held-out procedural | Godrick |
+|---|---|---|---|
+| plain v6 | 52.3% | 47.9% | 30.1% |
+| full stack | 34–40% | 56.5% | 15.6% |
+| stack without persist | 53.1% | 44.4% (vs stack p = .002) | 20.9% (vs v6 p = .03) |
+
+- Removing the attention window takes the stack back to v6 level on Margit, but it also removes the entire procedural gain (56.5 → 44.4). So the 90-frame post-swing window is the double-edged component; aim + back-off add nothing on procedural and cost on Godrick.
+- **Diagnostic** (`scripts/godrick_diag.py`, one 6-fight series each): on Godrick about a third of all hits taken are shockwaves that arrive after the boss has gone back to idle (21–22 of 61–67 hits, for v6 and v6+persist alike), and shockwaves overall are the largest single source. The world models learn rings only as statistics over (time since onset, distance, bearing); a ring is really a visible expanding front.
+- B60 (running): a perceptual "ring reflex": perceive a live shockwave's centre and radius (noisy), learn its expansion speed from consecutive frames, and roll so the i-frames cover the front's arrival (`WM_RING_REFLEX=1`). Intuitive physics for a visible effect instead of a learned hazard map.
