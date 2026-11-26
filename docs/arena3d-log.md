@@ -560,3 +560,17 @@ Damage ×2.2 again (Wilcoxon one-sided p = 4.5e-6), wins 8 vs 2 (Fisher one-side
 - **Margit:** 44.9% damage; switches to v6 after 4, 2 and 4 fights (`1111 0…`, `11 0…`, `1111 0…`), faster than the frame-level score (5–8).
 - **Procedural (18 × 6):** picks the stack in only 17 of 108 fights; 35.6% damage = plain v6 (36.0%) and below the stack (46.0%, p = .0006).
 - **Reading.** On *both* boss families, plain v6 predicts the felt contacts better, even in the near, decision-relevant frames and with the class imbalance removed. Yet on procedural bosses the stack *fights* better. So the stack's benefit there doesn't come from more accurate danger estimates. It comes from how its biases shape behaviour: imagining the boss turning toward where I'll be makes lateral repositioning look worse and committed dodges look better, and pooled evidence makes it bolder in places it has seen little. These are useful biases for decisions, not better beliefs. No predictive score can find them; selecting them needs evidence from outcomes (returns), which is slow because single-fight returns are noisy (B48–B49). This is a clean instance of a known tension in model-based RL and in cognition: the best model for prediction and the best model for control can differ.
+
+## B52 · A prior learned from earlier bosses of the family: works within the family, misleads across families
+- Selector: each model starts with a prior equal to its mean damage on the 18 *earlier* procedural bosses (B50: v6 0.36, stack 0.46, strength 3 pseudo-fights), updated with this boss's returns; Thompson sampling with a Gaussian posterior (return sd 0.2) so the disfavoured model still gets tried (`WM_SELECT_BY=family`).
+- **Held-out procedural bosses 18–35 × 6 (fresh bosses, not used for the prior):**
+
+| learner | damage | wins / 108 | attempts 4–6 |
+|---|---|---|---|
+| plain v6 | 47.9% | 17 | 48.7% |
+| stack | 56.5% | 25 | 57.1% |
+| family-prior selector | **57.9%** | **29** | 57.9% |
+
+  Stack > v6 again on new bosses (p = .03, better on 12/18). The family selector picks the stack in 83/108 fights and matches it (vs stack p = .60; vs v6 p = .002). So **the "which biases work here" knowledge transfers to unseen bosses of the same family**, and the selector loses nothing for keeping v6 available.
+- **Margit (3 × 12), same procedural prior:** 40.7%, no wins, vs v6 alone 52.3% and the B49 combined selector 47.2%. Selection strings `110011100000`, `111110100010`, `110111000010`: it does reach v6, but only after 5–7 fights, because the prior says the stack is 10 points better and one Margit fight returns are noisy.
+- **Reading.** A learned prior over inductive biases is the right object (it turns 6 noisy returns into a quick decision), but it must be conditioned on *how similar this boss is to the family* the prior came from. Margit is hand-authored, faster and more combo-heavy than the procedural bosses; an agent should notice that from the scouting phase and weaken the prior. Next (B53): make the prior strength depend on a family-similarity signal measured during scouting, e.g. how well the procedural-trained library predicts this boss (out-of-family surprise → weak prior, rely on likelihood+returns).
