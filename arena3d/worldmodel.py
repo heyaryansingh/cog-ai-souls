@@ -33,6 +33,7 @@ class DangerMaps:
         self.D = np.zeros((n_moves, 3 * TB, 2)); self.Dn = np.zeros((n_moves, 3 * TB))   # boss travel (onset frame)
         import os
         self.cur = os.environ.get('WM_FRAME', 'onset') == 'current'
+        self.geom = os.environ.get('WM_GEOM') == '1'; self.trajs = {}; self.cur_traj = []; self.prev_label = None
         self.a, self.b = prior_hit * prior_n, prior_n
         self.rng = np.random.default_rng(seed); self.read_k, self.acc, self.n = read_k, acc, n_moves
         self.update = True
@@ -57,6 +58,10 @@ class DangerMaps:
         s = getattr(env, "boss_serial", -1)
         if b.kind == "strike" and s != self.serial:
             self.serial, self.onset, self.label, self.pend = s, env.t, None, []
+            if getattr(self, 'geom', False) and getattr(self, 'cur_traj', None) and getattr(self, 'prev_label', None) is not None:
+                self.trajs.setdefault(self.prev_label, []).append(self.cur_traj[:])
+                self.trajs[self.prev_label] = self.trajs[self.prev_label][-40:]
+            self.cur_traj = []
             to_p = env.p_xy - b.root
             self.origin = b.root + self.rng.normal(0, 0.1, 2)
             self.fwd = float(np.arctan2(to_p[1], to_p[0])) + self.rng.normal(0, 0.1)   # bosses face you at onset
@@ -65,8 +70,12 @@ class DangerMaps:
         tau = env.t - self.onset
         if tau >= self.read_k and self.label is None:
             self.label = b.move_id if self.rng.random() < self.acc else int(self.rng.integers(self.n))
+            self.prev_label = self.label
         hit = bool(info.get("hit") is not None or info.get("blocked") or info.get("dodged"))
         bdisp = self.rel(env, b.root + self.rng.normal(0, 0.1, 2))      # boss travel since onset (perceived)
+        if getattr(self, 'geom', False):        # seen weapon tip (noisy keypoint), relative to the boss now
+            tip = env.d.site_xpos[env.tip][:2] + self.rng.normal(0, 0.06 * 1.75 * env.spec.scale, 2)
+            self.cur_traj.append((tau, self.rel(env, tip) - bdisp))
         r = self.rel(env) - bdisp if self.cur else self.rel(env)       # my position relative to the boss now
         self.pend.append((tau, r, hit, bdisp))
         if self.label is not None and self.update:
@@ -92,6 +101,28 @@ class DangerMaps:
                 self._Ns, self._Hs = self.N, self.H
             self._key = key
         return self._Ns, self._Hs
+
+    def geom_hazard(self, m, tau, rel, reach=0.55):
+        """Fraction of remembered tip trajectories of move m passing within `reach` of rel at tau (+-1)."""
+        T = self.trajs.get(m)
+        if not T:
+            return np.zeros(len(tau))
+        key = (m, len(T), id(T[-1]))
+        if getattr(self, "_gk", {}).get(m) != key:
+            A = np.full((len(T), 3 * TB + 2, 2), np.nan)
+            for j, tr in enumerate(T):
+                for t, p in tr:
+                    if 0 <= t < 3 * TB:
+                        A[j, t + 1] = p
+            self._ga = getattr(self, "_ga", {}); self._ga[m] = A
+            self._gk = getattr(self, "_gk", {}); self._gk[m] = key
+        A = self._ga[m]
+        ti = np.clip(np.asarray(tau), 0, 3 * TB - 1) + 1
+        best = np.full((A.shape[0], len(ti)), np.inf)
+        for o in (-1, 0, 1):
+            d = np.hypot(*(A[:, ti + o] - rel[None]).transpose(2, 0, 1))
+            best = np.fmin(best, d)
+        return (best < reach).mean(0) * 0.5
 
     def hazard(self, m, tau, rel):
         ti, ri, ai, ok = _bins(tau, rel)
@@ -182,7 +213,10 @@ class LearnedModelPlanner:
                         ti = np.clip(taus, 0, 3 * TB - 1)
                         disp = self.maps.D[m, ti] / np.maximum(self.maps.Dn[m, ti], 1)[:, None]
                         rr = rel - disp
-                    h = self.maps.hazard(m, np.maximum(taus, 0), rr) * (~inv) * (taus >= 0)
+                    h = self.maps.hazard(m, np.maximum(taus, 0), rr)
+                    if getattr(self.maps, 'geom', False):
+                        h = np.maximum(h, self.maps.geom_hazard(m, np.maximum(taus, 0), rr))
+                    h = h * (~inv) * (taus >= 0)
                     rs.append(1 - np.prod(1 - h))
                 risk = float(np.mean(rs))
             btn = a % N_BUTTONS

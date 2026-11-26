@@ -10,3 +10,7 @@ FIGHT mpc_learned_clean 16 win -0.067 1854
 FIGHT mpc_learned_clean 18 win -0.067 2387
 FIGHT mpc_learned_clean 17 win -0.067 2528
 FIGHT mpc_learned_clean 19 win -0.067 1602
+FIGHT mpc_learned_online 8 win -0.067 3962
+FIGHT mpc_learned_online 10 win -0.067 1530
+FIGHT mpc_learned_online 9 win -0.067 1108
+FIGHT mpc_learned_online 12 win -0.067 2178
