@@ -71,7 +71,7 @@ Source: `docs/arena3d-log.md` (entries B11–B38). Bosses are MuJoCo bodies driv
 | planner, true program | 22/24 (vs uniform p = .018) |
 | PPO from scratch (2.1M frames) | 0 (0% damage) |
 
-24 paired seeds (B26 + replication B41). Learned strings that keep updating come within one fight of the true program; the frozen-vs-online difference seen on the first 12 seeds did not replicate. Phase switch: the slow mind adapts inside the first phase-2 fight (22.7% of phase-2 HP vs 3.0% frozen, B19). A policy distilled from it starts level, and PPO fine-tuning collapses it to passivity within 0.25M frames (B37).
+24 paired seeds (B26 + replication B41). Learned strings that keep updating come within one fight of the true program; the frozen-vs-online difference seen on the first 12 seeds did not replicate. Without any simulator (learning Margit's physics too), the general-learner stack minus the phase clock reaches 49.6% damage vs 41.5% for the plain learned world model; the phase clock hurts on Margit (B46). Phase switch: the slow mind adapts inside the first phase-2 fight (22.7% of phase-2 HP vs 3.0% frozen, B19). A policy distilled from it starts level, and PPO fine-tuning collapses it to passivity within 0.25M frames (B37).
 
 ## Generalising to unseen procedural bosses
 

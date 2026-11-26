@@ -508,3 +508,16 @@ Damage ×2.2 again (Wilcoxon one-sided p = 4.5e-6), wins 8 vs 2 (Fisher one-side
 ## B46 · The general-learner stack on Margit: worse than plain v6 (running ablation)
 - Margit (uncalibrated program), 12 fights in series, fresh watch checkpoint per config: plain v6 (current frame + seen-tip geometry, re-run) 41.5% damage, 0/12 wins; full stack (drive, after-swing attention, back-off, aim, phase clock) **28.9%**, 0/12.
 - The stack that doubles damage on procedural bosses *hurts* on Margit. Margit differs from the procedural bosses in ways that could interact with each component: aggressive delayed hammer slams and dagger projectiles (the drive pushes in), long strings with branches, and a delay mechanism implemented in the program runner rather than as the boss's windup hold (phase clock). Ablation running: full minus phase clock, full minus drive, aim-only (no drive, no phase clock), and v6 + drive.
+- **Ablation (12 fights each, same seeds):**
+
+| config | damage | frames |
+|---|---|---|
+| plain v6 | 41.5% | 4371 |
+| v6 + drive | 46.7% | 2532 |
+| aim + attention + back-off, no drive, no phase clock | 47.4% | 4360 |
+| **aim + attention + back-off + drive, no phase clock** | **49.6%** | 3393 |
+| full stack (with phase clock) | 28.9% | 3029 |
+| full stack minus drive (with phase clock) | 21.5% | 3417 |
+
+  **The phase clock is what hurts on Margit**: both arms with it are 20–28 points below every arm without it. Without it, the stack is the best simulator-free Margit result so far (49.6% vs 41.5% for v6 in the same run, and 42.9% in B25). Margit's delays are bimodal mix-ups (the same move sometimes comes with no delay at all); one hypothesis is that sampling remaining holds from that mixture makes the agent mistime against the undelayed version, which the procedural bosses (unimodal log-normal holds) don't punish. Open.
+- **Recommendation.** The general-learner default drops the phase clock: on procedural bosses it was a non-significant +4 points (B43), and on Margit it costs ~20. The B44/B45 conclusions hold without it: the aim-model stack without the phase clock already scored 45.4% vs 22.7% for the naive learner on the B44 bosses.
