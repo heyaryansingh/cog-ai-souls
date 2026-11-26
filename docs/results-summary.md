@@ -61,17 +61,17 @@ A move-frequency opponent model (FightingICE-style) reaches only 16.9%, against 
 
 Source: `docs/arena3d-log.md` (entries B11–B38). Bosses are MuJoCo bodies driven by CMU motion capture, with real 3D contact hitboxes. The agent perceives noisy, delayed keypoints and sounds. Margit-like boss timings are calibrated against public Elden Ring footage (B22). Procedural bosses are random movesets, strings and phase switches built from held-out mocap subjects.
 
-## Margit-like boss (12 paired fights each, 450 HP)
+## Margit-like boss (24 paired fights each, 450 HP)
 
 | agent | wins |
 |---|---|
-| planner, strings guessed (uniform) | 7/12 |
-| planner, strings learned by watching, frozen | 7/12 |
-| planner, strings learned by watching, **keeps updating in the fight** | **11/12** |
-| planner, true program | 11/12 |
+| planner, strings guessed (uniform) | 15/24 |
+| planner, strings learned by watching, frozen | 18/24 |
+| planner, strings learned by watching, **keeps updating in the fight** | **21/24** (vs uniform p = .047) |
+| planner, true program | 22/24 (vs uniform p = .018) |
 | PPO from scratch (2.1M frames) | 0 (0% damage) |
 
-Learned strings match the true program once they adapt in-fight (B26). Phase switch: the slow mind adapts inside the first phase-2 fight (22.7% of phase-2 HP vs 3.0% frozen, B19). A policy distilled from it starts level, and PPO fine-tuning collapses it to passivity within 0.25M frames (B37).
+24 paired seeds (B26 + replication B41). Learned strings that keep updating come within one fight of the true program; the frozen-vs-online difference seen on the first 12 seeds did not replicate. Phase switch: the slow mind adapts inside the first phase-2 fight (22.7% of phase-2 HP vs 3.0% frozen, B19). A policy distilled from it starts level, and PPO fine-tuning collapses it to passivity within 0.25M frames (B37).
 
 ## Generalising to unseen procedural bosses
 

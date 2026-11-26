@@ -1,0 +1,52 @@
+FIGHT mpc_uniform 23 win -0.067 1740
+FIGHT mpc_uniform 26 death 0.2 1573
+FIGHT mpc_uniform 29 win -0.067 2362
+FIGHT mpc_uniform 27 win -0.067 1635
+FIGHT mpc_uniform 20 win -0.067 2982
+FIGHT mpc_uniform 24 death 0.111 2076
+FIGHT mpc_uniform 28 win -0.067 1454
+FIGHT mpc_uniform 25 win -0.067 1487
+FIGHT mpc_uniform 21 win -0.067 1745
+FIGHT mpc_uniform 30 win -0.067 2980
+FIGHT mpc_uniform 31 death 0.2 977
+FIGHT mpc_uniform 22 death 0.111 1232
+FIGHT mpc_learned 20 win -0.067 2391
+FIGHT mpc_learned 23 win -0.067 3284
+FIGHT mpc_learned 26 death 0.111 2441
+FIGHT mpc_learned 21 win -0.067 1813
+FIGHT mpc_learned 29 win -0.067 2469
+FIGHT mpc_learned 24 win -0.067 1691
+FIGHT mpc_learned 22 win -0.067 1715
+FIGHT mpc_learned 27 win -0.067 1874
+FIGHT mpc_learned 25 win -0.067 1610
+FIGHT mpc_learned 30 win -0.067 2699
+FIGHT mpc_learned 28 win -0.067 1805
+FIGHT mpc_learned 31 win -0.067 2147
+FIGHT mpc_learned_online 23 win -0.067 3080
+FIGHT mpc_learned_online 26 win -0.067 2575
+FIGHT mpc_learned_online 20 win -0.067 3657
+FIGHT mpc_learned_online 29 win -0.067 2084
+FIGHT mpc_learned_online 24 win -0.067 1889
+FIGHT mpc_learned_online 21 win -0.067 1672
+FIGHT mpc_learned_online 27 death 0.2 2006
+FIGHT mpc_learned_online 30 death 0.111 1837
+FIGHT mpc_learned_online 25 win -0.067 1610
+FIGHT mpc_learned_online 22 win -0.067 1712
+FIGHT mpc_learned_online 28 win -0.067 1805
+FIGHT mpc_grammar 23 win -0.067 1985
+FIGHT mpc_learned_online 31 win -0.067 2503
+FIGHT mpc_grammar 26 win -0.067 1682
+FIGHT mpc_grammar 20 win -0.067 3664
+FIGHT mpc_grammar 24 win -0.067 1666
+FIGHT mpc_grammar 29 win -0.067 1907
+FIGHT mpc_grammar 27 win -0.067 2337
+FIGHT mpc_grammar 25 win -0.067 1426
+FIGHT mpc_grammar 28 death 0.111 1552
+FIGHT mpc_grammar 30 win -0.067 1975
+FIGHT mpc_grammar 21 win -0.067 3032
+FIGHT mpc_grammar 31 win -0.067 1935
+FIGHT mpc_grammar 22 win -0.067 1732
+mpc_uniform win 0.67 boss hp left 0.01 mean secs 56 events {'hit': 48, 'dodged': 49, 'blocked': 0, 'proj': 2, 'ring': 12}
+mpc_learned win 0.92 boss hp left -0.05 mean secs 65 events {'hit': 47, 'dodged': 50, 'blocked': 0, 'proj': 3, 'ring': 12}
+mpc_learned_online win 0.83 boss hp left -0.03 mean secs 66 events {'hit': 41, 'dodged': 42, 'blocked': 0, 'proj': 0, 'ring': 12}
+mpc_grammar win 0.92 boss hp left -0.05 mean secs 62 events {'hit': 42, 'dodged': 42, 'blocked': 0, 'proj': 0, 'ring': 9}

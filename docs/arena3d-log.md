@@ -463,3 +463,14 @@ Keypoint noise alone removes almost all of the reading; 6-frame latency costs ne
 
 ## B40 · Hierarchical strings inside the physics-learning agent: no gain
 - Track config with the hierarchical back-off string learner (`WM_HIERG=1`) on the same 18 bosses × 2 paired fights: 38.5% damage, 4/36 wins, 1995 frames survived, vs 45.4%, 8/36, 2166 with flat strings (Wilcoxon two-sided p = .21). Back-off helped the simulator planner in B28 (10/12 vs 8/12, n.s.); here it doesn't. The strings component isn't what limits this agent (consistent with B37–B38: physics is the bottleneck).
+
+## B41 · Replication of B26 on 12 new Margit seeds (20–31)
+| arm | B26 (seeds 8–19) | replication (20–31) | pooled 24 | vs uniform, Fisher one-sided |
+|---|---|---|---|---|
+| uniform guess | 7/12 | 8/12 | 15/24 | — |
+| learned by watching, frozen | 7/12 | **11/12** | 18/24 | p = .27 |
+| learned by watching, online in-fight | 11/12 | 10/12 | **21/24** | **p = .047** |
+| true program | 11/12 | 11/12 | **22/24** | **p = .018** |
+
+- **What holds:** knowing the boss's strings helps the planner. The true program and the online-updated learned strings both beat guessing over 24 seeds, and the learned-online agent comes within one fight of the true program (21 vs 22).
+- **What doesn't:** B26's contrast between frozen and online learned strings. Frozen went 7/12 → 11/12 on the new seeds, and online vs frozen pooled is 21 vs 18 (p = .23). The "context mismatch" reading in B26 was over-read from one seed set. Results summary updated accordingly.
