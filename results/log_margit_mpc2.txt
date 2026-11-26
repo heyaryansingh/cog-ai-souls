@@ -1,0 +1,39 @@
+FIGHT mpc_uniform 14 win -0.067 2200
+FIGHT mpc_uniform 8 death 0.2 2441
+FIGHT mpc_uniform 11 death 0.2 2401
+FIGHT mpc_uniform 9 death 0.289 833
+FIGHT mpc_uniform 15 win -0.067 1547
+FIGHT mpc_uniform 10 death 0.2 1891
+FIGHT mpc_uniform 12 win -0.067 2287
+FIGHT mpc_uniform 16 win -0.067 2058
+FIGHT mpc_uniform 17 win -0.067 2577
+FIGHT mpc_uniform 13 win -0.067 2989
+FIGHT mpc_uniform 18 death 0.111 1162
+FIGHT mpc_learned 8 death 0.111 3022
+FIGHT mpc_learned 9 death 0.022 1016
+FIGHT mpc_learned 11 win -0.067 1990
+FIGHT mpc_learned 10 win -0.067 1521
+FIGHT mpc_uniform 19 win -0.067 2716
+FIGHT mpc_learned 12 win -0.067 1951
+FIGHT mpc_learned 14 death 0.289 958
+FIGHT mpc_learned 15 win -0.067 896
+FIGHT mpc_learned 13 death 0.111 1811
+FIGHT mpc_learned 17 win -0.067 2415
+FIGHT mpc_learned 18 win -0.067 1600
+FIGHT mpc_learned 16 win -0.067 2103
+FIGHT mpc_learned 19 death 0.289 1199
+FIGHT mpc_grammar 8 win -0.067 3401
+FIGHT mpc_grammar 14 win -0.067 1944
+FIGHT mpc_grammar 11 win -0.067 2919
+FIGHT mpc_grammar 9 win -0.067 1877
+FIGHT mpc_grammar 12 win -0.067 1274
+FIGHT mpc_grammar 15 death 0.111 1687
+FIGHT mpc_grammar 13 win -0.067 1676
+FIGHT mpc_grammar 16 win -0.067 1694
+FIGHT mpc_grammar 10 win -0.067 2596
+FIGHT mpc_grammar 17 win -0.067 2280
+FIGHT mpc_grammar 18 win -0.067 1935
+FIGHT mpc_grammar 19 win -0.067 2411
+mpc_uniform win 0.58 boss hp left 0.04 mean secs 63 events {'hit': 48, 'dodged': 58, 'blocked': 0, 'proj': 1, 'ring': 11}
+mpc_learned win 0.58 boss hp left 0.03 mean secs 51 events {'hit': 51, 'dodged': 32, 'blocked': 0, 'proj': 1, 'ring': 15}
+mpc_grammar win 0.92 boss hp left -0.05 mean secs 64 events {'hit': 38, 'dodged': 57, 'blocked': 0, 'proj': 0, 'ring': 10}

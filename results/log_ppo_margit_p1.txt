@@ -18,3 +18,9 @@ update 160 frames 1.34M fights 225 recent win 0.000 dmg 0.000 lv 0.001 ent 1.56 
 update 170 frames 1.42M fights 241 recent win 0.000 dmg 0.000 lv 0.003 ent 1.35 1173 fps
 update 180 frames 1.50M fights 249 recent win 0.000 dmg 0.000 lv 0.001 ent 1.43 1172 fps
 update 190 frames 1.58M fights 263 recent win 0.000 dmg 0.000 lv 0.000 ent 1.41 1171 fps
+update 200 frames 1.67M fights 268 recent win 0.000 dmg 0.000 lv 0.000 ent 1.19 1164 fps
+update 210 frames 1.75M fights 281 recent win 0.000 dmg 0.000 lv 0.000 ent 1.33 1155 fps
+update 220 frames 1.83M fights 287 recent win 0.000 dmg 0.000 lv 0.001 ent 1.48 1147 fps
+update 230 frames 1.91M fights 297 recent win 0.000 dmg 0.000 lv 0.000 ent 1.40 1139 fps
+update 240 frames 2.00M fights 300 recent win 0.000 dmg 0.000 lv 0.000 ent 1.62 1132 fps
+update 250 frames 2.08M fights 300 recent win 0.000 dmg 0.000 lv 0.002 ent 1.32 1126 fps
