@@ -163,3 +163,15 @@ Coarser label (any hit in the next 24 frames), perfect pose, 8 training bosses:
 | forget (wiped each attempt) | 943 | 987 | 998 | 0.9% | 3.6% | 0 |
 
   The pilot replicates: keeping memory across deaths gives 2.8× the survival and 4× the damage of the memoryless control by attempts 21–30, and the curve is still rising. It has learned to survive more than to punish. Next: 60-attempt runs with damage weighted 1× and 3× in the return.
+
+## B14 · 60 attempts: survive-or-punish trade-off; stacking the hazard model
+- **Episodic control, 60 attempts, 2 series each** (means per block of 10 attempts):
+
+| return weight on damage dealt | survival frames: 1–10 | 21–30 | 51–60 | boss damage: 1–10 | 21–30 | 51–60 |
+|---|---|---|---|---|---|---|
+| 1× | 1,568 | 2,832 | 2,480 | 5.8% | 14.2% | 21.8% |
+| 3× | 1,769 | 943 | 849 | 14.2% | 22.7% | 37.3% |
+
+  No wins in either. With damage at 1× the agent learns to survive and slowly deals more damage, plateauing near 22%. At 3× it trades its life for damage: 37% damage but dies 3× faster. The state oracle reaches 81% damage at 25% wins, so the agent is about a quarter of the way to the perfect-present-knowledge ceiling.
+- **Diagnosis.** Episodic control's state holds only timing context and own body. It cannot tell *which* move is coming, so the same context leads to a good outcome after a sweep and a bad one after a delayed slam. The value estimates average across moves, and the safe answer is to back off.
+- **Running:** a stacked agent that adds denoised arm-motion energy and the hazard model's forecast (learned from contacts and near misses) to the episodic state, damage weight 1× and 2×.

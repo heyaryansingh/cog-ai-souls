@@ -217,8 +217,16 @@ class EpisodicControl(EpisodicReader):
 
     def _state(self, env):
         f = self.f
-        return np.concatenate([f[78:83], [env.hp / 100 * 3, env.stamina / 100 * 2, env.flasks / 4,
-                                         float(env.player_free())]]).astype(np.float32)
+        base = [f[78:83], [env.hp / 100 * 3, env.stamina / 100 * 2, env.flasks / 4, float(env.player_free())]]
+        import os
+        if os.environ.get("EC_HAZ", "0") == "1":
+            # stacked reader: arm-motion energy over 8 frames (denoised by window means) + the hazard model's
+            # own forecast (learned from contacts and near misses) as inputs to episodic control
+            energy = float(np.linalg.norm(f[39:78][ARM])) * 2
+            y = self._predict(f)
+            haz = [0.0, 0.0] if y is None else [np.mean((y >= self.i_lo) & (y <= self.i_hi)) * 4, np.mean(y < 30) * 3]
+            base.append([energy, *haz])
+        return np.concatenate(base).astype(np.float32)
 
     def _q(self, ai, s):
         X = self._arr.get(ai)
