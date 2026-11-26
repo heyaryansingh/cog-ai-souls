@@ -1,0 +1,50 @@
+TRUE labels  K 4 info gain 0.574 bits, CE 1.360
+pca 4 timing 0 lam 1  K 89  NMI 0.213  info gain -1.448 bits
+pca 4 timing 0 lam 2  K 46  NMI 0.164  info gain -1.248 bits
+pca 4 timing 0 lam 4  K 23  NMI 0.133  info gain -0.698 bits
+pca 4 timing 0 lam 8  K 11  NMI 0.112  info gain -0.175 bits
+pca 4 timing 1 lam 1  K 91  NMI 0.333  info gain -1.211 bits
+pca 4 timing 1 lam 2  K 44  NMI 0.341  info gain -1.013 bits
+pca 4 timing 1 lam 4  K 18  NMI 0.360  info gain -0.406 bits
+pca 4 timing 1 lam 8  K  6  NMI 0.341  info gain -0.010 bits
+pca 4 timing 2 lam 1  K 56  NMI 0.355  info gain -0.959 bits
+pca 4 timing 2 lam 2  K 25  NMI 0.379  info gain -0.488 bits
+pca 4 timing 2 lam 4  K 11  NMI 0.426  info gain -0.161 bits
+pca 4 timing 2 lam 8  K  7  NMI 0.448  info gain 0.070 bits
+pca 4 timing 4 lam 1  K 27  NMI 0.397  info gain -0.469 bits
+pca 4 timing 4 lam 2  K 13  NMI 0.447  info gain -0.157 bits
+pca 4 timing 4 lam 4  K  7  NMI 0.499  info gain 0.053 bits
+pca 4 timing 4 lam 8  K  3  NMI 0.482  info gain 0.021 bits
+pca 8 timing 0 lam 1  K 189  NMI 0.327  info gain -1.056 bits
+pca 8 timing 0 lam 2  K 88  NMI 0.278  info gain -1.277 bits
+pca 8 timing 0 lam 4  K 43  NMI 0.210  info gain -0.942 bits
+pca 8 timing 0 lam 8  K 14  NMI 0.111  info gain -0.112 bits
+pca 8 timing 1 lam 1  K 181  NMI 0.351  info gain -1.052 bits
+pca 8 timing 1 lam 2  K 84  NMI 0.353  info gain -1.177 bits
+pca 8 timing 1 lam 4  K 33  NMI 0.366  info gain -0.707 bits
+pca 8 timing 1 lam 8  K 10  NMI 0.308  info gain -0.076 bits
+pca 8 timing 2 lam 1  K 127  NMI 0.359  info gain -1.156 bits
+pca 8 timing 2 lam 2  K 54  NMI 0.368  info gain -1.072 bits
+pca 8 timing 2 lam 4  K 21  NMI 0.438  info gain -0.160 bits
+pca 8 timing 2 lam 8  K  7  NMI 0.408  info gain -0.027 bits
+pca 8 timing 4 lam 1  K 64  NMI 0.382  info gain -1.040 bits
+pca 8 timing 4 lam 2  K 23  NMI 0.446  info gain -0.277 bits
+pca 8 timing 4 lam 4  K  9  NMI 0.433  info gain -0.009 bits
+pca 8 timing 4 lam 8  K  4  NMI 0.473  info gain 0.006 bits
+UNSUPERVISED PICK (max predictability score): K 3 NMI 0.482 gain 0.021 cfg (4, 4.0, 8.0)
+best NMI config: (np.float64(-0.08764979913415546), np.float64(0.052717946968724755), 0.4990053922071357, 7, 4, 4.0, 4.0)
+corr(gain, NMI) over configs: 0.40
+--- expectation-guided discovery: re-assign each swing using what the boss did before and after it
+lam 4  expectation weight 0.0  K 7  NMI 0.499  purity 0.729  info gain 0.053 bits (in-sample labels)
+lam 4  expectation weight 0.5  K 7  NMI 0.559  purity 0.736  info gain 0.574 bits (in-sample labels)
+lam 4  expectation weight 1.0  K 6  NMI 0.605  purity 0.759  info gain 0.648 bits (in-sample labels)
+lam 4  expectation weight 2.0  K 5  NMI 0.605  purity 0.763  info gain 0.662 bits (in-sample labels)
+lam 8  expectation weight 0.0  K 3  NMI 0.482  purity 0.645  info gain 0.021 bits (in-sample labels)
+lam 8  expectation weight 0.5  K 3  NMI 0.562  purity 0.645  info gain 0.022 bits (in-sample labels)
+lam 8  expectation weight 1.0  K 3  NMI 0.566  purity 0.645  info gain 0.009 bits (in-sample labels)
+lam 8  expectation weight 2.0  K 2  NMI 0.567  purity 0.645  info gain 0.024 bits (in-sample labels)
+CONTROL: shuffled sequence links
+lam 4  expectation weight 0.0  K 7  NMI 0.499  purity 0.729  info gain 0.053 bits (in-sample labels)
+lam 4  expectation weight 0.5  K 7  NMI 0.453  purity 0.672  info gain 0.006 bits (in-sample labels)
+lam 4  expectation weight 1.0  K 7  NMI 0.460  purity 0.649  info gain 0.060 bits (in-sample labels)
+lam 4  expectation weight 2.0  K 6  NMI 0.478  purity 0.649  info gain 0.056 bits (in-sample labels)

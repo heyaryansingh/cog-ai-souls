@@ -317,3 +317,27 @@ Coarser label (any hit in the next 24 frames), perfect pose, 8 training bosses:
 
 - The frozen learned table failed under MPC (B21) for two reasons this run separates. Label noise costs about 3 wins (perfect labels: 10/12). Context mismatch between watching and fighting is the rest: updating the counts from what the boss does *in this fight*, with the same noisy 70% labels, reaches the true-program level. Online vs uniform: Fisher one-sided p = .077 per arm. Pooled, the three program-aware arms win 32/36 vs 14/24 for uniform + frozen-noisy (Fisher one-sided p ≈ .008).
 - This is the clearest evidence yet for the project's thesis: an agent that keeps inferring the boss's program from noisy perception, while fighting, does as well as one handed the true program.
+
+## B27 — Expectation shapes perception: the boss's strings sharpen label-free move discovery
+
+**Question.** Without any move labels, can the agent learn the boss's strings over moves it discovered itself (R1)? And can knowing the strings help it see the moves better?
+
+**Setup.** `scripts/r1_grammar_offline.py`, data/margit_reading.pkl (442 perceived strikes, 4 true moves, labels used only for scoring). Discovery: DP-means over perceived keypoints + swing timing (the B16 config, NMI .50). Strings: Dirichlet bigram (prev discovered move or "open", phase), leave-one-fight-out information gain over a unigram baseline.
+
+**Result 1 (negative).** Strings over clusters found by kinematics alone carry almost none of the structure: best 0.07 bits vs 0.57 bits with true labels. Splitting finer makes it worse (overfit, negative gain). Cluster noise wipes out the sequence signal.
+
+**Result 2 (positive).** Expectation-guided discovery: hard-EM where each swing's label maximises kinematic fit + g·[log P(label | previous swing) + log P(next swing | label)], i.e. perception that uses what the boss just did and did next.
+
+| expectation weight g | K | NMI vs true moves | purity |
+|---|---|---|---|
+| 0 (kinematics only) | 7 | .499 | .729 |
+| 0.5 | 7 | .559 | .736 |
+| 1.0 | 6 | **.605** | .759 |
+| 2.0 | 5 | **.605** | .763 |
+| control: shuffled sequence links, g = 0.5–2 | 6–7 | .45–.48 | .65–.67 |
+
+The real sequence lifts label-free move identification by +.11 NMI; a fake sequence of the same density lowers it. So the boss's grammar is a genuine perceptual prior, not extra parameters. (The in-sample info gain of these labels, .65 bits, is biased upward because the labels were fit using transitions; NMI is unbiased.)
+
+**Meaning.** A label-free learner should discover moves and strings *jointly* (an infinite-HMM-style loop), not in sequence. This is the R1↔R2 link in the plan, and it is how a human learns a new boss: "that's the follow-up to the thrust, so it must be the sweep".
+
+**Next.** Online version inside the fight (assign each new swing with the prior from the previous one), feeding a cluster-keyed world model; the general-suite runs for the from-scratch string learner are queued (B28).
