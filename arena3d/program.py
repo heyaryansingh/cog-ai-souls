@@ -235,3 +235,32 @@ def random_program(rng, n_moves=None):
         strings.append(StringDef([str(rng.choice(pool))], max_d=4.5, weight=0.5, phase=ph))
         strings.append(StringDef([str(rng.choice(pool))], min_d=4.0, weight=0.5, phase=ph))
     return moves, strings
+
+
+# B55: a second hand-authored boss, Godrick-like (heavy axe, long multi-hit strings, wind shockwaves, a dragon arm in
+# phase 2). Timings are from general knowledge of the fight (slower, longer wind-ups and strings than Margit, many
+# area rings), NOT frame-annotated footage: treat as "Godrick-flavoured", uncalibrated.
+GODRICK_MOVES = [
+    MoveDef("axe_sweep", "sweep", speed=0.9),
+    MoveDef("axe_sweep_b", "sweep", speed=0.9),
+    MoveDef("axe_overhead", "overhead", delay_med=14, p_delay=0.6, speed=0.85, ender=True, ring=2.5),
+    MoveDef("stomp", "overhead", delay_med=20, speed=0.8, ender=True, ring=4.5, recover=15),
+    MoveDef("axe_charge", "thrust", speed=1.0, lunge_boost=2.0),
+    MoveDef("jump_slam", "overhead", delay_med=20, lunge_boost=4.0, ender=True, ring=4.0, recover=20),
+    MoveDef("whirlwind", "sweep", delay_med=30, speed=0.7, ender=True, ring=5.5, recover=25),
+    MoveDef("dragon_breath", "throw", projectile=True, phase=2),
+    MoveDef("dragon_swipe", "sweep", speed=1.0, phase=2),
+    MoveDef("dragon_slam", "overhead", delay_med=16, speed=0.85, ender=True, ring=4.5, phase=2),
+]
+GODRICK_STRINGS = [
+    StringDef(["axe_sweep", "axe_sweep_b", "axe_sweep"], branch={3: [(0.5, ["axe_overhead"]), (0.3, ["stomp"]), (0.2, [])]},
+              max_d=4.0, weight=3.0),
+    StringDef(["axe_charge", "axe_sweep"], min_d=2.5, max_d=7.0, weight=1.5),
+    StringDef(["stomp"], max_d=4.0, weight=1.5),
+    StringDef(["axe_overhead"], max_d=4.5, weight=1.5),
+    StringDef(["jump_slam"], min_d=4.0, max_d=10.0, weight=2.0),
+    StringDef(["whirlwind"], max_d=5.0, weight=1.0),
+    StringDef(["dragon_breath"], min_d=3.0, weight=2.0, phase=2),
+    StringDef(["axe_sweep", "dragon_swipe", "dragon_slam"], max_d=4.0, weight=2.5, phase=2),
+    StringDef(["dragon_slam"], max_d=5.0, weight=1.5, phase=2),
+]

@@ -55,6 +55,8 @@ def series(rep):
             else:
                 ucb = [np.mean(v) + 0.3 * np.sqrt(2 * np.log(k + 1) / len(v)) for v in rets]; sel = int(np.argmax(ucb))
             pl.maps = multi.ms[sel]; print("SELECT", rep, k, sel, [round(float(np.mean(v)), 3) if v else None for v in rets], flush=True)
+        elif multi and os.environ.get("WM_SELECT_BY", "").startswith("fixed"):     # B55: always use model k (control arms)
+            sel = int(os.environ["WM_SELECT_BY"][5:]); pl.maps = multi.ms[sel]
         elif multi and os.environ.get("WM_SELECT_BY") == "family":     # B52: family prior + Thompson on returns
             sel, post = family_select(rets, frng); pl.maps = multi.ms[sel]
             print("SELECT", rep, k, sel, [round(x, 3) for x in post], flush=True)
