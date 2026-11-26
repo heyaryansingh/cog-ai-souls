@@ -235,3 +235,9 @@ Coarser label (any hit in the next 24 frames), perfect pose, 8 training bosses:
 | true program | 6 | .18 0 .36 0 .36 0 | 15.1% |
 
   Online > frozen, Mann-Whitney one-sided p = .026; online vs true program p = .62 (no difference). The slow mind collected 26–66 phase-2 identifications during its *first* phase-2 fight and was already at ceiling level in that fight. **Deaths to recover ≈ 0–1**: it adapts to the new moveset within the fight where it first sees it. For comparison, Najar (2026) recovered phase 2 by gradient fine-tuning two skills with an unreported "limited" budget. Small samples; a 3-series replication and the PPO fine-tune arm are next.
+
+## B20 · Replacing hand-set thresholds with search over own actions: first wins against Margit
+- **`mpc_planner`** keeps the same perception limits (hidden delays, move identity unknown for 12 frames) and the same imagined futures, but instead of fixed roll/attack thresholds it evaluates 9–10 macro-actions (wait, approach, retreat, strafe ×2, light attack, roll ×3, heal when low). Each gets 3 imagined futures of 24 frames, scored as damage dealt − 2.5 × damage taken − 100 for death. Movement is held for 6 frames.
+- **Pilot, true strings, seeds 8–11: 4/4 wins** (81 s average, 2.75 hits taken per fight, 24 dodges). The threshold planner with the same knowledge lost all 4 seeds (22–44% damage). The action layer, not the boss model, was the bottleneck since B15.
+- **Running:** 12 paired seeds × {uniform guess, strings learned by watching, true strings} with the MPC action layer. Win rate and time-to-kill now resolve differences that damage alone couldn't.
+- **PPO on the same boss (phase 1, from scratch):** 1.6M frames, 263 fights, 0 wins, 0.0% average boss damage (entropy has collapsed to 1.4). Still running; it is the gradient-learning arm for the phase-change head-to-head.

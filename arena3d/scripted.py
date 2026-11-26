@@ -318,3 +318,58 @@ def learned_grammar_planner(env, rng):
     global _LGP
     _LGP.observe(env)
     return perceptual_oracle(env, rng, grammar="learned")
+
+
+def _rollout_value(env, a, H, seed, read_k, grammar, hold=6):
+    """Imagined outcome of committing to action a (held for movement): damage dealt - 2.5 x damage taken."""
+    sim = env.clone(seed)
+    _blind(sim, env, np.random.default_rng(seed), read_k, grammar)
+    hp0, b0 = sim.hp, sim.boss_hp
+    for k in range(H):
+        mv = a % N_BUTTONS == NONE
+        _, _, done, info = sim.step(a if (k == 0 or (mv and k < hold)) else 0)
+        if done:
+            break
+    return (b0 - sim.boss_hp) - 2.5 * (hp0 - sim.hp) - (100 if sim.hp <= 0 else 0)
+
+
+def mpc_planner(env, rng, H=24, n=3, grammar="learned"):
+    """Search over own macro-actions with imagined futures (realistic perception limits + boss program prior)
+    instead of hand-set thresholds. Replans every free frame, movement held for 6 frames."""
+    import os
+    if not env.player_free():
+        return 0
+    st = getattr(env, "_mpc", None)
+    if st and st[1] > 0:
+        env._mpc = (st[0], st[1] - 1)
+        return st[0]
+    g = grammar
+    acts = [NONE, 1 * N_BUTTONS + NONE, 5 * N_BUTTONS + NONE, 3 * N_BUTTONS + NONE, 7 * N_BUTTONS + NONE,
+            LIGHT, 3 * N_BUTTONS + ROLL, 7 * N_BUTTONS + ROLL, 5 * N_BUTTONS + ROLL]
+    if env.flasks and env.hp < 60:
+        acts.append(HEAL)
+    seeds = [int(s) for s in rng.integers(1 << 30, size=n)]
+    vals = [np.mean([_rollout_value(env, a, H, s, int(os.environ.get("READ_K", 12)), g) for s in seeds]) for a in acts]
+    a = acts[int(np.argmax(vals))]
+    env._mpc = (a, 5 if a % N_BUTTONS == NONE and a != NONE else 0)
+    return a
+
+
+def mpc_grammar(env, rng):
+    return mpc_planner(env, rng, grammar=True)
+
+
+def mpc_uniform(env, rng):
+    return mpc_planner(env, rng, grammar=False)
+
+
+def mpc_learned(env, rng):
+    """MPC with Margit's strings learned by watching (B18 checkpoint), frozen."""
+    global _LGP
+    if _LGP is None or getattr(_LGP, "_env", None) is not env:
+        import pickle
+        lg = pickle.load(open("checkpoints/margit_grammar_counts.pkl", "rb"))
+        counts = lg.counts; lg.reset(env); lg.counts = counts; lg.update = False; lg._env = env
+        _LGP = lg
+    _LGP.observe(env)
+    return mpc_planner(env, rng, grammar="learned")
