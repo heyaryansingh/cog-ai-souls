@@ -8,7 +8,7 @@ from arena3d.env import N_BUTTONS, NONE
 
 
 def watch(frames):
-    sp = spec(); lg = SC.LearnedGrammarPlanner(len(sp.program.moves), seed=7)
+    sp = spec(); lg = SC.LearnedGrammarPlanner(len(sp.program.moves), seed=7, acc=float(os.environ.get("ACC", 0.7)))
     for ep in range(2):
         env = Arena3D(sp, U, clips(), seed=500 + ep, player_strike=pstrike()); env.reset(); lg.reset(env)
         env.hp = 1e9
@@ -37,6 +37,9 @@ def fight(k):
 
 if __name__ == "__main__":
     from multiprocessing import Pool
+    CKP = os.environ.get("CKP", "checkpoints/margit_grammar_counts.pkl")
+    if os.environ.get("WATCH_ONLY"):
+        pickle.dump(watch(int(os.environ.get("WATCH", 9000))), open(CKP, "wb")); sys.exit()
     if not os.path.exists("checkpoints/margit_grammar_counts.pkl"):
         lg = watch(int(os.environ.get("WATCH", 9000)))
         pickle.dump(lg, open("checkpoints/margit_grammar_counts.pkl", "wb"))

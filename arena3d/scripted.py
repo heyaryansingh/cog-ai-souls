@@ -363,13 +363,22 @@ def mpc_uniform(env, rng):
     return mpc_planner(env, rng, grammar=False)
 
 
-def mpc_learned(env, rng):
-    """MPC with Margit's strings learned by watching (B18 checkpoint), frozen."""
+def mpc_learned(env, rng, ck="checkpoints/margit_grammar_counts.pkl", update=False):
+    """MPC with Margit's strings learned by watching (B18 checkpoint), frozen (or updating within the fight)."""
     global _LGP
     if _LGP is None or getattr(_LGP, "_env", None) is not env:
         import pickle
-        lg = pickle.load(open("checkpoints/margit_grammar_counts.pkl", "rb"))
-        counts = lg.counts; lg.reset(env); lg.counts = counts; lg.update = False; lg._env = env
+        lg = pickle.load(open(ck, "rb"))
+        counts = lg.counts; lg.reset(env); lg.counts = counts; lg.update = update; lg._env = env
         _LGP = lg
     _LGP.observe(env)
     return mpc_planner(env, rng, grammar="learned")
+
+
+def mpc_learned_online(env, rng):
+    return mpc_learned(env, rng, update=True)
+
+
+def mpc_learned_clean(env, rng):
+    """Strings learned by watching with perfect identification (separates label noise from context structure)."""
+    return mpc_learned(env, rng, ck="checkpoints/margit_grammar_counts_clean.pkl")

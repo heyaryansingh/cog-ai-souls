@@ -241,3 +241,15 @@ Coarser label (any hit in the next 24 frames), perfect pose, 8 training bosses:
 - **Pilot, true strings, seeds 8–11: 4/4 wins** (81 s average, 2.75 hits taken per fight, 24 dodges). The threshold planner with the same knowledge lost all 4 seeds (22–44% damage). The action layer, not the boss model, was the bottleneck since B15.
 - **Running:** 12 paired seeds × {uniform guess, strings learned by watching, true strings} with the MPC action layer. Win rate and time-to-kill now resolve differences that damage alone couldn't.
 - **PPO on the same boss (phase 1, from scratch):** 1.6M frames, 263 fights, 0 wins, 0.0% average boss damage (entropy has collapsed to 1.4). Still running; it is the gradient-learning arm for the phase-change head-to-head.
+
+## B21 · With the MPC action layer: true strings 11/12 wins, learned strings don't transfer yet; label-free discovery
+- **12 paired seeds (8–19), MPC action layer, realistic perception limits:**
+
+| boss model in imagination | wins | per seed | mean frames to kill (wins) | hits taken |
+|---|---|---|---|---|
+| uniform guess for unreadable moves | 7/12 | `....WWWWWW.W` | 2,339 | 48 |
+| strings learned by watching (frozen, 70% labels) | 7/12 | `..WWW..WWWW.` | 1,782 | 51 |
+| true strings | **11/12** | `WWWWWWW.WWWW` | 2,182 | 38 |
+
+  True strings vs uniform: Fisher one-sided p = .077 (12 per arm). The learned table, which matched the true program under the threshold planner (B18), gives no gain under MPC. MPC exploits the program more sharply, so errors in the learned table matter more. Suspects: 30% wrong labels corrupt the "previous move" context, the opener/continuation split rarely fires (the 45-frame gap rule), and the watching player's spacing differs from MPC's close-range play. **Running:** learned with perfect labels (isolates label noise) and learned with in-fight updating.
+- **R1 label-free move discovery (offline, 442 perceived strikes, `scripts/r1_discovery_offline.py`).** DP-means on onset-aligned perceived keypoint windows (PCA): NMI .16–.31 with true moves, and it over-splits. Adding *when the swing was heard* (onset → whoosh) as a second modality: **NMI .50**, purity .73, 7 clusters for 4 true moves (two of which are near-identical sweeps). Retrospective, multimodal labelling (vision + sound timing, after the move ends) is how R1 should work. Online prediction needs early reading, but the grammar can be learned from labels assigned after the fact.
