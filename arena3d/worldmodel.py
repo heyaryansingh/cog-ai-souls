@@ -430,6 +430,9 @@ class Interleave:
         self.bhp, self.php, self.t0 = env.boss_hp, env.hp, -10 ** 9
 
     def pick(self):
+        eps = float(os.environ.get("WM_IL_EPS", 1.0))     # B54: 1 = pure Thompson; <1 = greedy on the posterior mean, Thompson w.p. eps
+        if self.rng.random() >= eps:
+            return int(np.argmax((self.ad + self.D) / (self.at + self.T)))
         rho = self.rng.gamma(self.ad + self.D) / self.rng.gamma(self.at + self.T)
         return int(np.argmax(rho))
 
