@@ -46,8 +46,8 @@ def train_library(K, frames):
     if os.path.exists(path): return pickle.load(open(path, "rb"))
     lib = {}
     for b in range(100, 100 + K):
-        sp = pboss(b); n = len(sp.program.moves); acc = float(os.environ.get("WM_ACC", 0.7))
-    maps = DangerMaps(n, seed=b, acc=acc); g = SC.LearnedGrammarPlanner(n, seed=b, acc=acc)
+        sp = pboss(b); n = len(sp.program.moves)
+        maps = DangerMaps(n, seed=b); g = SC.LearnedGrammarPlanner(n, seed=b)
         scout(sp, frames, maps, g, 900 + b)
         for i, m in enumerate(sp.program.moves):
             k = proto(m); N0, H0 = lib.get(k, (0, 0))
