@@ -66,15 +66,19 @@ class DangerMaps:
             to_p = env.p_xy - b.root
             self.origin = b.root + self.rng.normal(0, 0.1, 2)
             self.fwd = float(np.arctan2(to_p[1], to_p[0])) + self.rng.normal(0, 0.1)   # bosses face you at onset
-        if self.origin is None or b.kind != "strike" or s != self.serial:
+        import os
+        persist = os.environ.get("WM_PERSIST", "0") == "1"   # B30: keep attending to a move's effects after the swing
+        if self.origin is None or s != self.serial or (b.kind != "strike" and not persist):
             return
         tau = env.t - self.onset
+        if b.kind != "strike" and tau >= 3 * TB:
+            return
         if tau >= self.read_k and self.label is None:
             self.label = b.move_id if self.rng.random() < self.acc else int(self.rng.integers(self.n))
             self.prev_label = self.label
         hit = bool(info.get("hit") is not None or info.get("blocked") or info.get("dodged"))
         bdisp = self.rel(env, b.root + self.rng.normal(0, 0.1, 2))      # boss travel since onset (perceived)
-        if getattr(self, 'geom', False):        # seen weapon tip (noisy keypoint), relative to the boss now
+        if getattr(self, 'geom', False) and b.kind == "strike":        # seen weapon tip (noisy keypoint), relative to the boss now
             sd = 0.06 * 1.75 * env.spec.scale
             tip = env.d.site_xpos[env.tip][:2] + self.rng.normal(0, sd, 2)
             hand = env.d.xpos[env.m.body('b_rhand').id][:2] + self.rng.normal(0, sd, 2)
@@ -140,7 +144,14 @@ class DangerMaps:
     def hazard(self, m, tau, rel):
         ti, ri, ai, ok = _bins(tau, rel)
         Ns, Hs = self._smoothed()
-        p = (Hs[m, ti, ri, ai] + self.a) / (Ns[m, ti, ri, ai] + self.b)
+        import os
+        k = float(os.environ.get("WM_HIER", 0))
+        if k > 0:   # hierarchical back-off (B30): sparse places borrow this move's hazard-at-this-time over all places
+            Hm, Nm = Hs[m].sum((1, 2)), Ns[m].sum((1, 2))
+            pm = (Hm[ti] + self.a) / (Nm[ti] + self.b)
+            p = (Hs[m, ti, ri, ai] + k * pm) / (Ns[m, ti, ri, ai] + k)
+        else:
+            p = (Hs[m, ti, ri, ai] + self.a) / (Ns[m, ti, ri, ai] + self.b)
         return np.where(ok & (np.asarray(tau) < 3 * TB), p, 0.0)
 
 
@@ -183,7 +194,8 @@ class LearnedModelPlanner:
     def _move_samples(self, env):
         """(move id, tau) samples for the current boss move; None if the boss isn't attacking."""
         b = env.boss; mp = self.maps
-        if b.kind != "strike" or mp.origin is None or env.t - mp.onset > 3 * TB:
+        persist = __import__("os").environ.get("WM_PERSIST", "0") == "1"
+        if (b.kind != "strike" and not persist) or mp.origin is None or env.t - mp.onset > 3 * TB:
             # boss between moves: imagine the next move starting soon (opener anticipation), frame of
             # reference = now, start delay 0-15 frames, identity from the learned strings
             import os
