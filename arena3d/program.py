@@ -157,8 +157,9 @@ class ProgramRunner(BossRunner):
             if last.recover > 0:
                 self.stagger = int(last.recover)              # frozen recovery pose: the punish window
             return "idle", int(rng.integers(len(self.s.idles)))      # every string ends in a recovery
-        if self.player_healing and rng.random() < 0.7:
-            return "strike", prog.idx["dagger_throw"]
+        punish = [i for i, m in enumerate(prog.moves) if m.projectile and m.phase <= (2 if phase else 1)]
+        if self.player_healing and punish and rng.random() < 0.7:     # input reading: punish heals
+            return "strike", punish[0]
         ph = 2 if phase else 1
         ok = [s for s in prog.strings if s.min_d <= dist <= s.max_d and s.phase <= ph]
         if not ok or rng.random() > self.s.aggression:
@@ -190,3 +191,47 @@ class ProgramRunner(BossRunner):
             self.cur_move = mv
         else:
             self.cur_move = None
+
+
+def random_program(rng, n_moves=None):
+    """A procedural boss program for the generalisation suite: random named moves (shape, delay mix-ups,
+    speed, enders with recovery, rings, projectiles, leaps), random strings with branch points and distance
+    ranges, and a phase-2 moveset switch (2-3 new moves, new strings)."""
+    n1 = int(n_moves or rng.integers(4, 8)); n2 = int(rng.integers(2, 4))
+    moves = []
+    for i in range(n1 + n2):
+        ph = 1 if i < n1 else 2
+        shape = str(rng.choice(["sweep", "sweep", "overhead", "thrust"]))
+        r = rng.random()
+        mv = MoveDef(f"m{i}", shape, speed=float(rng.uniform(0.8, 1.3)), phase=ph)
+        if rng.random() < 0.35:
+            mv = _dc.replace(mv, delay_med=float(rng.integers(8, 36)), p_delay=float(rng.uniform(0.5, 1.0)))
+        if r < 0.12:
+            mv = _dc.replace(mv, shape="throw", projectile=True)
+        elif r < 0.25:
+            mv = _dc.replace(mv, lunge_boost=float(rng.uniform(1.5, 4.0)))
+        if rng.random() < 0.3 and not mv.projectile:
+            mv = _dc.replace(mv, ender=True, recover=int(rng.integers(8, 30)))
+            if rng.random() < 0.4:
+                mv = _dc.replace(mv, ring=float(rng.uniform(3.0, 5.0)))
+        moves.append(mv)
+    strings = []
+    for ph, pool in ((1, list(range(n1))), (2, list(range(n1 + n2)))):
+        for _ in range(int(rng.integers(3, 6))):
+            L = int(rng.integers(1, 4))
+            seq = [moves[int(rng.choice(pool))].name for _ in range(L)]
+            if ph == 2 and not any(moves[int(m[1:])].phase == 2 for m in seq):
+                seq[-1] = moves[int(rng.integers(n1, n1 + n2))].name
+            br = {}
+            if L >= 2 and rng.random() < 0.4:
+                a, b = (moves[int(rng.choice(pool))].name for _ in range(2))
+                br = {L: [(0.5, [a]), (0.5, [b])]}
+            far = rng.random() < 0.3 or any(moves[int(m[1:])].projectile or moves[int(m[1:])].lunge_boost > 0 for m in seq[:1])
+            strings.append(StringDef(seq, branch=br, min_d=4.0 if far else 0.0, max_d=99.0 if far else 4.5,
+                                     weight=float(rng.uniform(0.5, 3.0)), phase=ph))
+    # every distance band needs an option in each phase
+    for ph in (1, 2):
+        pool = [m.name for m in moves if m.phase <= ph]
+        strings.append(StringDef([str(rng.choice(pool))], max_d=4.5, weight=0.5, phase=ph))
+        strings.append(StringDef([str(rng.choice(pool))], min_d=4.0, weight=0.5, phase=ph))
+    return moves, strings
