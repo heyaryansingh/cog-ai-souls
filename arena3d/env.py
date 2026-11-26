@@ -174,6 +174,7 @@ class Arena3D:
         if self.boss.unit is not unit_before and self.boss.kind == "strike":
             self.move_serial += 1
             self.boss_serial = self.move_serial
+            self.boss_onset_t = self.t
             if self.rng.random() < 0.6:
                 self.audio[0] = 1
         q_new = np.concatenate([qb, self._player_q()])
@@ -356,6 +357,11 @@ class Arena3D:
         c.boss.origin = getattr(self.boss, "origin", self.boss.root).copy()
         c.boss.lunge_dir = getattr(self.boss, "lunge_dir", np.zeros(2)).copy()
         c.hit_lock = dict(self.hit_lock)
+        # program bosses keep mutable plans (string queue); imagination must not consume the real boss's queue
+        if hasattr(self.boss, "queue"):
+            c.boss.queue = list(self.boss.queue)
+        c.projectiles = [dict(p, pos=p["pos"].copy(), vel=p["vel"].copy()) for p in self.projectiles]
+        c.rings = [dict(r, c=r["c"].copy()) for r in self.rings]
         return c
 
     def truth(self):

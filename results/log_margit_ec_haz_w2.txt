@@ -95,3 +95,31 @@ learn 1 49 death 0.556 839 40193 {'roll': 23, 'light': 21, 'heal': 1, 'hit': 6, 
 learn 0 44 death 0.733 626 40193 {'roll': 19, 'light': 10, 'heal': 0, 'hit': 5, 'dodged': 0, 'blocked': 0}
 learn 0 45 death 1.0 123 40193 {'roll': 2, 'light': 1, 'heal': 0, 'hit': 4, 'dodged': 1, 'blocked': 0}
 learn 1 50 death 0.733 862 40193 {'roll': 11, 'light': 13, 'heal': 1, 'hit': 6, 'dodged': 2, 'blocked': 0}
+learn 1 51 death 0.911 570 40193 {'roll': 4, 'light': 9, 'heal': 0, 'hit': 5, 'dodged': 2, 'blocked': 0}
+learn 0 46 death 0.822 1515 40193 {'roll': 78, 'light': 15, 'heal': 0, 'hit': 6, 'dodged': 0, 'blocked': 0}
+learn 0 47 death 0.911 430 40193 {'roll': 3, 'light': 6, 'heal': 1, 'hit': 5, 'dodged': 0, 'blocked': 0}
+learn 1 52 death 0.733 687 40193 {'roll': 7, 'light': 12, 'heal': 1, 'hit': 9, 'dodged': 0, 'blocked': 0}
+learn 0 48 death 0.911 417 40193 {'roll': 6, 'light': 4, 'heal': 0, 'hit': 5, 'dodged': 1, 'blocked': 0}
+learn 1 53 death 0.733 797 40193 {'roll': 15, 'light': 19, 'heal': 1, 'hit': 8, 'dodged': 3, 'blocked': 0}
+learn 0 49 death 0.644 1379 40193 {'roll': 89, 'light': 18, 'heal': 2, 'hit': 9, 'dodged': 0, 'blocked': 0}
+learn 0 50 death 1.0 341 40193 {'roll': 0, 'light': 5, 'heal': 1, 'hit': 4, 'dodged': 0, 'blocked': 0}
+learn 1 54 death 0.467 950 40193 {'roll': 25, 'light': 19, 'heal': 1, 'hit': 6, 'dodged': 2, 'blocked': 0}
+learn 0 51 death 0.911 975 40193 {'roll': 38, 'light': 5, 'heal': 3, 'hit': 8, 'dodged': 1, 'blocked': 0}
+learn 0 52 death 0.822 918 40193 {'roll': 36, 'light': 17, 'heal': 1, 'hit': 6, 'dodged': 1, 'blocked': 0}
+learn 1 55 death 0.733 1836 40193 {'roll': 100, 'light': 13, 'heal': 4, 'hit': 12, 'dodged': 5, 'blocked': 0}
+learn 1 56 death 1.0 445 40193 {'roll': 8, 'light': 2, 'heal': 0, 'hit': 4, 'dodged': 0, 'blocked': 0}
+learn 0 53 death 0.733 786 40193 {'roll': 8, 'light': 17, 'heal': 1, 'hit': 6, 'dodged': 0, 'blocked': 0}
+learn 1 57 death 0.822 1547 40193 {'roll': 69, 'light': 17, 'heal': 4, 'hit': 13, 'dodged': 2, 'blocked': 0}
+learn 0 54 death 0.644 1454 40193 {'roll': 91, 'light': 18, 'heal': 1, 'hit': 6, 'dodged': 0, 'blocked': 0}
+learn 0 55 death 0.911 591 40193 {'roll': 3, 'light': 10, 'heal': 1, 'hit': 6, 'dodged': 0, 'blocked': 0}
+learn 1 58 death 0.822 600 40193 {'roll': 13, 'light': 4, 'heal': 2, 'hit': 5, 'dodged': 2, 'blocked': 0}
+learn 0 56 death 0.911 1064 40193 {'roll': 75, 'light': 14, 'heal': 1, 'hit': 7, 'dodged': 1, 'blocked': 0}
+learn 1 59 death 0.644 1124 40193 {'roll': 54, 'light': 34, 'heal': 1, 'hit': 7, 'dodged': 3, 'blocked': 0}
+learn 0 57 death 0.911 631 40193 {'roll': 13, 'light': 10, 'heal': 1, 'hit': 4, 'dodged': 2, 'blocked': 0}
+learn 0 58 death 0.733 1567 40193 {'roll': 106, 'light': 22, 'heal': 2, 'hit': 12, 'dodged': 3, 'blocked': 0}
+learn 0 59 death 0.733 1974 40193 {'roll': 156, 'light': 50, 'heal': 3, 'hit': 11, 'dodged': 2, 'blocked': 0}
+learn boss hp left by attempt [1.   0.91 0.91 1.   1.   1.   0.96 0.91 1.   1.   0.96 1.   0.91 1.
+ 1.   0.82 0.87 0.87 0.96 0.87 0.73 0.91 0.82 0.6  0.73 0.64 0.96 0.87
+ 0.73 0.82 0.96 0.56 0.78 0.91 0.56 0.87 0.96 0.73 0.87 0.73 0.91 0.64
+ 0.78 0.69 0.69 0.78 0.78 0.69 0.69 0.6  0.87 0.91 0.78 0.73 0.56 0.82
+ 0.96 0.87 0.78 0.69] wins 0

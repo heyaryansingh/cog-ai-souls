@@ -148,3 +148,84 @@ def state_oracle(env, rng, horizon=14, n=5):
     if risk(LIGHT, 30) < 0.2:          # the attack commits the body for ~30 frames
         return LIGHT
     return 5 * N_BUTTONS + NONE
+
+
+def _blind(sim, env, rng, read_k=12):
+    """Remove from an imagined copy what perception cannot know (B11): the remaining delay of a held windup
+    (resampled from the boss's delay distribution) and, before the move is readable (read_k frames after
+    onset), the move's identity (resampled from the boss's moves)."""
+    from .boss import danger_frame, heading
+    b, s = sim.boss, sim.spec
+    if b.kind != "strike" or b.unit is None:
+        return
+    since = env.t - getattr(env, "boss_onset_t", env.t)
+    j = b.move_id
+    if since < read_k:
+        prog = getattr(s, "program", None)
+        cands = [i for i, m in enumerate(prog.moves) if m.phase <= (2 if env.phase else 1)] if prog else list(range(len(s.strikes)))
+        j = int(rng.choice(cands))
+        u = sim.U[s.strikes[j]]
+        b.unit, b.move_id, b.combo_last = u, j, j
+        b.c = sim.C[u.clip]
+        b.q0yaw = heading(b.c.quat[u.start]); b.p0 = b.c.pos[u.start].copy()
+        k = danger_frame(u, s.scale); b.peak = k
+        p = u.tip_rel[k, :2] * s.scale
+        b.yaw_off = b.want0 - b.q0yaw - np.arctan2(p[1], p[0])
+        dist = np.linalg.norm(env.p_xy - b.origin)
+        b.lunge = float(np.clip(dist - np.linalg.norm(p) + 0.15, -1.5, 2.5 + s.scale))
+        b.speed = s.speed[j] * (1.2 if env.phase else 1.0)
+        b.f = min(b.f, u.length - 2)
+        if prog:
+            mv = prog.moves[j]; b.cur_move = mv; b.lunge += mv.lunge_boost
+    if s.hold_med[j] > 0 and (b.hold > 0 or int(b.f) < max(0, b.peak - 5)):
+        b.hold_at = max(0, b.peak - 5)
+        b.hold = int(np.clip(round(rng.lognormal(np.log(s.hold_med[j]), s.hold_sig)), 1, 90))
+        prog = getattr(s, "program", None)
+        if prog and prog.moves[j].delay_med > 0 and rng.random() > prog.moves[j].p_delay:
+            b.hold = 0
+
+
+def _hit_soon_blind(env, a, horizon, seed, read_k):
+    sim = env.clone(seed)
+    _blind(sim, env, np.random.default_rng(seed), read_k)
+    for k in range(horizon):
+        _, _, done, info = sim.step(a if k == 0 else (0 if a % N_BUTTONS != NONE else a))
+        if info["hit"] is not None or (done and sim.hp <= 0):
+            return True
+        if done:
+            return False
+    return False
+
+
+def perceptual_oracle(env, rng, horizon=14, n=5, read_k=None):
+    """State oracle limited to what perception can deliver: exact boss position and pose, but hidden delays and
+    move identity unknown for the first READ_K frames (env var, default 12; B11). Same decisions as state_oracle."""
+    import os
+    rk = int(os.environ.get("READ_K", 12)) if read_k is None else read_k
+    if not env.player_free():
+        return 0
+    seeds = [int(s) for s in rng.integers(1 << 30, size=n)]
+    risk = lambda a, H=horizon: np.mean([_hit_soon_blind(env, a, H, s, rk) for s in seeds])
+    if risk(NONE) >= 0.4:
+        best, bv = 5 * N_BUTTONS + ROLL, 2.0
+        for d in rng.permutation([5, 3, 7, 4, 6, 2, 8]):
+            a = int(d) * N_BUTTONS + ROLL
+            r = risk(a)
+            if r < bv:
+                best, bv = a, r
+            if r == 0:
+                break
+        return best
+    if env.hp < 45 and env.flasks and np.linalg.norm(env.boss.root - env.p_xy) > 4:
+        return HEAL
+    dist = np.linalg.norm(env.boss.root - env.p_xy)
+    if dist > 0.8 + 0.25 * env.spec.scale:
+        return 1 * N_BUTTONS + NONE
+    if risk(LIGHT, 30) < 0.2:
+        return LIGHT
+    return 5 * N_BUTTONS + NONE
+
+
+def perceptual_oracle_delay_only(env, rng):
+    """Ablation: only the remaining delay is hidden; move identity known from the first frame."""
+    return perceptual_oracle(env, rng, read_k=0)
