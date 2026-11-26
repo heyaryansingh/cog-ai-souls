@@ -355,7 +355,6 @@ class LearnedModelPlanner:
         ms, tau0 = self._move_samples(env)
         dist = np.linalg.norm(env.boss.root - env.p_xy); reach = 0.8 + 0.25 * env.spec.scale
         # engagement drive (B28/B30): the approach weight grows with time since this agent last landed a hit
-        import os
         if getattr(self, "_bhp", None) != env.boss_hp or getattr(self, "_env", None) is not env:
             self._bhp, self._dmg_t, self._env = env.boss_hp, env.t, env
         w_close = float(os.environ.get("WM_CLOSE", 2.0)) * (1 + float(os.environ.get("WM_HUNGER", 0)) * (env.t - self._dmg_t) / 300.0)
