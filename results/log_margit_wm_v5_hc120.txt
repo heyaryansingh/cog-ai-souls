@@ -1,0 +1,5 @@
+FIGHT worldmodel 0 8 timeout 0.178 9000
+FIGHT worldmodel 0 9 death 0.444 6429
+FIGHT worldmodel 0 10 death 0.0 4094
+FIGHT worldmodel 0 11 death 0.178 1931
+FIGHT worldmodel 0 12 death 0.089 3962
