@@ -494,3 +494,13 @@ Same 18 procedural bosses × 2 paired fights, no simulator, no library, 1,500 sc
 | + motion-phase clock (full stack) | **49.5%** | **7/36** | 2237 | 0 |
 
 Full stack vs naive: damage ×2.2 (Wilcoxon one-sided p = 2.6e-5), wins 7 vs 1 (Fisher one-sided p = .028). The cognitive additions of B28–B43 (a drive that turns lack of progress into pressure, attention to an attack's effects after the swing, hierarchical pooling of sparse evidence, a model of the boss's aim, a motion-phase clock for delays) together double what a learner can do against a boss it has never seen, using only what it perceives. The individual steps are mostly too small to resolve at n = 36 (aim model's survival gain is the exception, B33). The gap to a learner given each boss's physics (~90% wins, B29) remains.
+
+## B45 · Out-of-sample replication of B44 on 18 new bosses (7018–7035)
+Configuration frozen after B44, bosses never used during development:
+
+| learner | damage | wins | frames | timeouts |
+|---|---|---|---|---|
+| naive | 27.2% | 2/36 | 5330 | 7 |
+| full stack | **60.4%** | **8/36** | 2445 | 0 |
+
+Damage ×2.2 again (Wilcoxon one-sided p = 4.5e-6), wins 8 vs 2 (Fisher one-sided p = .042). **The B44 gain replicates on held-out bosses.** Pooled over 36 unseen bosses (72 paired fights): naive 25.0%, 3/72 wins; full stack 55.0%, 15/72 wins.
