@@ -41,7 +41,7 @@ What each component of the Reader has shown so far (details in docs/arena3d-log.
 
 | component | finding | entry |
 |---|---|---|
-| R2 strings, learned by watching | Margit: online-updated strings 11/12 wins = true program; frozen 7/12. Context mismatch, not label noise, is the main cost of freezing | B26 |
+| R2 strings, learned by watching | Margit, 24 seeds: online-updated learned strings 21/24 wins vs true program 22/24 vs guessing 15/24; frozen 18/24 (frozen-vs-online gap not replicated) | B26, B41 |
 | R1 + R2 jointly | expectation-guided discovery: the boss's own sequence lifts label-free move identification NMI .50 → .61 (shuffled control .45–.48) | B27 |
 | Drive (new) | short-horizon planners stall at a safe distance on unseen bosses; a drive that grows with time since the last hit lifts 7/24 → 35/48 wins | B28 |
 | Generalisation suite | with a perfect per-move simulator, 18 procedural bosses are nearly saturated (20–23/24); string knowledge adds nothing there | B29 |
