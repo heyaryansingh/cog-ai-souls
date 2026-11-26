@@ -122,7 +122,9 @@ def self_model(env, a, H):
 class LearnedModelPlanner:
     """MPC over own macro-actions using DangerMaps (learned) + learned strings, no boss simulator."""
 
-    def __init__(self, maps, grammar, H=30, hit_cost=200.0, dmg=40.0, seed=0, n=8):
+    def __init__(self, maps, grammar, H=30, hit_cost=None, dmg=40.0, seed=0, n=8):
+        import os
+        hit_cost = float(os.environ.get("WM_HITCOST", 200.0)) if hit_cost is None else hit_cost
         self.maps, self.g, self.H, self.hc, self.dmg, self.n = maps, grammar, H, hit_cost, dmg, n
         self.rng = np.random.default_rng(seed)
         self.hold, self.hold_n = None, 0

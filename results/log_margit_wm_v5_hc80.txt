@@ -1,0 +1,2 @@
+FIGHT worldmodel 0 8 death 0.0 802
+FIGHT worldmodel 0 9 death 0.0 268
