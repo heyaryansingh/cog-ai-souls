@@ -1,0 +1,32 @@
+epoch 0 loss 0.66 acc 0.876
+epoch 1 loss 0.486 acc 0.895
+epoch 2 loss 0.461 acc 0.896
+epoch 3 loss 0.448 acc 0.897
+epoch 4 loss 0.444 acc 0.897
+epoch 5 loss 0.436 acc 0.898
+epoch 6 loss 0.435 acc 0.898
+epoch 7 loss 0.438 acc 0.898
+epoch 8 loss 0.426 acc 0.899
+epoch 9 loss 0.42 acc 0.898
+epoch 10 loss 0.413 acc 0.9
+epoch 11 loss 0.421 acc 0.898
+epoch 12 loss 0.408 acc 0.9
+epoch 13 loss 0.404 acc 0.9
+epoch 14 loss 0.399 acc 0.9
+epoch 15 loss 0.399 acc 0.899
+epoch 16 loss 0.396 acc 0.9
+epoch 17 loss 0.385 acc 0.901
+epoch 18 loss 0.387 acc 0.9
+epoch 19 loss 0.385 acc 0.901
+epoch 20 loss 0.376 acc 0.902
+epoch 21 loss 0.371 acc 0.902
+epoch 22 loss 0.368 acc 0.903
+epoch 23 loss 0.371 acc 0.904
+epoch 24 loss 0.361 acc 0.904
+epoch 25 loss 0.36 acc 0.904
+epoch 26 loss 0.356 acc 0.904
+epoch 27 loss 0.348 acc 0.906
+epoch 28 loss 0.345 acc 0.907
+epoch 29 loss 0.335 acc 0.908
+BC policy phase 1 wins 0 / 8 dmg 0.122
+BC policy phase 2 wins 0 / 8 dmg 0.249
