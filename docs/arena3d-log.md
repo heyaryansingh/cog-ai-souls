@@ -639,3 +639,18 @@ Same selector as B56's best (decision credit, prior 1, ε = 0.2) on the other tw
 
 - Decision credit fixes Godrick but costs ~9 points on Margit (one series locked onto the stack: ratios 0.24 vs 0.37) and ~5 on procedural (stack share 63%, vs 70% in B54; vs B54 p = .16). With 6–12 fights per boss, any selector's settings trade one family against another; a 36-fight Margit run has a series-level SE of several points, so the B54-vs-B57 Margit gap is itself only ~2 SE.
 - **Conclusion of the selection line (B47–B57).** (1) Prediction quality does not identify the better controller (B47, B51). (2) Outcome evidence does, but per-boss evidence within a dozen fights is too noisy to beat a robust default on every family. (3) The stack's advantage is family-specific (procedural only); on both hand-authored bosses it hurts, on Godrick by 2×. So the robust agent uses plain v6 + drive and treats the stack's biases as a family-specific option. The scientific question that remains is *why* those biases hurt on hand-authored bosses: B58 ablates the stack's components on Godrick.
+
+## B58 · On Godrick the attention window (persist) is what hurts
+One stack component at a time, Godrick 3 × 12 (each with its own scouting checkpoint):
+
+| model | damage | fights 7–12 | vs v6 |
+|---|---|---|---|
+| plain v6 (current frame) | 30.1% | 40.2% | – |
+| v6 + back-off (`WM_HIER=4`) | 29.2% | 28.5% | p = .70 |
+| onset frame | 29.0% | 32.7% | p = .73 |
+| onset frame + aim model | 24.7% | 31.6% | p = .21 |
+| **v6 + attention window (`WM_PERSIST=1`)** | **20.9%** | 19.6% | **p = .05** |
+| full stack | 15.6% | 13.8% | p = .003 |
+
+- The 90-frame post-swing attention window is the main cost on Godrick (−9 points); the aim model costs a further ~5 (n.s.); back-off and the onset frame are neutral. With persist, scouting records 37% more exposures and 25% more contacts: on a boss whose rings, delayed whirlwind and 3-hit strings land well after a move's own swing, contacts from the *next* move or the shockwave get filed under the previous one. That's the same superstition mechanism hypothesised in B31, now localised to one component.
+- B59: the stack without persist (onset + aim + back-off) on all three families. If it keeps the procedural gain, it's a candidate for a model that's good everywhere.
