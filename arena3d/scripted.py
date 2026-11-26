@@ -290,8 +290,8 @@ class LearnedGrammarPlanner:
         serial = getattr(env, "boss_serial", -1)
         if b.kind == "strike" and serial != self.seen_serial:
             since = env.t - getattr(env, "boss_onset_t", env.t)
-            if since == 0:
-                self.ctx_cur = self._ctx(env)
+            if serial != getattr(self, "ctx_serial", None):
+                self.ctx_cur, self.ctx_serial = self._ctx(env), serial
             if since >= self.read_k:
                 self.seen_serial = serial
                 lab = b.move_id if self.rng.random() < self.acc else int(self.rng.integers(self.n))

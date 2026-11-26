@@ -27,6 +27,7 @@ def one(args):
         if info["hit"]:
             ev["hit"] += 1; ev["proj"] += info["hit"][0] == "projectile"; ev["ring"] += info["hit"][0] == "shockwave"
         ev["dodged"] += bool(info["dodged"]); ev["blocked"] += bool(info["blocked"])
+    print("FIGHT", pol, k, info["outcome"], round(env.boss_hp / env.spec.hp, 3), env.t, flush=True)
     return pol, info["outcome"], env.boss_hp / env.spec.hp, env.t, ev
 
 
@@ -34,7 +35,7 @@ if __name__ == "__main__":
     pols = os.environ.get("POLS", "aggro,state_oracle,oracle_dodger").split(",")
     n = int(os.environ.get("N", 8))
     with Pool(int(os.environ.get("PROCS", 3))) as p:
-        res = p.map(one, [(q, k) for q in pols for k in range(n)])
+        res = p.map(one, [(q, k) for q in pols for k in range(int(os.environ.get("SEED0", 0)), int(os.environ.get("SEED0", 0)) + n)])
     for q in pols:
         r = [x for x in res if x[0] == q]
         print(q, "win", np.mean([x[1] == "win" for x in r]).round(2), "boss hp left", np.mean([x[2] for x in r]).round(2),

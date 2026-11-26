@@ -1,0 +1,34 @@
+forget 0 0 death 0.267 2541 contexts 11
+learn 0 0 death 0.267 2541 contexts 11
+forget 0 1 death 0.444 2485 contexts 13
+learn 1 0 death 0.267 6408 contexts 15
+forget 1 0 death 0.267 6408 contexts 15
+learn 0 1 death 0.178 4508 contexts 16
+forget 0 2 death 0.356 3789 contexts 15
+learn 0 2 death 0.356 3960 contexts 17
+learn 1 1 death 0.089 5140 contexts 17
+forget 0 3 death 0.267 3306 contexts 13
+forget 1 1 death 0.089 5680 contexts 18
+learn 0 3 death 0.0 1455 contexts 17
+learn 0 4 death 0.178 2045 contexts 18
+forget 0 4 death 0.267 3521 contexts 14
+learn 1 2 death 0.356 4687 contexts 19
+forget 1 2 death 0.533 5982 contexts 24
+learn 0 5 death 0.267 4415 contexts 20
+forget 0 5 death 0.267 4275 contexts 17
+learn 1 3 death 0.267 5358 contexts 20
+forget 1 3 death 0.089 4914 contexts 17
+learn 0 6 death 0.356 4601 contexts 20
+forget 1 4 death 0.089 2388 contexts 13
+learn 1 4 death 0.178 3335 contexts 20
+forget 1 5 death 0.533 3465 contexts 16
+learn 0 7 death 0.356 4235 contexts 20
+learn 1 5 death 0.356 3207 contexts 20
+forget 0 6 death 0.444 8557 contexts 17
+forget 1 6 death 0.178 3573 contexts 15
+forget 0 7 death 0.533 4229 contexts 24
+learn 1 6 death 0.178 4677 contexts 20
+forget 1 7 death 0.444 6522 contexts 17
+learn 1 7 death 0.444 5266 contexts 20
+learn damage by attempt [0.267 0.134 0.356 0.134 0.178 0.312 0.267 0.4  ] wins 0
+forget damage by attempt [0.267 0.266 0.444 0.178 0.178 0.4   0.311 0.489] wins 0
