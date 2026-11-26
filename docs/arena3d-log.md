@@ -474,3 +474,6 @@ Keypoint noise alone removes almost all of the reading; 6-frame latency costs ne
 
 - **What holds:** knowing the boss's strings helps the planner. The true program and the online-updated learned strings both beat guessing over 24 seeds, and the learned-online agent comes within one fight of the true program (21 vs 22).
 - **What doesn't:** B26's contrast between frozen and online learned strings. Frozen went 7/12 → 11/12 on the new seeds, and online vs frozen pooled is 21 vs 18 (p = .23). The "context mismatch" reading in B26 was over-read from one seed set. Results summary updated accordingly.
+
+## B42 · 4× more scouting doesn't help the aim-model agent either
+- Same 18 bosses × 2 fights, 6,000 instead of 1,500 scouting frames: 44.0% damage, 6/36 wins, 2412 frames (vs 45.4%, 8/36, 2166; Wilcoxon p = .64). Same plateau as B23 and B32: more data of the same kind doesn't move this learner.
