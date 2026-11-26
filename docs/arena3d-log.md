@@ -412,3 +412,18 @@ The real sequence lifts label-free move identification by +.11 NMI; a fake seque
 
   On the 12 new bosses alone: 43.7% vs 40.0% damage, 5 vs 3 wins. **Modelling the boss's aim makes the learner reliably harder to kill**; the damage and win gains go the same way but don't reach significance. The aim model is now part of the default simulator-free learner.
 - **Where the remaining gap is.** The same learner with a perfect boss simulator wins ~90% of these fights (B29); with everything learned it wins 22%. Most deaths still come from strikes read late (12 frames) whose remembered paths are averaged over many aims and speeds. Candidate next steps: (1) condition remembered blade paths on the boss's speed in the first frames (the hold/delay variable that the footage calibration showed matters most); (2) amortise: train a small network on (pose window → future blade path) from all seen swings, shared across bosses, the R7 "intuition" component.
+
+## B34 · Amortised intuition (R7) does not transfer from noisy pose (negative)
+- `scripts/r7_collect.py`: 2,669 swings from 58 procedural bosses (train b = 100–139: 1,846 swings; test = the 18 suite bosses: 823 swings). For each swing: the perceived boss pose for the first k frames (sensor: 6% noise, 6-frame latency, dropout) and the weapon tip's future path over 90 frames, in the onset frame and boss-height units.
+- `scripts/r7_train.py`, `scripts/r7_baselines.py`: mean tip-path error (boss heights) on the 18 unseen bosses.
+
+| predictor | k = 12 | k = 20 |
+|---|---|---|
+| average path of all training swings | .586 | .586 |
+| MLP, 40 training bosses (zero-shot) | .614 | .594 |
+| ridge regression (zero-shot) | .567 | .563 |
+| kNN-10 (zero-shot) | .608 | .601 |
+| same boss, same move, mean of its other swings (needs identity + experience) | **.258** | **.258** |
+
+- Even on held-out swings of the *training* bosses, ridge only reaches .49–.51 vs .52 for the average path. So with this sensor, 12–20 frames of pose say very little about where the blade will go, while knowing *which of this boss's moves it is* halves the error. Swing paths don't share a structure across bosses that noisy early pose can unlock; what transfers is the skill of building a per-boss episodic memory keyed by move identity, which is the design the learner already has.
+- Running: the same with a clean sensor (no noise, latency or dropout), to separate a perception limit from a transfer limit.
