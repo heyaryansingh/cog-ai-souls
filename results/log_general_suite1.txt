@@ -16,3 +16,11 @@ FIGHT mpc_grammar 3 1 win 1.067 3181
 FIGHT mpc_uniform 5 0 death 0.0 3194
 FIGHT mpc_uniform 4 0 timeout 0.0 9000
 FIGHT mpc_grammar 3 0 win 1.067 6073
+FIGHT mpc_grammar 5 0 death 0.089 2897
+FIGHT mpc_uniform 5 1 death 0.0 3200
+FIGHT mpc_uniform 4 1 timeout 0.267 9000
+FIGHT mpc_grammar 5 1 death 0.0 3553
+FIGHT mpc_grammar 4 0 timeout 0.0 9000
+FIGHT mpc_grammar 4 1 timeout 0.0 9000
+mpc_uniform wins 3 / 12 damage 0.4
+mpc_grammar wins 4 / 12 damage 0.415

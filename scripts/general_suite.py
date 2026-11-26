@@ -35,7 +35,8 @@ if __name__ == "__main__":
     pols = os.environ.get("POLS", "mpc_uniform,mpc_grammar").split(",")
     NB, NF = int(os.environ.get("NB", 6)), int(os.environ.get("NF", 2))
     with Pool(int(os.environ.get("PROCS", 3))) as p:
-        res = p.map(one, [(q, b, k) for b in range(NB) for k in range(NF) for q in pols])
+        B0 = int(os.environ.get("B0", 0))
+        res = p.map(one, [(q, b, k) for b in range(B0, B0 + NB) for k in range(NF) for q in pols])
     json.dump(res, open(os.environ.get("OUT", "results/general_suite.json"), "w"))
     for q in pols:
         r = [x for x in res if x[0] == q]

@@ -347,3 +347,14 @@ The real sequence lifts label-free move identification by +.11 NMI; a fake seque
 - Diagnosis on boss 0 (700 frames, mpc_uniform): the boss is mid-swing 68% of the time; the agent waits at a median 3.7 m (own reach 1.26 m), presses nothing 97% of frames, and deals 0 damage. With a 24-frame imagined horizon, closing in costs risk now and pays only after the horizon, so standing off always looks best. This is a planning-horizon failure, not a knowledge failure.
 - Fix: an engagement drive. Imagined futures that end out of reach cost `w` per metre, and `w` grows with time since the agent last landed a hit (`MPC_CLOSE=3`, `MPC_HUNGER=1`: frustration turns into pressure, reset by each hit). Same 700 frames: median distance 1.0 m, 200 damage dealt, 34 HP lost.
 - Suite 3 (queued): the drive on for guessing, true strings, from-scratch in-fight string learner, and the hierarchical back-off learner. Suite 1 is the no-drive ablation.
+- **Result (suite 1 vs suite 3, same 6 bosses × 2 paired fights):**
+
+| arm | no drive | engagement drive |
+|---|---|---|
+| guessing (uniform strings) | 3/12 wins, 40% dmg | **9/12**, 98% |
+| true strings | 4/12, 42% | 8/12, 99% |
+| learns strings from scratch in-fight | — | 8/12, 89% |
+| from scratch + hierarchical back-off | — | **10/12**, 97% |
+
+  Drive vs no drive, pooled: 35/48 vs 7/24 wins (Fisher one-sided p = .0005); every timeout disappears and wins take 400–2000 frames instead of 2000–6000. Among drive arms the differences are inside noise at n = 12 (hierarchical 10 vs guessing 9). The hard cases are bosses 4 and 5 (most deaths).
+- **Reading.** On unseen bosses the binding constraint was motivation, not knowledge: an agent with a short imagined horizon needs a drive that turns lack of progress into pressure, much as a frustrated player starts trading hits. Program knowledge has to be tested where the drive alone is not enough: B29 runs 12 fresh bosses (7006–7017) to get the power to separate the learners.
