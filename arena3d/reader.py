@@ -247,7 +247,8 @@ class EpisodicControl(EpisodicReader):
 
     def observe(self, obs, env, info):
         super().observe(obs, env, info)
-        r = (self.prev_bhp - env.boss_hp) / 10 - max(0.0, self.prev_hp - env.hp) / 10
+        import os
+        r = float(os.environ.get("EC_DMGW", 1)) * (self.prev_bhp - env.boss_hp) / 10 - max(0.0, self.prev_hp - env.hp) / 10
         if env.hp <= 0:
             r -= 10
         self.prev_bhp, self.prev_hp = env.boss_hp, env.hp

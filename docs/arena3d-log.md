@@ -152,3 +152,14 @@ Coarser label (any hit in the next 24 frames), perfect pose, 8 training bosses:
 | forget (memory wiped each attempt) | 949 | 1,021 | 900 | 0.0% | 1.1% |
 
   Memory across deaths makes it survive 2.5× longer than the memoryless control by the end, and it starts to deal damage; it has not learned to win yet. One series per condition, so this is a pilot; the replicated run (2 series × 30 attempts, 450 HP) is running.
+
+## B13 · Replication at 450 HP: memory across deaths nearly triples survival
+- **Controls (8 fights each, 4.5-min limit):** clairvoyant oracle **75%** wins (1% HP left), state oracle **25%** (19% left), aggro 0% (dies in 10 s). The ceiling is now informative, and the 50-point gap between knowing the present and knowing the future is the boss's real unpredictability (delays, branches).
+- **Episodic control, 2 series × 30 attempts per condition:**
+
+| | survival frames, att. 1–5 | 11–20 | 21–30 | boss damage 1–5 | 21–30 | wins |
+|---|---|---|---|---|---|---|
+| learn (memory kept) | 1,274 | 2,542 | **2,832** | 5.3% | **14.2%** | 0 |
+| forget (wiped each attempt) | 943 | 987 | 998 | 0.9% | 3.6% | 0 |
+
+  The pilot replicates: keeping memory across deaths gives 2.8× the survival and 4× the damage of the memoryless control by attempts 21–30, and the curve is still rising. It has learned to survive more than to punish. Next: 60-attempt runs with damage weighted 1× and 3× in the return.
