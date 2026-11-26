@@ -1,0 +1,11 @@
+learn 0 0 death 1.0 1275 1025 {'roll': 11, 'light': 6, 'heal': 2, 'hit': 8, 'dodged': 3, 'blocked': 0}
+forget 0 0 death 1.0 1275 1025 {'roll': 11, 'light': 6, 'heal': 2, 'hit': 8, 'dodged': 3, 'blocked': 0}
+learn 0 1 death 0.943 451 1537 {'roll': 4, 'light': 15, 'heal': 1, 'hit': 6, 'dodged': 0, 'blocked': 0}
+forget 0 1 death 1.0 750 769 {'roll': 5, 'light': 1, 'heal': 2, 'hit': 6, 'dodged': 0, 'blocked': 0}
+forget 0 2 death 1.0 845 1025 {'roll': 3, 'light': 0, 'heal': 1, 'hit': 7, 'dodged': 0, 'blocked': 0}
+forget 0 3 death 1.0 1008 1025 {'roll': 4, 'light': 1, 'heal': 1, 'hit': 7, 'dodged': 0, 'blocked': 0}
+learn 0 2 death 1.0 2923 4609 {'roll': 483, 'light': 4, 'heal': 4, 'hit': 7, 'dodged': 4, 'blocked': 0}
+forget 0 4 death 1.0 869 769 {'roll': 3, 'light': 2, 'heal': 1, 'hit': 8, 'dodged': 0, 'blocked': 0}
+forget 0 5 death 1.0 976 1025 {'roll': 6, 'light': 1, 'heal': 1, 'hit': 6, 'dodged': 1, 'blocked': 0}
+learn 0 3 death 0.943 1540 6145 {'roll': 327, 'light': 7, 'heal': 4, 'hit': 6, 'dodged': 1, 'blocked': 0}
+forget 0 6 death 1.0 1156 1025 {'roll': 7, 'light': 1, 'heal': 2, 'hit': 9, 'dodged': 0, 'blocked': 0}

@@ -1,0 +1,3 @@
+aggro win 0.0 boss hp left 0.89 mean secs 10 events {'hit': 44, 'dodged': 0, 'blocked': 0, 'proj': 0, 'ring': 0}
+state_oracle win 0.0 boss hp left 0.56 mean secs 168 events {'hit': 48, 'dodged': 134, 'blocked': 0, 'proj': 0, 'ring': 1}
+oracle_dodger win 0.0 boss hp left 0.56 mean secs 169 events {'hit': 66, 'dodged': 133, 'blocked': 0, 'proj': 4, 'ring': 1}

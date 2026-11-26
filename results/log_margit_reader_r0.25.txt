@@ -1,0 +1,11 @@
+learn 0 0 death 0.855 422 257 {'roll': 2, 'light': 30, 'heal': 0, 'hit': 7, 'dodged': 0, 'blocked': 0}
+learn 0 1 death 0.927 591 769 {'roll': 13, 'light': 9, 'heal': 0, 'hit': 6, 'dodged': 3, 'blocked': 0}
+learn 0 2 death 0.891 377 1281 {'roll': 7, 'light': 6, 'heal': 0, 'hit': 5, 'dodged': 0, 'blocked': 0}
+learn 0 3 death 0.891 738 2049 {'roll': 22, 'light': 12, 'heal': 0, 'hit': 4, 'dodged': 1, 'blocked': 0}
+learn 0 4 death 0.891 229 2305 {'roll': 2, 'light': 6, 'heal': 0, 'hit': 3, 'dodged': 0, 'blocked': 0}
+learn 0 5 death 0.927 383 2561 {'roll': 5, 'light': 7, 'heal': 0, 'hit': 8, 'dodged': 0, 'blocked': 0}
+learn 0 6 death 0.927 198 2817 {'roll': 1, 'light': 6, 'heal': 0, 'hit': 5, 'dodged': 0, 'blocked': 0}
+learn 0 7 death 0.709 826 3585 {'roll': 13, 'light': 14, 'heal': 0, 'hit': 7, 'dodged': 3, 'blocked': 0}
+learn 0 8 death 1.0 454 4097 {'roll': 9, 'light': 3, 'heal': 0, 'hit': 4, 'dodged': 0, 'blocked': 0}
+learn 0 9 death 0.927 344 4353 {'roll': 3, 'light': 8, 'heal': 0, 'hit': 3, 'dodged': 1, 'blocked': 0}
+learn boss hp left by attempt [0.86 0.93 0.89 0.89 0.89 0.93 0.93 0.71 1.   0.93] wins 0

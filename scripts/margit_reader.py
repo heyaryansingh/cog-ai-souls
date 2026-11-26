@@ -2,12 +2,13 @@
 import os, sys, json
 sys.path.insert(0, "/home/user/cog-ai-souls"); os.chdir("/home/user/cog-ai-souls")
 exec(open("scripts/arena3d_margit.py").read().split('if __name__ == "__main__"')[0].replace("os.path.dirname(os.path.abspath(__file__))", '"scripts"'))
-from arena3d.reader import EpisodicReader, run_attempt
+from arena3d.reader import EpisodicReader, EpisodicControl, run_attempt
 
 
 def series(args):
     cond, rep = args
-    ag = EpisodicReader(forget=(cond == "forget"), seed=rep)
+    Ag = EpisodicControl if os.environ.get("AGENT", "reader") == "ec" else EpisodicReader
+    ag = Ag(forget=(cond == "forget"), seed=rep)
     out = []
     for a in range(int(os.environ.get("A", 8))):
         env = Arena3D(spec(), U, clips(), seed=1000 * rep + a, player_strike=pstrike())

@@ -34,7 +34,9 @@ CROUCH = ("CMU_139_17", 121)
 
 class Arena3D:
     def __init__(self, spec: BossSpec, units, clips, seed=0, substeps=4, render=False, width=96, height=96,
-                 max_frames=6000, player_strike=None):
+                 max_frames=None, player_strike=None):
+        import os
+        max_frames = max_frames or int(os.environ.get("ARENA_MAX_FRAMES", 6000))
         self.spec, self.U, self.C = spec, units, clips
         self.m, _ = build_world(spec.scale, spec.weapon, width, height)
         self.d = mujoco.MjData(self.m)
