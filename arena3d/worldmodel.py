@@ -409,3 +409,38 @@ def family_select(rets, rng):
     post = [(m * n0 + sum(v)) / (n0 + len(v)) for m, v in zip(mu0, rets)]
     draw = [p + sd / np.sqrt(n0 + len(v)) * rng.standard_normal() for p, v in zip(post, rets)]
     return int(np.argmax(draw)), post
+
+
+class Interleave:
+    """B53 selector: try the candidate world models in short segments *within* fights (every WM_SEG_LEN frames
+    re-pick by Thompson sampling), scoring each by its exchange ratio = hits dealt / hits taken while it was in
+    control (Gamma posteriors on both counts; damage-before-death is proportional to this ratio). The family prior
+    (WM_FAMILY_PRIOR, mean damage of each model on earlier bosses) sets the dealt pseudo-counts so the prior ratio
+    between models matches the family; WM_FAMILY_N pseudo-hits taken sets its strength. Evidence persists across
+    fights, so a whole series is one adaptive experiment."""
+
+    def __init__(self, n_models, seed=0):
+        mu0 = np.array([float(x) for x in os.environ.get("WM_FAMILY_PRIOR", "0.36,0.46").split(",")][:n_models])
+        a = float(os.environ.get("WM_FAMILY_N", 3)); self.seg = int(os.environ.get("WM_SEG_LEN", 300))
+        self.ad = a * mu0 / mu0.mean(); self.at = np.full(n_models, a)
+        self.D = np.zeros(n_models); self.T = np.zeros(n_models); self.F = np.zeros(n_models, int)
+        self.rng = np.random.default_rng(seed); self.cur = 0; self.trace = []
+
+    def start(self, env):
+        self.bhp, self.php, self.t0 = env.boss_hp, env.hp, -10 ** 9
+
+    def pick(self):
+        rho = self.rng.gamma(self.ad + self.D) / self.rng.gamma(self.at + self.T)
+        return int(np.argmax(rho))
+
+    def step(self, env):
+        """call after env.step; returns the model index to use for the next frame"""
+        if env.boss_hp < self.bhp - 1e-9: self.D[self.cur] += 1
+        if env.hp < self.php - 1e-9: self.T[self.cur] += 1
+        self.bhp, self.php = env.boss_hp, env.hp; self.F[self.cur] += 1
+        if env.t - self.t0 >= self.seg:
+            self.cur, self.t0 = self.pick(), env.t; self.trace.append(self.cur)
+        return self.cur
+
+    def summary(self):
+        return [round(float(x), 2) for x in (self.ad + self.D) / (self.at + self.T)], self.F.tolist()

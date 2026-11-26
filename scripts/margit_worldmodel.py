@@ -5,7 +5,7 @@ import os, sys, pickle
 sys.path.insert(0, "/home/user/cog-ai-souls"); os.chdir("/home/user/cog-ai-souls")
 exec(open("scripts/arena3d_margit.py").read().split('if __name__ == "__main__"')[0].replace("os.path.dirname(os.path.abspath(__file__))", '"scripts"'))
 import arena3d.scripted as SC
-from arena3d.worldmodel import DangerMaps, LearnedModelPlanner, Multi, VARIANTS, family_select
+from arena3d.worldmodel import DangerMaps, LearnedModelPlanner, Multi, VARIANTS, family_select, Interleave
 from arena3d.env import N_BUTTONS, NONE, ROLL, LIGHT
 CK = os.environ.get("WM_CK", "checkpoints/margit_worldmodel.pkl")
 
@@ -38,6 +38,7 @@ def series(rep):
     maps.update = g.update = os.environ.get("LEARN", "1") == "1"
     multi = maps if isinstance(maps, Multi) else None
     rets = [[] for _ in (multi.ms if multi else [])]; frng = np.random.default_rng(31 * rep + 5)
+    il = Interleave(len(multi.ms), seed=rep) if multi and os.environ.get("WM_SELECT_BY") == "interleave" else None
     pl = LearnedModelPlanner(maps.best() if multi else maps, g, seed=rep)
     for k in range(int(os.environ.get("N", 6))):
         if multi and os.environ.get("WM_SELECT_BY") == "combined":
@@ -63,10 +64,13 @@ def series(rep):
         seed = 8 + rep * 100 + k if rep else 8 + k
         env = Arena3D(spec(), U, clips(), seed=seed, player_strike=pstrike()); env.reset(); pl.reset(env)
         if multi: multi.reset(env)
+        if il: il.start(env); pl.maps = multi.ms[il.cur]
         counts = g.counts; g.counts = counts; done = False
         while not done:
             a = pl.act(env)
             _, _, done, info = env.step(a); maps.observe(env, info)
+            if il: pl.maps = multi.ms[il.step(env)]
+        if il: print("INTERLEAVE", rep, k, *il.summary(), flush=True)
         r = ("worldmodel", rep, seed, info["outcome"], round(1 - env.boss_hp / env.spec.hp, 3), env.t)
         if multi: rets[sel].append(r[4])
         print("FIGHT", *r, flush=True); out.append(r)

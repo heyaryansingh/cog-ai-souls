@@ -7,7 +7,7 @@ sys.path.insert(0, "/home/user/cog-ai-souls"); os.chdir("/home/user/cog-ai-souls
 __file__ = "/home/user/cog-ai-souls/scripts/margit_worldmodel.py"
 exec(open(__file__).read().rsplit("if __name__", 1)[0])
 from arena3d.program import random_program, build_program_boss
-from arena3d.worldmodel import Multi, VARIANTS, family_select, DangerMaps, LearnedModelPlanner
+from arena3d.worldmodel import Multi, VARIANTS, family_select, Interleave, DangerMaps, LearnedModelPlanner
 BOSSES = {}
 
 
@@ -71,6 +71,7 @@ def one(args):
     if W > 0: scout(sp, W, maps, g, 500 + b)
     pl = LearnedModelPlanner(maps.best() if multi else maps, g, seed=b); out = []
     rets = [[] for _ in (multi.ms if multi else [])]; frng = np.random.default_rng(31 * b + 5)
+    il = Interleave(len(multi.ms), seed=b) if multi and os.environ.get("WM_SELECT_BY") == "interleave" else None
     for k in range(int(os.environ.get("NF", 2))):
         if k and os.environ.get("NOCARRY") == "1":     # control: a fresh learner (same scouting) for every attempt
             maps = DangerMaps(n, seed=b, acc=acc); g = (SC.HierGrammar if os.environ.get("WM_HIERG") == "1" else SC.LearnedGrammarPlanner)(n, seed=b, acc=acc)
@@ -86,8 +87,11 @@ def one(args):
             pl.maps = multi.best(); sel = int(np.argmax(multi.scores())); print("SELECT", b, k, sel, [round(x, 4) for x in multi.scores()], flush=True)
         env = Arena3D(sp, U, clips(), seed=100 * b + k, player_strike=pstrike()); env.reset(); pl.reset(env); done = False
         if multi: multi.reset(env)
+        if il: il.start(env); pl.maps = multi.ms[il.cur]
         while not done:
             _, _, done, info = env.step(pl.act(env)); maps.observe(env, info)
+            if il: pl.maps = multi.ms[il.step(env)]
+        if il: print("INTERLEAVE", b, k, *il.summary(), flush=True)
         r = (cond, b, k, info["outcome"], round(1 - env.boss_hp / sp.hp, 3), env.t); print("FIGHT", *r, flush=True); out.append(r)
         if multi: rets[sel].append(r[4])
     return out
