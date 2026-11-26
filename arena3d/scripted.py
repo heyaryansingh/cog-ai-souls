@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import numpy as np
+import os
 
 from .env import GUARD, HEAL, LIGHT, N_ACTIONS, N_BUTTONS, NONE, ROLL
 
@@ -382,3 +383,41 @@ def mpc_learned_online(env, rng):
 def mpc_learned_clean(env, rng):
     """Strings learned by watching with perfect identification (separates label noise from context structure)."""
     return mpc_learned(env, rng, ck="checkpoints/margit_grammar_counts_clean.pkl")
+
+
+class HierGrammar(LearnedGrammarPlanner):
+    """Learned strings with hierarchical back-off (a Chinese-restaurant-style prior): the full context
+    (prev, far, phase) borrows strength from the coarser context (prev) and from the overall move frequency,
+    so a boss's habits generalise across distance/phase before each fine context has data."""
+    beta = float(os.environ.get("HIER_BETA", 2.0))
+
+    def sample(self, env, rng, next_move=False):
+        ctx = self._ctx(env) if next_move else (self.ctx_cur or self._ctx(env))
+        z = np.zeros(self.n)
+        coarse = sum((c for k, c in self.counts.items() if k[0] == ctx[0]), z)
+        glob = sum(self.counts.values(), z)
+        pg = (glob + self.alpha) / (glob.sum() + self.alpha * self.n)
+        pc = (coarse + self.beta * pg) / (coarse.sum() + self.beta)
+        c = self.counts.get(ctx, z) + self.beta * pc
+        ok = np.array([m.phase <= (2 if env.phase else 1) for m in env.spec.program.moves], float)
+        p = c * ok + 1e-9
+        return int(rng.choice(self.n, p=p / p.sum()))
+
+
+def _mpc_scratch(env, rng, cls):
+    """General learner: knows nothing about this boss's strings; learns them from scratch during the fight."""
+    global _LGP
+    if _LGP is None or getattr(_LGP, "_env", None) is not env:
+        lg = cls(len(env.spec.program.moves), acc=float(os.environ.get("READ_ACC", 0.7)), seed=env.seed if hasattr(env, "seed") else 0)
+        lg.reset(env); lg.update = True; lg._env = env
+        _LGP = lg
+    _LGP.observe(env)
+    return mpc_planner(env, rng, grammar="learned")
+
+
+def mpc_scratch(env, rng):
+    return _mpc_scratch(env, rng, LearnedGrammarPlanner)
+
+
+def mpc_scratch_hier(env, rng):
+    return _mpc_scratch(env, rng, HierGrammar)
