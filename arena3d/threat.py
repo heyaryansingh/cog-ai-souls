@@ -21,12 +21,42 @@ KS = (1, 4, 7, 10, 13, 16, 20, 24)          # query horizons (frames)
 import os
 POSE_D = 42 if os.environ.get("SENSE_TIP") == "1" else 39
 FEAT_D = len(LAGS) * POSE_D + POSE_D + 1     # poses + velocity + height
-IN_D = FEAT_D + 2 + len(KS) + 2              # + local xy + k one-hot + (r, cos, sin features) -> r and angle
+CUE_J = (5, 6, 3, 4, 11, 12)                 # wrists, elbows, feet (J13 order)
+N_CUE = len(CUE_J) * 6 + 2
+RAW = os.environ.get("THREAT_RAW", "0") == "1"
+IN_D = (FEAT_D if RAW else 1) + 2 + len(KS) + 2 + N_CUE
 
 
-def query_feats(local, ki):
+def cue_feats(f, local):
+    """Boss-invariant cues a human reads: for each hand/elbow/foot, its height, distance to (my planned)
+    position, speed, closing velocity toward me, earlier speed, rise; plus whole-body speed now / before.
+    f: (n, FEAT_D) or (FEAT_D,), local: (n, 2) or (2,)."""
+    f = np.atleast_2d(f); local = np.atleast_2d(local)
+    P0 = f[:, 0:POSE_D].reshape(len(f), -1, 3)[:, :13]
+    P3 = f[:, POSE_D:2 * POSE_D].reshape(len(f), -1, 3)[:, :13]
+    P6 = f[:, 2 * POSE_D:3 * POSE_D].reshape(len(f), -1, 3)[:, :13]
+    out = []
+    for j in CUE_J:
+        v = (P0[:, j] - P3[:, j]) / 3
+        v6 = (P3[:, j] - P6[:, j]) / 3
+        rel = local - P0[:, j, :2]
+        r = np.linalg.norm(rel, axis=1) + 1e-6
+        out += [P0[:, j, 2], r, np.linalg.norm(v, axis=1), (v[:, :2] * rel).sum(1) / r, np.linalg.norm(v6, axis=1),
+                P0[:, j, 2] - P3[:, j, 2]]
+    out += [np.abs(P0 - P3).sum((1, 2)), np.abs(P3 - P6).sum((1, 2))]
+    return np.stack(out, 1)
+
+
+def query_feats(local, ki, f=None):
     r = np.hypot(local[..., 0], local[..., 1])
-    return np.concatenate([local, np.eye(len(KS))[ki], np.stack([r, np.minimum(r, 3.0) ** 2], -1)], -1)
+    q = np.concatenate([local, np.eye(len(KS))[ki], np.stack([r, np.minimum(r, 3.0) ** 2], -1)], -1)
+    if f is None:
+        return q
+    f2 = np.atleast_2d(f)
+    if len(f2) == 1 and np.ndim(local) > 1:
+        f2 = np.repeat(f2, len(local), 0)
+    base = f2 if RAW else f2[:, -1:]
+    return np.concatenate([base, np.atleast_2d(q), cue_feats(f2, np.atleast_2d(local))], 1)
 
 
 class PoseHistory:
@@ -85,10 +115,11 @@ class BayesHead:
         prec0 = self.prec.copy()
         m = self.m.copy()
         for _ in range(steps):
-            p = 1 / (1 + np.exp(-(X @ m)))
+            p = 1 / (1 + np.exp(-np.clip(X @ m, -30, 30)))
             g = X.T @ (p - y) + prec0 * (m - self.m)
-            H = (X * X).T @ (p * (1 - p)) + prec0
-            m = m - g / H
+            # diagonal Newton is overconfident with correlated features: damp by the feature count
+            H = (X * X).T @ (p * (1 - p)) * X.shape[1] ** 0.5 + prec0
+            m = m - np.clip(g / H, -0.5, 0.5)
         self.m = m
-        p = 1 / (1 + np.exp(-(X @ m)))
+        p = 1 / (1 + np.exp(-np.clip(X @ m, -30, 30)))
         self.prec = prec0 + (X * X).T @ (p * (1 - p))

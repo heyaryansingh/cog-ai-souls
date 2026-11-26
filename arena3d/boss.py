@@ -11,6 +11,8 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
+import os
+
 import numpy as np
 
 from .mocap import _qmul
@@ -50,10 +52,10 @@ def danger_frame(u, scale, v_min=4.0, z_lo=0.25, z_hi=1.8):
 def sample_boss(rng, units, allowed, name="boss", n_strikes=None, clips=None, verify=None):
     scale = float(np.exp(rng.uniform(np.log(1.2), np.log(2.6))))
     pool_s = [i for i in allowed if units[i].kind == "strike" and units[i].length < 75
-              and danger_frame(units[i], scale) >= 4]
+              and danger_frame(units[i], scale) >= int(os.environ.get("MIN_WINDUP", 12))]
     pool_w = [i for i in allowed if units[i].kind == "move" and units[i].travel / (units[i].length * 0.03) > 0.6]
     n = int(n_strikes or rng.integers(6, 14))
-    import os
+
     verify = (os.environ.get("ARENA3D_VERIFY", "1") == "1") if verify is None else verify
     if verify and clips is not None:
         cand = [int(i) for i in rng.permutation(pool_s)]
@@ -88,7 +90,7 @@ def sample_boss(rng, units, allowed, name="boss", n_strikes=None, clips=None, ve
                     speed=rng.uniform(0.7, 1.15, n) / np.sqrt(scale / 1.6),
                     hold_med=np.where(rng.random(n) < 0.45, rng.uniform(6, 30, n), 0.0), hold_sig=0.45,
                     track=float(rng.uniform(0.01, 0.06)), aggression=float(rng.uniform(0.35, 0.8)),
-                    hp=float(500 + 250 * scale), idles=idles, p_recover=float(rng.uniform(0.5, 0.9)))
+                    hp=float(350 + 150 * scale), idles=idles, p_recover=float(rng.uniform(0.5, 0.9)))
 
 
 def _qz(a):

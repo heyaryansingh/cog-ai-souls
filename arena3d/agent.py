@@ -376,7 +376,7 @@ class ThreatAgent:
                     continue
                 rel = self.hist[t + k][1] - bxy
                 local = np.array([c * rel[0] - s * rel[1], s * rel[0] + c * rel[1]]) / max(h, 0.5)
-                rows.append(np.concatenate([f, self.T.query_feats(local, ki)]))
+                rows.append(self.T.query_feats(local[None], np.array([ki]), f)[0])
                 ys.append(float(y))
             if rows:
                 self.buf_E.append(self._embed(np.array(rows, np.float32)))
@@ -394,9 +394,9 @@ class ThreatAgent:
         f = self.ph.feat()
         nC, nK = locals_.shape[:2]
         ki = np.tile(np.arange(nK), nC)
-        X = np.concatenate([np.repeat(f[None], nC * nK, 0), self.T.query_feats(locals_.reshape(-1, 2), ki)], 1)
+        X = self.T.query_feats(locals_.reshape(-1, 2), ki, f)
         E = self._embed(X.astype(np.float32))
-        return (1 / (1 + np.exp(-self.head.logits(E)))).reshape(nC, nK)
+        return (1 / (1 + np.exp(-np.clip(self.head.logits(E), -30, 30)))).reshape(nC, nK)
 
     def act(self, obs, env):
         bxy, fwd = self.frame

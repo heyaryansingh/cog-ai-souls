@@ -76,3 +76,20 @@ Coarser label (any hit in the next 24 frames), perfect pose, 8 training bosses:
 1. Exact hit timing is weakly predictable even from the true move state (0.79): log-normal windup holds and random combo choices make souls timing uncertain *by design*. An agent must hedge (roll late, keep distance), not predict exactly.
 2. Raw pose does not transfer: a model fitted on a few bosses memorises each boss's look and is worse than chance on new ones. This is the cross-boss generalisation problem in its purest form. Humans rely on invariant cues ("the arm draws back", "the weapon closes on me"), and those cues transfer a little.
 3. The next steps follow from this: train on hundreds of bosses (cheap here), use invariant cue features, and model timing as a distribution (a hazard over windup duration) rather than as a point prediction.
+
+## B9 · Agents v2/v3 and the information ceiling
+| Player (12 held-out bosses, verified attacks) | Win | Boss HP removed |
+|---|---|---|
+| random | 0% | 7% |
+| aggressive | 0% | 20% |
+| cue reflex (rolls when a perceived hand closes fast) | 0% | 7% |
+| agent v2 (threat net + per-boss Bayesian head), best attempt | 0% | 38% |
+| **state oracle**: perfect view of the boss's current state, imagines 3 futures with fresh randomness | **0%** | 29% |
+| clairvoyant oracle: same logic, but sees the true future | 50% | 80% |
+
+- Threat net v3 (cue features only, 150 bosses, 727k samples): AUC 0.72. More bosses did not help.
+- The state-oracle control is the key result. Even perfect perception wins 0/12, so the bosses were too hard for *any* perceiving player. My agents were not the only problem.
+- Rebalance: boss HP 350 + 150 × size, player hit 50, 4 flasks. After it: clairvoyant 75%, state oracle 8%, aggressive 0%.
+- Requiring windups of at least 12 frames (360 ms, above human reaction plus roll start-up): clairvoyant 58%, state oracle 0%.
+- Check: imagined futures do track the truth. Over the next 14 frames, mean imagined risk is 0.70 before real hits and 0.05 otherwise. So the state oracle's failure is its decision rule (false alarms drain stamina; rolls into follow-ups), not missing information. Re-running with 5 futures and a 0.4 threshold.
+- Next: PPO restarted on the rebalanced bosses. A hit-risk planner with proper stamina accounting is needed before agent comparisons mean anything.

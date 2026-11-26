@@ -59,7 +59,7 @@ class Arena3D:
         self.boss = BossRunner(self.spec, self.U, self.C, self.rng)
         self.boss.reset(np.array([0.0, 5.0 + self.spec.scale]), -np.pi / 2)
         self.p_xy, self.p_yaw = np.array([0.0, 0.0]), np.pi / 2
-        self.hp, self.stamina, self.flasks = 100.0, 100.0, 3
+        self.hp, self.stamina, self.flasks = 100.0, 100.0, 4
         self.boss_hp, self.phase = self.spec.hp, False
         self.t, self.walk_phase = 0, 0.0
         self.act, self.act_t, self.act_dir = NONE, 0, np.zeros(2)
@@ -247,7 +247,7 @@ class Arena3D:
             if pbl_touch is not None and self.act == LIGHT and ("p", self.p_serial) not in self.hit_lock:
                 self.hit_lock[("p", self.p_serial)] = 1
                 part = m.body(m.geom_bodyid[pbl_touch]).name[2:]
-                dmg = 40.0 * PART_MULT.get(part, 0.8)
+                dmg = 50.0 * PART_MULT.get(part, 0.8)
                 self.boss_hp -= dmg
                 reward += dmg * 100.0 / self.spec.hp
                 info["boss_hit"] = (part, dmg)

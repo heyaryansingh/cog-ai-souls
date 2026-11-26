@@ -93,7 +93,7 @@ def make_samples(F, LOC, HIT, PROT, EP, rng, neg_keep=0.25):
             rel = np.array([mx - bx, my - by])
             c, s = np.cos(-fwd), np.sin(-fwd)
             local = np.array([c * rel[0] - s * rel[1], s * rel[0] + c * rel[1]]) / max(h, 0.5)
-            X.append(np.concatenate([F[t], T.query_feats(local, ki)]))
+            X.append(T.query_feats(local[None], np.array([ki]), F[t])[0])
             Y.append(float(y))
     return np.array(X, np.float32), np.array(Y, np.float32)
 
