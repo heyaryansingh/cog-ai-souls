@@ -55,9 +55,9 @@ class Featurizer:
 
 
 class Policy(nn.Module):
-    def __init__(self, hidden=256):
+    def __init__(self, hidden=256, din=OBS_D):
         super().__init__()
-        self.inp = nn.Sequential(nn.Linear(OBS_D, hidden), nn.Tanh(), nn.Linear(hidden, hidden), nn.Tanh())
+        self.inp = nn.Sequential(nn.Linear(din, hidden), nn.Tanh(), nn.Linear(hidden, hidden), nn.Tanh())
         self.gru = nn.GRU(hidden, hidden, batch_first=True)
         self.pi = nn.Linear(hidden, len(CANDS))
         self.v = nn.Linear(hidden, 1)

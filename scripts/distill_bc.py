@@ -21,6 +21,31 @@ def to_cand(a):
     return same[0] if same else CI[0]
 
 
+BEL = os.environ.get("BC_BELIEF") == "1"
+
+
+def belief_feat(env, lg):
+    """The slow mind's beliefs as inputs for the habit: identified current move, time since onset, and the
+    learned strings' prediction of the current/next move (perception-limited, no simulator)."""
+    n = lg.n; b = env.boss
+    since = env.t - getattr(env, "boss_onset_t", env.t) if b.kind == "strike" else 99
+    cur = np.zeros(n + 1, np.float32)
+    if b.kind == "strike" and since >= lg.read_k and lg.prev is not None:
+        cur[lg.prev] = 1
+    else:
+        cur[n] = 1
+    ctx = lg._ctx(env)
+    c = lg.counts.get(ctx, np.zeros(n)) + lg.alpha
+    ok = np.array([m.phase <= (2 if env.phase else 1) for m in env.spec.program.moves], float)
+    p = c * ok; p = p / p.sum()
+    return np.concatenate([cur, p.astype(np.float32), [min(since, 90) / 90.0, float(b.kind == "strike")]]).astype(np.float32)
+
+
+def obs_plus(w, lg):
+    o = w.obs()
+    return np.concatenate([o, belief_feat(w.env, lg)]) if BEL else o
+
+
 def collect(seed):
     os.environ.pop("PPO_PHASE", None)
     w = R.Worker(make_train_env, seed); rng = np.random.default_rng(seed)
@@ -29,7 +54,7 @@ def collect(seed):
     done = False
     while not done:
         a = SC.learned_grammar_planner(env, rng)
-        O.append(w.obs()); A.append(to_cand(a))
+        O.append(obs_plus(w, lg)); A.append(to_cand(a))
         r, done, out, n = w.step(A[-1])
     print("teacher fight", seed, out, round(1 - env.boss_hp / env.spec.hp, 3), env.t, len(A), flush=True)
     return np.array(O, np.float32), np.array(A), out, 1 - env.boss_hp / env.spec.hp
@@ -79,23 +104,26 @@ def evaluate(pol, phase, n=8, seed0=0):
     else: os.environ.pop("PPO_PHASE", None)
     res = []
     for k in range(n):
-        w = R.Worker(make_train_env, 77000 + seed0 + k); h = torch.zeros(1, 1, pol.hidden); o = w.obs(); done = False
+        w = R.Worker(make_train_env, 77000 + seed0 + k); h = torch.zeros(1, 1, pol.hidden); done = False
+        lg = pickle.load(open("checkpoints/margit_grammar_phase1.pkl", "rb")); lg.update = True; lg.reset(w.env)
+        lg.observe(w.env); o = obs_plus(w, lg)
         while not done:
+            lg.observe(w.env); o = obs_plus(w, lg)
             with torch.no_grad():
                 lg, _, h = pol(torch.from_numpy(o)[None, None], h)
             r, done, out, nfr = w.step(int(lg[0, 0].argmax()))
-            o = w.obs() if not done else o
         h0 = getattr(w.env, "h0", w.env.spec.hp); res.append((out, 1 - w.env.boss_hp / h0))
     return res
 
 
 if __name__ == "__main__":
     st = os.environ.get("STAGE", "collect")
+    sfx = "_bel" if BEL else ""
     if st == "collect":
         from multiprocessing import Pool
         with Pool(int(os.environ.get("PROCS", 4))) as p:
             data = p.map(collect, range(int(os.environ.get("NFIGHT", 16))))
-        pickle.dump(data, open("data/bc_margit.pkl", "wb"))
+        pickle.dump(data, open(f"data/bc_margit{sfx}.pkl", "wb"))
         print("teacher wins", sum(d[2] == "win" for d in data), "/", len(data), "dmg", np.mean([d[3] for d in data]).round(3))
     elif st == "dagger":
         from multiprocessing import Pool
@@ -110,8 +138,8 @@ if __name__ == "__main__":
             for ph in (1, 2):
                 r = evaluate(pol, ph); print("  DAgger policy iter", it, "phase", ph, "wins", sum(x[0] == "win" for x in r), "/", len(r), "dmg", np.mean([x[1] for x in r]).round(3), flush=True)
     else:
-        data = pickle.load(open("data/bc_margit.pkl", "rb")); torch.manual_seed(0); torch.set_num_threads(4)
-        pol = R.Policy(); opt = torch.optim.Adam(pol.parameters(), 1e-3); L = 64
+        data = pickle.load(open(f"data/bc_margit{sfx}.pkl", "rb")); torch.manual_seed(0); torch.set_num_threads(4)
+        pol = R.Policy(din=data[0][0].shape[1]); opt = torch.optim.Adam(pol.parameters(), 1e-3); L = 64
         chunks = [(o[i:i + L], a[i:i + L]) for o, a, _, _ in data for i in range(0, len(a) - 8, L // 2)]
         for ep in range(int(os.environ.get("EPOCHS", 30))):
             np.random.shuffle(chunks); tot, acc, nn_ = 0, 0, 0
@@ -123,6 +151,6 @@ if __name__ == "__main__":
                 opt.zero_grad(); loss.backward(); opt.step()
                 tot += loss.item() * len(B); acc += (lg.argmax(-1) == Y).float().sum().item(); nn_ += Y.numel()
             print("epoch", ep, "loss", round(tot / len(chunks), 3), "acc", round(acc / nn_, 3), flush=True)
-        torch.save(pol.state_dict(), "checkpoints/bc_margit.pt")
+        torch.save(pol.state_dict(), f"checkpoints/bc_margit{sfx}.pt")
         for ph in (1, 2):
             r = evaluate(pol, ph); print("BC policy phase", ph, "wins", sum(x[0] == "win" for x in r), "/", len(r), "dmg", np.mean([x[1] for x in r]).round(3), flush=True)
