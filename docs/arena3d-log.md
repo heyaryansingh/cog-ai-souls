@@ -341,3 +341,9 @@ The real sequence lifts label-free move identification by +.11 NMI; a fake seque
 **Meaning.** A label-free learner should discover moves and strings *jointly* (an infinite-HMM-style loop), not in sequence. This is the R1↔R2 link in the plan, and it is how a human learns a new boss: "that's the follow-up to the thrust, so it must be the sweep".
 
 **Next.** Online version inside the fight (assign each new swing with the prior from the previous one), feeding a cluster-keyed world model; the general-suite runs for the from-scratch string learner are queued (B28).
+
+## B28 · Generalisation suite: the planner stalls on unseen bosses; an engagement drive fixes the stall (running)
+- Suite 1 (`general_suite.py`, 6 procedural bosses × 2 fights, 9000-frame cap, no drive), partial 18/24: bosses 2 and 3 are won by both MPC arms (true strings 4/4, guessing 3/4); bosses 0, 1 and 4 time out with 0–44% damage.
+- Diagnosis on boss 0 (700 frames, mpc_uniform): the boss is mid-swing 68% of the time; the agent waits at a median 3.7 m (own reach 1.26 m), presses nothing 97% of frames, and deals 0 damage. With a 24-frame imagined horizon, closing in costs risk now and pays only after the horizon, so standing off always looks best. This is a planning-horizon failure, not a knowledge failure.
+- Fix: an engagement drive. Imagined futures that end out of reach cost `w` per metre, and `w` grows with time since the agent last landed a hit (`MPC_CLOSE=3`, `MPC_HUNGER=1`: frustration turns into pressure, reset by each hit). Same 700 frames: median distance 1.0 m, 200 damage dealt, 34 HP lost.
+- Suite 3 (queued): the drive on for guessing, true strings, from-scratch in-fight string learner, and the hierarchical back-off learner. Suite 1 is the no-drive ablation.
