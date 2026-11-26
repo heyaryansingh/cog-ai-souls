@@ -612,3 +612,17 @@ Damage ×2.2 again (Wilcoxon one-sided p = 4.5e-6), wins 8 vs 2 (Fisher one-side
 - **Two hand-authored bosses, same verdict: v6 is the better controller, and by a lot on Godrick (2×).** The stack's advantage is specific to the procedural family. Plain v6 also keeps learning on Godrick (30% → 40% in later fights); the stack doesn't.
 - **The B54 selector picked the stack in 2 of 3 series**: segment exchange ratios favoured it (0.14 vs 0.09, 0.21 vs 0.15) even though v6 alone deals twice the damage. Two likely causes: (1) Godrick deals and takes few hits, so the family prior (which favours the stack) dominates the counts for longer; (2) credit leaks across segments: a 3-hit string or a delayed whirlwind that lands in one segment was set up (or failed to be dodged) under the previous model. Under interleaving, the score measures "who is in control when the trade resolves", not "whose decisions caused it".
 - Next (B56): credit each hit to the model that was in control when the decision was made (hit taken → model at the boss move's onset; hit dealt → model when the swing started), and weaken the family prior.
+
+## B56 · Decision-time credit + a weak prior fixes Godrick
+Godrick 3 × 12, interleave ε = 0.2, varying credit assignment and family-prior strength:
+
+| variant | damage | final exchange ratios (v6, stack) | v6 share of frames |
+|---|---|---|---|
+| v6 alone / stack alone | 30.1% / 15.6% | – | – |
+| B54 (credit at resolution, prior 3) | 16.2% | 0.09/0.14, 0.15/0.21, 0.35/0.18 | 1 of 3 series |
+| decision credit, prior 3 | 25.2% | 0.33/0.37, 0.19/0.28, 0.39/0.27 | mixed |
+| **decision credit, prior 1** | **26.6%** (vs v6 p = .51) | 0.40/0.09, 0.38/0.20, 0.36/0.27 | 85–95% in all 3 |
+| resolution credit, prior 1, 15 s segments | 24.2% | 0.47/0.07, 0.39/0.22, 0.13/0.07 | 2 of 3 |
+
+- Crediting a hit taken to the model in control when the boss move *started* (when the dodge decision was made), and a hit dealt to the model in control when my swing started, reverses the misleading ratios: with a weak prior all three series settle on v6 and the damage gap to v6-alone closes (26.6% vs 30.1%, n.s.). Credit assignment to the decision, not the outcome moment, is what makes short within-fight trials valid when moves are long and delayed.
+- B57 (running): the same selector (`WM_IL_CREDIT=decision WM_FAMILY_N=1`) on Margit and held-out procedural bosses, to check it keeps B54's wins there.
