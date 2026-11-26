@@ -1,0 +1,12 @@
+dagger iter 0 beta 0.5 rollout dmg 0.459
+  bc acc 0.903
+  DAgger policy iter 0 phase 1 wins 0 / 8 dmg 0.111
+  DAgger policy iter 0 phase 2 wins 0 / 8 dmg 0.181
+dagger iter 1 beta 0.25 rollout dmg 0.348
+  bc acc 0.898
+  DAgger policy iter 1 phase 1 wins 0 / 8 dmg 0.1
+  DAgger policy iter 1 phase 2 wins 0 / 8 dmg 0.249
+dagger iter 2 beta 0.125 rollout dmg 0.267
+  bc acc 0.893
+  DAgger policy iter 2 phase 1 wins 0 / 8 dmg 0.1
+  DAgger policy iter 2 phase 2 wins 0 / 8 dmg 0.204
