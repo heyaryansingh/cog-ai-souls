@@ -40,7 +40,14 @@ def series(rep):
     rets = [[] for _ in (multi.ms if multi else [])]
     pl = LearnedModelPlanner(maps.best() if multi else maps, g, seed=rep)
     for k in range(int(os.environ.get("N", 6))):
-        if multi and os.environ.get("WM_SELECT_BY") == "return":     # bandit over world models, scored by damage dealt
+        if multi and os.environ.get("WM_SELECT_BY") == "combined":
+            # prior from predictive likelihood (the model that 'reads' the boss best), evidence from returns:
+            # Gaussian posterior mean per model, prior mean = 0.45 + bonus for the likelihood favourite, prior n0 = 2
+            fav = int(np.argmax(multi.scores()))
+            post = [((0.45 + (0.08 if i == fav else 0.0)) * 2 + sum(v)) / (2 + len(v)) for i, v in enumerate(rets)]
+            sel = int(np.argmax(post)); pl.maps = multi.ms[sel]
+            print("SELECT", rep, k, sel, [round(x, 3) for x in post], flush=True)
+        elif multi and os.environ.get("WM_SELECT_BY") == "return":     # bandit over world models, scored by damage dealt
             n_ = [len(v) for v in rets]
             if min(n_) == 0:
                 sel = int(np.argmin(n_))
