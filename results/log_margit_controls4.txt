@@ -1,0 +1,4 @@
+oracle_dodger win 0.12 boss hp left 0.3 mean secs 105 events {'hit': 82, 'dodged': 150, 'blocked': 0, 'proj': 2, 'ring': 11}
+state_oracle win 0.0 boss hp left 0.39 mean secs 145 events {'hit': 93, 'dodged': 164, 'blocked': 0, 'proj': 6, 'ring': 9}
+perceptual_oracle_delay_only win 0.0 boss hp left 0.51 mean secs 149 events {'hit': 94, 'dodged': 163, 'blocked': 0, 'proj': 4, 'ring': 6}
+perceptual_oracle win 0.0 boss hp left 0.71 mean secs 150 events {'hit': 91, 'dodged': 133, 'blocked': 0, 'proj': 2, 'ring': 0}

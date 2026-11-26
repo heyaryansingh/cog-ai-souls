@@ -181,3 +181,16 @@ Coarser label (any hit in the next 24 frames), perfect pose, 8 training bosses:
 - **Bug found and fixed:** `Arena3D.clone` shared the program boss's string queue with the real boss, so the oracles' imagined futures *consumed the real boss's planned moves*. Projectiles and rings were also not copied. Every Margit oracle number before this entry is affected; rerunning all of them.
 - **New control `perceptual_oracle`:** the state oracle, except imagined futures cannot see what perception can't: (a) the remaining length of a held windup is resampled from the boss's delay distribution (including the no-delay mix-up), and (b) for the first 12 frames after onset (the readability limit from B11) the move's identity is resampled from the boss's moves. Ablation `perceptual_oracle_delay_only`: only (a).
 - This splits the gap into three parts: future randomness (clairvoyant → state), hidden delays (state → delay-only), and late move identification (delay-only → perceptual). Whatever is left between the perceptual oracle and a learning agent is the cost of learning the boss model.
+- **Result (8 fights each, Margit-like, 450 HP, queue bug fixed):**
+
+| control | what it knows | wins | boss damage | survival (s) | hits taken / fight |
+|---|---|---|---|---|---|
+| clairvoyant | the true future | 1/8 | 70% | 105 | 10.3 |
+| state oracle | exact current state, future resampled | 0/8 | 61% | 145 | 11.6 |
+| delay hidden | + remaining windup delay unknown | 0/8 | 49% | 149 | 11.8 |
+| perceptual | + move identity unknown for 12 frames | 0/8 | 29% | 150 | 11.4 |
+
+  With the bug fixed the boss really runs its strings, and it is harder: the clairvoyant's win rate fell from 75% to 12%. Earlier Margit oracle numbers (B12, B13) were inflated by the bug. The episodic-control runs never used `clone`, so they are unaffected.
+- **Decomposition of the 41-point damage gap between clairvoyant and perceptual:** future randomness 9 points, hidden delays 12 points, late move identification **20 points**. Reading the move earlier is the biggest single lever. That points at anticipation from context (string position, distance, rhythm) rather than better pose estimation.
+- **Agent vs ceiling.** Episodic control after 50+ attempts deals 22% (damage 1×) to 37% (3×). The perceptual oracle, which has a perfect simulator but realistic perception, deals 29%. So the learning agent already matches the perception-limited planner on damage, though the planner survives 5× longer. The headline question becomes: can a learned boss model plus planning beat the perceptual limit by anticipating moves before they are readable?
+- Caveat: the oracles share a crude hand-written action layer (fixed roll and attack thresholds) and take ~11 hits per fight even when clairvoyant. Their absolute numbers are a weak ceiling; the differences between them are the result.
