@@ -143,6 +143,13 @@ class DangerMaps:
                     p = np.maximum(p, self.geom_hazard(self.label, T0, R0))
                 p = np.clip(p, 1e-3, 1 - 1e-3)
                 self.ll += float((H0 * np.log(p) + (1 - H0) * np.log(1 - p)).sum()); self.ll_n += len(sc)
+                # B51 decision-relevant score: only frames within 3 m (where the planner chooses), balanced
+                # between contact and no-contact frames so the many easy safe frames don't dominate
+                near = np.hypot(R0[:, 0], R0[:, 1]) < 3.0
+                if near.any():
+                    hh = H0[near] > 0; lp, lq = np.log(p[near]), np.log(1 - p[near])
+                    self.llh = getattr(self, "llh", 0.0) + float(lp[hh].sum()); self.nh = getattr(self, "nh", 0) + int(hh.sum())
+                    self.lls = getattr(self, "lls", 0.0) + float(lq[~hh].sum()); self.ns = getattr(self, "ns", 0) + int((~hh).sum())
             for (t0, r0, h0, d0, k0) in self.pend:
                 ti, ri, ai, ok = _bins(t0, r0)
                 if ok:
@@ -386,5 +393,8 @@ class Multi:
     @update.setter
     def update(self, v):
         for m in self.ms: m.update = v
-    def scores(self): return [m.ll / max(1, m.ll_n) for m in self.ms]
+    def scores(self):
+        if __import__("os").environ.get("WM_SCORE") == "balanced":
+            return [0.5 * getattr(m, "llh", 0.0) / max(1, getattr(m, "nh", 0)) + 0.5 * getattr(m, "lls", 0.0) / max(1, getattr(m, "ns", 0)) for m in self.ms]
+        return [m.ll / max(1, m.ll_n) for m in self.ms]
     def best(self): return self.ms[int(np.argmax(self.scores()))]
