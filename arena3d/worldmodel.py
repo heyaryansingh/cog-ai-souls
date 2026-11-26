@@ -30,6 +30,9 @@ def _bins(tau, rel):
 class DangerMaps:
     def __init__(self, n_moves, prior_hit=0.005, prior_n=2.0, seed=0, read_k=12, acc=0.7):
         self.N = np.zeros((n_moves, TB, RB, AB)); self.H = np.zeros((n_moves, TB, RB, AB))
+        self.D = np.zeros((n_moves, 3 * TB, 2)); self.Dn = np.zeros((n_moves, 3 * TB))   # boss travel (onset frame)
+        import os
+        self.cur = os.environ.get('WM_FRAME', 'onset') == 'current'
         self.a, self.b = prior_hit * prior_n, prior_n
         self.rng = np.random.default_rng(seed); self.read_k, self.acc, self.n = read_k, acc, n_moves
         self.update = True
@@ -59,12 +62,16 @@ class DangerMaps:
         if tau >= self.read_k and self.label is None:
             self.label = b.move_id if self.rng.random() < self.acc else int(self.rng.integers(self.n))
         hit = bool(info.get("hit") is not None or info.get("blocked") or info.get("dodged"))
-        self.pend.append((tau, self.rel(env), hit))
+        bdisp = self.rel(env, b.root + self.rng.normal(0, 0.1, 2))      # boss travel since onset (perceived)
+        r = self.rel(env) - bdisp if self.cur else self.rel(env)       # my position relative to the boss now
+        self.pend.append((tau, r, hit, bdisp))
         if self.label is not None and self.update:
-            for (t0, r0, h0) in self.pend:
+            for (t0, r0, h0, d0) in self.pend:
                 ti, ri, ai, ok = _bins(t0, r0)
                 if ok:
                     self.N[self.label, ti, ri, ai] += 1; self.H[self.label, ti, ri, ai] += h0
+                if t0 < 3 * TB:
+                    self.D[self.label, t0] += d0; self.Dn[self.label, t0] += 1
             self.pend = []
 
     def _smoothed(self):
@@ -164,7 +171,12 @@ class LearnedModelPlanner:
                 taus = tau0 + np.arange(1, self.H + 1)
                 rs = []
                 for m in ms:
-                    h = self.maps.hazard(m, np.maximum(taus, 0), rel) * (~inv) * (taus >= 0)
+                    rr = rel
+                    if self.maps.cur:     # predicted boss travel for this move (learned mean)
+                        ti = np.clip(taus, 0, 3 * TB - 1)
+                        disp = self.maps.D[m, ti] / np.maximum(self.maps.Dn[m, ti], 1)[:, None]
+                        rr = rel - disp
+                    h = self.maps.hazard(m, np.maximum(taus, 0), rr) * (~inv) * (taus >= 0)
                     rs.append(1 - np.prod(1 - h))
                 risk = float(np.mean(rs))
             btn = a % N_BUTTONS
