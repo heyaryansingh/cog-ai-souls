@@ -483,3 +483,14 @@ Keypoint noise alone removes almost all of the reading; 6-frame latency costs ne
 - `WM_PHASEIDX=1`: index danger by **motion phase** (how far the swing has progressed through its motion; perceivable from pose progression, with the windup freeze seen as the body stopping), not by time since onset. Each move's hold lengths and hold point are learned from watching. In imagination, each of the 8 sampled futures draws its own remaining hold from the learned lengths, conditioned on how long the boss has already held. Timing uncertainty is represented while the boss is frozen and collapses when it resumes, which is the human strategy against delayed attacks ("wait for it, then roll").
 - 18 bosses × 2 paired fights, against the aim-model agent (45.4%, 8/36 wins, 2166 frames).
 - **Result (18 bosses × 2 paired fights):** 49.5% damage, 7/36 wins, 2237 frames, vs 45.4%, 8/36, 2166 for the aim-model agent (damage Wilcoxon one-sided p = .21, frames p = .26). Small and not significant on its own: only ~45% of procedural moves have a windup hold, and the hold matters only for moves that are dodged late. Kept as an option. Next: the whole stack vs the naive learner on all 18 bosses, to measure the total gain of B28–B43 in one paired comparison.
+
+## B44 · Total gain of the general-learner stack on 18 unseen bosses
+Same 18 procedural bosses × 2 paired fights, no simulator, no library, 1,500 scouting frames each:
+
+| learner | damage | wins | frames | timeouts |
+|---|---|---|---|---|
+| naive (v6 world model, no drive) | 22.7% | 1/36 | 3945 | 4 |
+| + drive, after-swing attention, back-off, aim model | 45.4% | 8/36 | 2166 | 0 |
+| + motion-phase clock (full stack) | **49.5%** | **7/36** | 2237 | 0 |
+
+Full stack vs naive: damage ×2.2 (Wilcoxon one-sided p = 2.6e-5), wins 7 vs 1 (Fisher one-sided p = .028). The cognitive additions of B28–B43 (a drive that turns lack of progress into pressure, attention to an attack's effects after the swing, hierarchical pooling of sparse evidence, a model of the boss's aim, a motion-phase clock for delays) together double what a learner can do against a boss it has never seen, using only what it perceives. The individual steps are mostly too small to resolve at n = 36 (aim model's survival gain is the exception, B33). The gap to a learner given each boss's physics (~90% wins, B29) remains.
