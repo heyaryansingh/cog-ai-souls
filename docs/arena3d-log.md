@@ -402,3 +402,13 @@ The real sequence lifts label-free move identification by +.11 NMI; a fake seque
 - `WM_TRACK=1`: positions are recorded in the onset-origin frame rotated by the boss's perceived turn since onset (body rotation, small noise). Two things are learned from watching: the boss's turn rate (90th percentile of seen per-frame turning) and each move's commit time (median last tau at which turning was seen). In imagination, for each candidate action, the boss turns toward the agent's *imagined* position at the learned rate until the learned commit time, and the danger maps and remembered blade paths are read in that turned frame. This is a small piece of theory of mind: the boss aims at where I am going to be, until it can't.
 - Same 6 bosses × 2 fights as B30b (paired with p1h4, 38.8%).
 - **First 6 bosses (paired with p1h4):** damage 48.9% vs 38.8%, wins 3/12 vs 1/12, frames survived 2232 vs 1787. Paired Wilcoxon one-sided p = .28 (7 better, 3 worse, 2 tied), so promising but underpowered. Replication on 12 more bosses (7006–7017), both arms, running.
+- **Replication (12 more bosses) and pooled result, 18 bosses × 2 paired fights:**
+
+| | onset-frame maps (p1h4) | aim model (track) | paired test |
+|---|---|---|---|
+| frames survived | 1761 | **2166 (+23%)** | Wilcoxon one-sided p = **.008** |
+| damage dealt | 39.6% | 45.4% | p = .16 (19 better, 14 worse) |
+| wins | 4/36 | 8/36 | n.s. |
+
+  On the 12 new bosses alone: 43.7% vs 40.0% damage, 5 vs 3 wins. **Modelling the boss's aim makes the learner reliably harder to kill**; the damage and win gains go the same way but don't reach significance. The aim model is now part of the default simulator-free learner.
+- **Where the remaining gap is.** The same learner with a perfect boss simulator wins ~90% of these fights (B29); with everything learned it wins 22%. Most deaths still come from strikes read late (12 frames) whose remembered paths are averaged over many aims and speeds. Candidate next steps: (1) condition remembered blade paths on the boss's speed in the first frames (the hold/delay variable that the footage calibration showed matters most); (2) amortise: train a small network on (pose window → future blade path) from all seen swings, shared across bosses, the R7 "intuition" component.
