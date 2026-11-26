@@ -150,7 +150,27 @@ def state_oracle(env, rng, horizon=14, n=5):
     return 5 * N_BUTTONS + NONE
 
 
-def _blind(sim, env, rng, read_k=12):
+def grammar_prior(env, rng):
+    """Sample the current move as an observer who knows the boss program and has seen the string so far would:
+    mid-string moves are known (except at branch points); openers are drawn from the strings valid at this
+    distance and phase, weighted as the program weights them."""
+    b, prog = env.boss, env.spec.program
+    st, pos = getattr(b, "cur_string", None), getattr(b, "string_pos", 1)
+    if st is not None and pos > 1:
+        if pos - 1 < len(st.moves):
+            return prog.idx[st.moves[pos - 1]]
+        opts = st.branch.get(len(st.moves))
+        if opts:
+            ps = np.array([q for q, _ in opts])
+            return prog.idx[opts[int(rng.choice(len(opts), p=ps / ps.sum()))][1][0]]
+    dist = np.linalg.norm(env.p_xy - b.origin)
+    ph = 2 if env.phase else 1
+    ok = [x for x in prog.strings if x.min_d <= dist <= x.max_d and x.phase <= ph] or prog.strings
+    w = np.array([x.weight * (1.5 if x.phase == 2 else 1.0) for x in ok])
+    return prog.idx[ok[int(rng.choice(len(ok), p=w / w.sum()))].moves[0]]
+
+
+def _blind(sim, env, rng, read_k=12, grammar=False):
     """Remove from an imagined copy what perception cannot know (B11): the remaining delay of a held windup
     (resampled from the boss's delay distribution) and, before the move is readable (read_k frames after
     onset), the move's identity (resampled from the boss's moves)."""
@@ -163,7 +183,7 @@ def _blind(sim, env, rng, read_k=12):
     if since < read_k:
         prog = getattr(s, "program", None)
         cands = [i for i, m in enumerate(prog.moves) if m.phase <= (2 if env.phase else 1)] if prog else list(range(len(s.strikes)))
-        j = int(rng.choice(cands))
+        j = grammar_prior(env, rng) if (grammar and prog) else int(rng.choice(cands))
         u = sim.U[s.strikes[j]]
         b.unit, b.move_id, b.combo_last = u, j, j
         b.c = sim.C[u.clip]
@@ -185,9 +205,9 @@ def _blind(sim, env, rng, read_k=12):
             b.hold = 0
 
 
-def _hit_soon_blind(env, a, horizon, seed, read_k):
+def _hit_soon_blind(env, a, horizon, seed, read_k, grammar=False):
     sim = env.clone(seed)
-    _blind(sim, env, np.random.default_rng(seed), read_k)
+    _blind(sim, env, np.random.default_rng(seed), read_k, grammar)
     for k in range(horizon):
         _, _, done, info = sim.step(a if k == 0 else (0 if a % N_BUTTONS != NONE else a))
         if info["hit"] is not None or (done and sim.hp <= 0):
@@ -197,7 +217,7 @@ def _hit_soon_blind(env, a, horizon, seed, read_k):
     return False
 
 
-def perceptual_oracle(env, rng, horizon=14, n=5, read_k=None):
+def perceptual_oracle(env, rng, horizon=14, n=5, read_k=None, grammar=False):
     """State oracle limited to what perception can deliver: exact boss position and pose, but hidden delays and
     move identity unknown for the first READ_K frames (env var, default 12; B11). Same decisions as state_oracle."""
     import os
@@ -205,7 +225,7 @@ def perceptual_oracle(env, rng, horizon=14, n=5, read_k=None):
     if not env.player_free():
         return 0
     seeds = [int(s) for s in rng.integers(1 << 30, size=n)]
-    risk = lambda a, H=horizon: np.mean([_hit_soon_blind(env, a, H, s, rk) for s in seeds])
+    risk = lambda a, H=horizon: np.mean([_hit_soon_blind(env, a, H, s, rk, grammar) for s in seeds])
     if risk(NONE) >= 0.4:
         best, bv = 5 * N_BUTTONS + ROLL, 2.0
         for d in rng.permutation([5, 3, 7, 4, 6, 2, 8]):
@@ -229,3 +249,9 @@ def perceptual_oracle(env, rng, horizon=14, n=5, read_k=None):
 def perceptual_oracle_delay_only(env, rng):
     """Ablation: only the remaining delay is hidden; move identity known from the first frame."""
     return perceptual_oracle(env, rng, read_k=0)
+
+
+def grammar_oracle(env, rng):
+    """Perceptual oracle that also knows the boss program (string grammar): unreadable moves are anticipated
+    from the string so far and the distance instead of guessed uniformly. Upper bound for a learned program model."""
+    return perceptual_oracle(env, rng, grammar=True)
