@@ -460,3 +460,6 @@ Keypoint noise alone removes almost all of the reading; 6-frame latency costs ne
 
 ## B39 · Risk trade-off sweep for the physics-learning agent
 - Track config, 6 bosses × 2 paired fights, hit cost (penalty per unit of imagined contact probability) 120 / 200 / 300 / 500: damage 35.0% / **48.9%** / 39.3% / 31.9%, wins 1 / **3** / 1 / 0, frames survived 1636 / 2232 / 3069 / 2992. Higher cost survives longer but deals less; the default (200) is best for damage and wins. The risk weight isn't the lever.
+
+## B40 · Hierarchical strings inside the physics-learning agent: no gain
+- Track config with the hierarchical back-off string learner (`WM_HIERG=1`) on the same 18 bosses × 2 paired fights: 38.5% damage, 4/36 wins, 1995 frames survived, vs 45.4%, 8/36, 2166 with flat strings (Wilcoxon two-sided p = .21). Back-off helped the simulator planner in B28 (10/12 vs 8/12, n.s.); here it doesn't. The strings component isn't what limits this agent (consistent with B37–B38: physics is the bottleneck).
