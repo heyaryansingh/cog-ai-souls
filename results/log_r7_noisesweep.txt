@@ -1,0 +1,10 @@
+== noise 0.02
+k=12 unseen bosses: mean 0.586  ridge10 0.559  ridge100 0.555  ridge1000 0.555  knn10 0.574
+k=12 seen bosses, held-out swings: mean 0.520  ridge10 0.479  ridge100 0.476  ridge1000 0.482  knn10 0.482
+k=20 unseen bosses: mean 0.586  ridge10 0.548  ridge100 0.546  ridge1000 0.549  knn10 0.574
+k=20 seen bosses, held-out swings: mean 0.520  ridge10 0.455  ridge100 0.453  ridge1000 0.464  knn10 0.427
+== noise 0.04
+k=12 unseen bosses: mean 0.586  ridge10 0.564  ridge100 0.561  ridge1000 0.563  knn10 0.596
+k=12 seen bosses, held-out swings: mean 0.520  ridge10 0.498  ridge100 0.495  ridge1000 0.498  knn10 0.520
+k=20 unseen bosses: mean 0.586  ridge10 0.557  ridge100 0.555  ridge1000 0.559  knn10 0.586
+k=20 seen bosses, held-out swings: mean 0.520  ridge10 0.475  ridge100 0.473  ridge1000 0.482  knn10 0.490
