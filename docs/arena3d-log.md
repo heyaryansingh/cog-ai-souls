@@ -368,3 +368,14 @@ The real sequence lifts label-free move identification by +.11 NMI; a fake seque
 - Engagement drive (`WM_HUNGER=1`) vs none: damage 34.1% vs 20.7% (paired: 7 fights better, 1 worse, 4 ties at 0; Wilcoxon one-sided p = .074), 1/12 vs 0/12 wins. Bosses 4 and 5 are never damaged in either arm.
 - Death diagnosis (`scripts/wm_death_diag.py`): on boss 5, 9 of 12 hits are the shockwave ring of one slam (m3, ring radius 3.8 m), landing at 2.7–6.5 m. On boss 4 the shockwave slam (m2) also dominates once the agent survives longer. Cause: the learner **stopped attending when the boss's swing ended**. Danger maps recorded contacts only while the boss was mid-strike, and the planner stopped imagining a move once its animation finished. A ring that keeps expanding after the swing, or a hit after recovery, was invisible to learning and to planning.
 - Fixes, each behind a flag: `WM_PERSIST=1` keeps attending to a move's effects for its whole 90-frame window after onset, even after the body is done (object permanence for attacks). `WM_HIER=k` makes sparse places borrow the move's hazard at that moment pooled over all places (hierarchical back-off, the same idea as the string learner's). Factorial running on the same 6 bosses.
+- **B30b result (same 6 bosses × 2 fights, all with drive):**
+
+| arm | damage | wins | mean frames survived |
+|---|---|---|---|
+| no drive (h0) | 20.7% | 0 | 3360 |
+| drive (h1) | 34.1% | 1 | 2172 |
+| drive + attend after swing (p1) | 26.7% | 0 | 1685 |
+| drive + attend after swing + hierarchical back-off (p1h4) | **38.8%** | 1 | 1787 |
+
+  None of the pairwise differences is significant at n = 12 (best: p1h4 vs no drive, Wilcoxon one-sided p = .064; p1h4 vs h1, p = .23). Attending after the swing alone *hurt*: more recorded contacts at late taus make the planner see danger everywhere, and with too few data that pushes it into bad dodges. Back-off rescues it by pooling. First non-zero damage on boss 4 (27%, 18%) and boss 5 (9%). Every fight still ends in death: the simulator-free learner's bottleneck is survival, not aggression.
+- **Next (B31).** The real souls test: does the learner improve *across attempts*, as a player does after each death? 6 attempts per boss, learning carried over, p1h4 config, learning curves of damage and survival per attempt.

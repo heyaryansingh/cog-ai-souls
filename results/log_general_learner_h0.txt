@@ -1,0 +1,13 @@
+FIGHT K0 2 0 death 0.0 1290
+FIGHT K0 3 0 death 0.889 1873
+FIGHT K0 2 1 death 0.178 2513
+FIGHT K0 3 1 death 0.444 2818
+FIGHT K0 4 0 death 0.0 2029
+FIGHT K0 5 0 death 0.0 1784
+FIGHT K0 5 1 death 0.0 858
+FIGHT K0 4 1 death 0.0 1807
+FIGHT K0 0 0 death 0.267 8404
+FIGHT K0 1 0 timeout 0.089 9000
+FIGHT K0 1 1 death 0.089 900
+FIGHT K0 0 1 death 0.533 7039
+K0 wins 0 / 12 damage 0.207 frames 3360.0
