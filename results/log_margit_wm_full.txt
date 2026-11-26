@@ -1,0 +1,14 @@
+exposures 17053 contacts 221
+FIGHT worldmodel 0 8 death 0.089 1477
+FIGHT worldmodel 0 9 death 0.533 3813
+FIGHT worldmodel 0 10 death 0.0 1222
+FIGHT worldmodel 0 11 death 0.267 3492
+FIGHT worldmodel 0 12 death 0.444 3380
+FIGHT worldmodel 0 13 death 0.267 2818
+FIGHT worldmodel 0 14 death 0.089 3842
+FIGHT worldmodel 0 15 death 0.356 3365
+FIGHT worldmodel 0 16 death 0.178 2915
+FIGHT worldmodel 0 17 death 0.533 3841
+FIGHT worldmodel 0 18 death 0.533 4040
+FIGHT worldmodel 0 19 death 0.178 2146
+worldmodel wins 0 / 12 damage 0.289

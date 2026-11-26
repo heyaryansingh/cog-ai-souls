@@ -504,3 +504,7 @@ Configuration frozen after B44, bosses never used during development:
 | full stack | **60.4%** | **8/36** | 2445 | 0 |
 
 Damage ×2.2 again (Wilcoxon one-sided p = 4.5e-6), wins 8 vs 2 (Fisher one-sided p = .042). **The B44 gain replicates on held-out bosses.** Pooled over 36 unseen bosses (72 paired fights): naive 25.0%, 3/72 wins; full stack 55.0%, 15/72 wins.
+
+## B46 · The general-learner stack on Margit: worse than plain v6 (running ablation)
+- Margit (uncalibrated program), 12 fights in series, fresh watch checkpoint per config: plain v6 (current frame + seen-tip geometry, re-run) 41.5% damage, 0/12 wins; full stack (drive, after-swing attention, back-off, aim, phase clock) **28.9%**, 0/12.
+- The stack that doubles damage on procedural bosses *hurts* on Margit. Margit differs from the procedural bosses in ways that could interact with each component: aggressive delayed hammer slams and dagger projectiles (the drive pushes in), long strings with branches, and a delay mechanism implemented in the program runner rather than as the boss's windup hold (phase clock). Ablation running: full minus phase clock, full minus drive, aim-only (no drive, no phase clock), and v6 + drive.
