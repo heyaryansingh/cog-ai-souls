@@ -67,9 +67,25 @@ class DangerMaps:
                     self.N[self.label, ti, ri, ai] += 1; self.H[self.label, ti, ri, ai] += h0
             self.pend = []
 
+    def _smoothed(self):
+        """Kernel-smoothed counts (generalise across neighbouring times, distances and bearings), cached."""
+        import os
+        sig = float(os.environ.get("WM_SMOOTH", 1.0))
+        key = (int(self.N.sum()), sig)
+        if getattr(self, "_key", None) != key:
+            if sig > 0:
+                from scipy.ndimage import gaussian_filter
+                f = lambda X: gaussian_filter(X, sigma=(0, sig, sig, sig), mode=("nearest", "nearest", "nearest", "wrap"))
+                self._Ns, self._Hs = f(self.N), f(self.H)
+            else:
+                self._Ns, self._Hs = self.N, self.H
+            self._key = key
+        return self._Ns, self._Hs
+
     def hazard(self, m, tau, rel):
         ti, ri, ai, ok = _bins(tau, rel)
-        p = (self.H[m, ti, ri, ai] + self.a) / (self.N[m, ti, ri, ai] + self.b)
+        Ns, Hs = self._smoothed()
+        p = (Hs[m, ti, ri, ai] + self.a) / (Ns[m, ti, ri, ai] + self.b)
         return np.where(ok & (np.asarray(tau) < 3 * TB), p, 0.0)
 
 
