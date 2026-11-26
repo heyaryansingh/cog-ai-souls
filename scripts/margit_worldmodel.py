@@ -19,7 +19,7 @@ def watch(frames):
         rng = np.random.default_rng(ep)
         for t in range(frames):
             g.observe(env)
-            dist = np.linalg.norm(env.boss.root - env.p_xy); want = [1.5, 3.0, 5.0][(t // 300) % 3]
+            dist = np.linalg.norm(env.boss.root - env.p_xy); want = [1.5, 3.0, 5.0, 8.0][(t // 300) % 4]
             if env.player_free() and rng.random() < 0.03:
                 a = int(rng.choice([3, 5, 7])) * N_BUTTONS + ROLL
             else:

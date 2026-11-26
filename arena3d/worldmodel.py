@@ -14,15 +14,15 @@ import numpy as np
 
 from .env import HEAL, LIGHT, N_BUTTONS, NONE, ROLL
 
-TB, RB, AB = 30, 12, 8           # 3-frame tau bins (90 frames), 0.5 m rings, 8 bearing sectors
-R_MAX = 6.0
+TB, RB, AB = 30, 16, 8           # 3-frame tau bins (90 frames), 0.75 m rings (12 m), 8 bearing sectors
+R_MAX = 12.0
 
 
 def _bins(tau, rel):
     r = np.hypot(rel[..., 0], rel[..., 1])
     a = np.arctan2(rel[..., 1], rel[..., 0])
     ti = np.clip(np.asarray(tau) // 3, 0, TB - 1).astype(int)
-    ri = np.clip((r / 0.5).astype(int), 0, RB - 1)
+    ri = np.clip((r / 0.75).astype(int), 0, RB - 1)
     ai = ((a + np.pi) / (2 * np.pi) * AB).astype(int) % AB
     return ti, ri, ai, r < R_MAX
 

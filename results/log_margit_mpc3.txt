@@ -3,3 +3,5 @@ FIGHT mpc_learned_clean 13 death 0.378 1258
 FIGHT mpc_learned_clean 10 win -0.067 3343
 FIGHT mpc_learned_clean 8 win -0.067 3243
 FIGHT mpc_learned_clean 14 win -0.067 1234
+FIGHT mpc_learned_clean 9 death 0.2 1088
+FIGHT mpc_learned_clean 11 win -0.067 1537
