@@ -280,3 +280,15 @@ Coarser label (any hit in the next 24 frames), perfect pose, 8 training bosses:
 - **v3 (maps to 12 m):** 0/12, 17.0% damage, but survival up from ~1,600 to ~2,550 frames.
 - **v4 (kernel-smoothed maps, so sparse contacts generalise to neighbouring times, distances and bearings):** σ = 1 bin: **40.0% damage**, survival ~4,500 frames (2.8× v2), 0/12 wins. σ = 2: 35.6%. Smoothing helps; over-smoothing blurs hit volumes.
 - **Running: experience scaling.** Same model, watching budget 2,250 / 9,000 (done) / 18,000 frames per phase: does performance scale with experience, and how fast?
+- **Experience scaling (σ = 1, 12 fights each):**
+
+| watching per phase | exposures | contacts | boss damage | mean fight length (frames) |
+|---|---|---|---|---|
+| 2,250 | 3,333 | 55 | 30.4% | 3,343 |
+| 9,000 | 13,528 | 202 | 40.0% | ~4,500 |
+| 18,000 | 27,182 | 385 | 35.6% | 3,789 |
+
+  It improves from little to moderate experience, then plateaus around 35–40% (±~7 points of noise at 12 fights). More data of the same kind doesn't fix it, so the bottleneck is the model class: a per-move map in the onset frame can't represent hit volumes that move with the boss's lunge and tracking. Next modelling step: maps in the boss's *current* frame (perceived hip each frame) and per-move lunge displacement.
+
+## B24 · Cross-boss library on procedural bosses (R5), running
+- `scripts/general_learner.py`: 6 held-out procedural bosses (random moves, strings, branches, enders, rings, projectiles, phase-2 switch, random weapon and scale). Per boss: scout 1,500 frames per phase, then 2 fights with the learned-world-model planner (no simulator). Conditions: K = 0 (learn from scratch) vs K = 12 training bosses pooled into a library of danger maps by move prototype (shape, ender, ring, projectile, leap), injected as pseudo-counts. Question: does a library make a new boss faster to learn?
