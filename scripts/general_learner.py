@@ -70,18 +70,24 @@ def one(args):
                 N0, H0 = lib[proto(m)]; maps.N[i] += c * N0 / max(1, K); maps.H[i] += c * H0 / max(1, K)
     if W > 0: scout(sp, W, maps, g, 500 + b)
     pl = LearnedModelPlanner(maps.best() if multi else maps, g, seed=b); out = []
+    rets = [[] for _ in (multi.ms if multi else [])]
     for k in range(int(os.environ.get("NF", 2))):
         if k and os.environ.get("NOCARRY") == "1":     # control: a fresh learner (same scouting) for every attempt
             maps = DangerMaps(n, seed=b, acc=acc); g = (SC.HierGrammar if os.environ.get("WM_HIERG") == "1" else SC.LearnedGrammarPlanner)(n, seed=b, acc=acc)
             if W > 0: scout(sp, W, maps, g, 500 + b)
             pl = LearnedModelPlanner(maps, g, seed=b)
-        if multi:
+        if multi and os.environ.get("WM_SELECT_BY") == "combined":   # B49 selector: likelihood prior + return evidence
+            fav = int(np.argmax(multi.scores()))
+            post = [((0.45 + (0.08 if i == fav else 0.0)) * 2 + sum(v)) / (2 + len(v)) for i, v in enumerate(rets)]
+            sel = int(np.argmax(post)); pl.maps = multi.ms[sel]; print("SELECT", b, k, sel, [round(x, 3) for x in post], flush=True)
+        elif multi:
             pl.maps = multi.best(); sel = int(np.argmax(multi.scores())); print("SELECT", b, k, sel, [round(x, 4) for x in multi.scores()], flush=True)
         env = Arena3D(sp, U, clips(), seed=100 * b + k, player_strike=pstrike()); env.reset(); pl.reset(env); done = False
         if multi: multi.reset(env)
         while not done:
             _, _, done, info = env.step(pl.act(env)); maps.observe(env, info)
         r = (cond, b, k, info["outcome"], round(1 - env.boss_hp / sp.hp, 3), env.t); print("FIGHT", *r, flush=True); out.append(r)
+        if multi: rets[sel].append(r[4])
     return out
 
 
