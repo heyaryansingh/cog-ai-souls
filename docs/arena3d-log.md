@@ -302,3 +302,18 @@ Coarser label (any hit in the next 24 frames), perfect pose, 8 training bosses:
 - Felt contacts are sparse: ~200 in 18k frames. A player also learns from *watching the weapon*: every swing that passes near you shows its reach and timing. v6 (`WM_GEOM=1`) stores each move's perceived weapon-tip trajectory (tip keypoint with 6%-of-height noise: a weapon-aware detector, which the MediaPipe pipeline doesn't have yet) relative to the boss. Hazard = the fraction of remembered trajectories whose tip passes within reach of the imagined player position at that moment, combined with the felt-contact map.
 - **v6 result (tip trajectories + felt contacts, 12 fights):** 0/12 wins, **42.9% damage**, the best simulator-free result so far (v5: 35.6%), with shorter fights (3,156 frames). Seeing the weapon makes it more willing to engage where swings don't reach.
 - **v7 (running):** hazard from the distance to the whole *blade segment* (perceived hand → tip), not only the tip point, reach 0.4 m.
+- **v7 result (blade segment, reach 0.4 m):** 12.6% damage, 6,844 frames (3 timeouts). Far too cautious: the hand is always near the boss's body, so the whole approach zone looks dangerous. Negative; v6 (tip only) stays the best simulator-free model.
+
+## B26 · Learned strings that keep updating during the fight match the true program under MPC (main result)
+- Same 12 paired Margit seeds (8–19), MPC action layer, realistic perception limits:
+
+| boss model in imagination | wins | per seed |
+|---|---|---|
+| uniform guess | 7/12 | `....WWWWWW.W` |
+| learned by watching, frozen, 70% labels (B21) | 7/12 | `..WWW..WWWW.` |
+| learned by watching, frozen, perfect labels | 10/12 | `WdWWWdWWWWWW` |
+| **learned by watching + keeps updating in the fight, 70% labels** | **11/12** | `WWWWWWdWWWWW` |
+| true strings | 11/12 | `WWWWWWW.WWWW` |
+
+- The frozen learned table failed under MPC (B21) for two reasons this run separates. Label noise costs about 3 wins (perfect labels: 10/12). Context mismatch between watching and fighting is the rest: updating the counts from what the boss does *in this fight*, with the same noisy 70% labels, reaches the true-program level. Online vs uniform: Fisher one-sided p = .077 per arm. Pooled, the three program-aware arms win 32/36 vs 14/24 for uniform + frozen-noisy (p ≈ .004).
+- This is the clearest evidence yet for the project's thesis: an agent that keeps inferring the boss's program from noisy perception, while fighting, does as well as one handed the true program.

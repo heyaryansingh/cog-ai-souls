@@ -18,3 +18,9 @@ FIGHT mpc_learned_online 14 death 0.289 958
 FIGHT mpc_learned_online 15 win -0.067 896
 FIGHT mpc_learned_online 13 win -0.067 1786
 FIGHT mpc_learned_online 11 win -0.067 2425
+FIGHT mpc_learned_online 18 win -0.067 1600
+FIGHT mpc_learned_online 16 win -0.067 2116
+FIGHT mpc_learned_online 19 win -0.067 1853
+FIGHT mpc_learned_online 17 win -0.067 1829
+mpc_learned_clean win 0.83 boss hp left -0.01 mean secs 58 events {'hit': 47, 'dodged': 58, 'blocked': 0, 'proj': 2, 'ring': 12}
+mpc_learned_online win 0.92 boss hp left -0.04 mean secs 56 events {'hit': 44, 'dodged': 45, 'blocked': 0, 'proj': 0, 'ring': 12}
