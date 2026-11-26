@@ -42,6 +42,7 @@ class MoveDef:
     lunge_boost: float = 0.0    # extra gap-closing (leaps)
     projectile: bool = False
     phase: int = 1
+    recover: int = 0            # extra frozen recovery after the move (frames), the punish window of enders
 
 
 @dataclass
@@ -77,6 +78,16 @@ MARGIT_STRINGS = [
     StringDef(["staff_sweep", "hammer_slam"], max_d=4.0, weight=2.0, phase=2),
     StringDef(["hammer_leap"], min_d=4.0, weight=2.0, phase=2),
 ]
+
+
+# Footage calibration (log B22, Margit moveset video, frame-annotated at 30 fps, +-4 frames): leap slam
+# takeoff->impact ~1.3 s (sim 0.63 s) and ~1.5 s recovery after big hammer moves (sim ~0.5-0.9 s) were off by
+# more than 2x; staff swings (0.55-0.65 s real vs 0.45 s sim) and the summoned-hammer sweep (~1.2 s both) were not.
+import dataclasses as _dc
+MARGIT_MOVES_CAL = [
+    _dc.replace(m, delay_med=30) if m.name == "hammer_leap" else m for m in MARGIT_MOVES]
+MARGIT_MOVES_CAL = [_dc.replace(m, recover=25) if m.name in ("hammer_slam", "hammer_leap") else
+                    (_dc.replace(m, recover=12) if m.ender else m) for m in MARGIT_MOVES_CAL]
 
 
 def build_program_boss(rng, units, allowed, clips, moves=MARGIT_MOVES, strings=MARGIT_STRINGS, scale=1.9,
@@ -143,6 +154,8 @@ class ProgramRunner(BossRunner):
             return "strike", prog.idx[name]
         if last is not None:
             self.combo_last = -1
+            if last.recover > 0:
+                self.stagger = int(last.recover)              # frozen recovery pose: the punish window
             return "idle", int(rng.integers(len(self.s.idles)))      # every string ends in a recovery
         if self.player_healing and rng.random() < 0.7:
             return "strike", prog.idx["dagger_throw"]

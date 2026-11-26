@@ -253,3 +253,20 @@ Coarser label (any hit in the next 24 frames), perfect pose, 8 training bosses:
 
   True strings vs uniform: Fisher one-sided p = .077 (12 per arm). The learned table, which matched the true program under the threshold planner (B18), gives no gain under MPC. MPC exploits the program more sharply, so errors in the learned table matter more. Suspects: 30% wrong labels corrupt the "previous move" context, the opener/continuation split rarely fires (the 45-frame gap rule), and the watching player's spacing differs from MPC's close-range play. **Running:** learned with perfect labels (isolates label noise) and learned with in-fight updating.
 - **R1 label-free move discovery (offline, 442 perceived strikes, `scripts/r1_discovery_offline.py`).** DP-means on onset-aligned perceived keypoint windows (PCA): NMI .16–.31 with true moves, and it over-splits. Adding *when the swing was heard* (onset → whoosh) as a second modality: **NMI .50**, purity .73, 7 clusters for 4 true moves (two of which are near-identical sweeps). Retrospective, multimodal labelling (vision + sound timing, after the move ends) is how R1 should work. Online prediction needs early reading, but the grammar can be learned from labels assigned after the fact.
+
+## B22 · Timing grounded in public Elden Ring footage: gap table and calibrated Margit
+- **Source.** Aryan doesn't want to record, so I used public no-commentary videos, downloaded on his laptop because this machine can't reach YouTube: 3 Margit fights (60 fps), 2 Godrick fights (60 fps), and a Margit moveset showcase (30 fps, the player mostly passive), all 720p. Sources and URLs are in `data/footage/sources.csv` on the laptop; the videos are not committed.
+- **Automatic HUD/motion timelines (`scripts/footage_timeline.py`)** were too noisy to time moves. The HP bar is semi-transparent and compressed, and whole-screen motion mixes camera, player and effects (peaks every 26–110 frames depending on the video). So timing comes from **frame-by-frame annotation** of filmstrips (`scripts/filmstrip.py`, every 4th frame at 30 fps, so ±4 frames ≈ ±0.13 s).
+- **Annotated (moveset video):** staff overhead slam, raise → impact ≈ 16–20 frames (0.55–0.65 s); staff combo, hit-to-hit ≈ 16–20 frames (0.55–0.65 s); leap slam, takeoff → impact ≈ 39 frames (1.3 s), then ≥45 frames (1.5 s) on the ground before acting; summoned golden-hammer sweep, glow → swing ≈ 36 frames (1.2 s), recovery ≈ 44 frames (1.5 s).
+
+| move | real (s) | sim (s) | ratio | flag (>2× off) |
+|---|---|---|---|---|
+| staff swing windup | 0.55–0.65 | 0.45 | 0.7–0.8 | |
+| staff combo hit-to-hit | 0.55–0.65 | ~0.88 | 1.4–1.6 | |
+| overhead slam (no delay) | 0.55–0.65 | 0.58 | ~1.0 | |
+| summoned-hammer sweep windup | ~1.2 | 1.16 | ~1.0 | |
+| leap slam takeoff → impact | ~1.3 | 0.63 | **0.48** | **yes** |
+| recovery after hammer moves | ~1.5 | ~0.5–0.9 | **0.3–0.6** | **yes** |
+
+- **Calibration (`MARGIT_MOVES_CAL`, `MARGIT_CAL=1`):** hammer leap delay 8 → 30 frames (total ≈ 1.3 s); new per-move frozen recovery (the punish window): 25 frames after the hammer moves, 12 after the other enders. Unflagged moves are unchanged. Everything before this entry used the uncalibrated table.
+- **Limits.** One annotator (me), one moveset video, a handful of instances per move, ±0.13 s precision. Staff thrust, dagger throw and spin were not found cleanly in the strips. Godrick is not annotated yet.

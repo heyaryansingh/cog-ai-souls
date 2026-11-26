@@ -13,7 +13,8 @@ SPEC = None
 def spec():
     global SPEC
     if SPEC is None:
-        SPEC = build_program_boss(np.random.default_rng(42), U, TEST, clips())
+        from arena3d.program import MARGIT_MOVES, MARGIT_MOVES_CAL
+        SPEC = build_program_boss(np.random.default_rng(42), U, TEST, clips(), moves=MARGIT_MOVES_CAL if os.environ.get("MARGIT_CAL") == "1" else MARGIT_MOVES)
     return SPEC
 
 

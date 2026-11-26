@@ -1,0 +1,1 @@
+FIGHT mpc_learned_clean 12 win -0.067 1503
