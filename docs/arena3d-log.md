@@ -757,3 +757,9 @@ Hits on Margit came at 1–3 frames into a new move: the engine blends the boss'
 | **mirror simulation (B66–B68)** | 43.5–49.6% | **56.6%** | **60.8%** | **~55%** |
 
 - **This resolves the B47–B57 dilemma.** The statistical world models needed family-specific biases (the attention window helps procedural bosses and wrecks Godrick), and no selector could choose them reliably. Mirror simulation has no such biases: it remembers how the boss moved and re-enacts it through its own body and contact physics, and that one mechanism is at or near the best model on every family: +5 to +31 points over the most robust statistical learner, with no per-family settings.
+
+## B69 · Leak check: the mirror results stand
+Integrity audit of `MirrorPlanner._imagine`: when memory had nothing to re-enact (e.g. a move never seen while scouting), the imagined arena kept the clone of the *real* boss runner, i.e. a true simulator. Fixed: imagination now substitutes a boss that holds its current pose (`StillBoss`), and counts how often. Rerun of all three families, leak-free:
+- procedural 18 × 6: 56.4%, 25 wins (was 56.6%; vs v6 p = .013, vs stack p = .79); fallback used in 0.3% of imagined futures.
+- Godrick 60.8%, 2 wins; Margit 43.5%, 2 wins: identical to B66 (fallback never used, so the runs are the same seed-for-seed).
+The B65–B68 conclusions hold.
