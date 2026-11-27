@@ -8,3 +8,5 @@ checkpoints/
 *.egg-info/
 data/mocap/
 data/*.npz
+data/*.pkl
+results/*.done
