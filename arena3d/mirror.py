@@ -90,6 +90,7 @@ class MirrorMemory:
             self.cur["proj"].append(len(self.cur["q"]))
         if self.cur is not None: self.cur["_np"] = len(env.projectiles)
         if b.kind == "strike" and s != self.serial:
+            if self.cur is not None: self.cur["cont"] = True     # cut by the next move of the string
             self._close()
             self.serial, self.onset, self.label = s, env.t, None
             to_p = env.p_xy - b.root
@@ -146,18 +147,29 @@ class ReplayBoss:
         """the learned strings: does a move follow this one, and which?"""
         g, lab = self.g, self.move_id
         if g is None or self.rng is None or os.environ.get("MIRROR_CHAIN", "1") != "1": return False
-        n_lab = sum(c[lab] for c in g.counts.values()) + 1.0
+        if os.environ.get("MIRROR_CHAIN_EP", "1") == "1":
+            # the remembered episode itself says whether a move followed (it was cut by the next one) or the boss
+            # went into recovery (the episode already contains it)
+            if not self.ep.get("cont", False): return False
+            n_cont, n_lab = 1.0, 1.0
         conts = {k: c for k, c in g.counts.items() if k[0] == lab}
-        n_cont = sum(c.sum() for c in conts.values())
-        if self.rng.random() > n_cont / n_lab: return False
+        if os.environ.get("MIRROR_CHAIN_EP", "1") != "1":
+            n_lab = sum(c[lab] for c in g.counts.values()) + 1.0
+            n_cont = sum(c.sum() for c in conts.values())
+            if self.rng.random() > n_cont / n_lab: return False
+        if not conts: return False
         d = float(np.linalg.norm(player_xy - self.root))
         c = conts.get((lab, d > 4.0, bool(self.phase)))
         if c is None or c.sum() == 0: c = sum(conts.values())
         p = c + 0.1; nxt = int(self.rng.choice(len(p), p=p / p.sum()))
         ep = self.mem.sample(nxt, d, self.rng)
         if ep is None: return False
-        to_p = player_xy - self.root
-        self._load(ep, 0, self.root.copy(), float(np.arctan2(to_p[1], to_p[0])), nxt)
+        if os.environ.get("MIRROR_CHAIN_PLACE", "1") == "1" and getattr(self, "last_q", None) is not None:
+            o, fw = place(ep["q"][0], self.last_q)          # continue from the pose the boss is in now
+            self._load(ep, 1, o, fw, nxt)
+        else:
+            to_p = player_xy - self.root
+            self._load(ep, 0, self.root.copy(), float(np.arctan2(to_p[1], to_p[0])), nxt)
         return True
 
     def step(self, player_xy, phase=False):
@@ -175,7 +187,7 @@ class ReplayBoss:
             Q = self.ep["q"]
         i = min(max(self.f, 0), len(Q) - 1)
         q = MirrorMemory.from_frame(Q[i], self.origin, self.fwd)
-        self.f += 1; self.root = q[:2].copy()
+        self.f += 1; self.root = q[:2].copy(); self.last_q = q
         return q
 
 
