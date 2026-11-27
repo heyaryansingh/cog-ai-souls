@@ -733,3 +733,14 @@ Same MPC planner (9 macro-actions, 3 imagined futures, H = 24, move identity rea
 
 - **On Godrick this is the first learner without a boss simulator to win, and it keeps improving with fights** (60% damage in fights 9–12, where v6 plateaued at ~30% for 24 fights). It learns the boss by remembering whole movements and re-enacting them through its own body-and-contact model.
 - On Margit it is still well behind v6: Margit's staff strings are fast and chain tightly, so recognition errors and chaining errors cost more. Next: more imagined samples, recognise using the blade path as well as the joints, and mix the replay's predictions with the learned danger maps where memory is thin.
+
+## B66 · Replays that blend into new movements: Margit wins too
+Hits on Margit came at 1–3 frames into a new move: the engine blends the boss's body from its last pose into the next movement over 8 frames, and the fast blade sweep in that transition is real danger. Chained and opener replays now (a) start a new move facing the (imagined) player, as at every remembered onset, and (b) blend from the current imagined pose into it the same way bodies do. Fidelity: tip error 0.9 → 0.77 m, standing-hit AUC 0.92 → 0.93. Episodes now also record whether a move followed (cut by the next one) so chaining follows the memory.
+
+| learner (3 × 12) | Godrick | Margit |
+|---|---|---|
+| learned danger maps (v6) | 30.1%, 0 wins | 52.3%, 0 wins |
+| mirror simulation (B65) | 47.2%, 3 wins | 34.8%, 0 wins |
+| **mirror simulation + blending (B66)** | **60.8%, 2 wins** (vs v6 p < .0001) | 43.5%, **2 wins** (vs v6 p = .07) |
+
+- Godrick doubles relative to the world-model learner. On Margit it now wins fights (2 of 36; v6 has none) though mean damage is still a bit below v6. B67: procedural bosses; B68: more imagined futures per decision on Margit.

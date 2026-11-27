@@ -55,8 +55,30 @@ def train_library(K, frames):
     pickle.dump(lib, open(path, "wb")); return lib
 
 
+class _MemAdapter:
+    def __init__(self, mem): self.mem = mem
+    def reset(self, env): self.mem.reset(env)
+    def observe(self, env, info): self.mem.observe(env)
+
+
+def one_mirror(cond, b):
+    """B67: the mirror-simulation learner on a procedural boss (same scouting and fight protocol)."""
+    from arena3d.mirror import MirrorMemory, MirrorPlanner
+    sp = pboss(b); n = len(sp.program.moves); W = int(os.environ.get("WATCH", 1500))
+    mem = MirrorMemory(n, seed=b); g = SC.LearnedGrammarPlanner(n, seed=b)
+    if W > 0: scout(sp, W, _MemAdapter(mem), g, 500 + b)
+    pl = MirrorPlanner(mem, g, seed=b, n=int(os.environ.get("MIRROR_N", 3))); out = []
+    for k in range(int(os.environ.get("NF", 2))):
+        env = Arena3D(sp, U, clips(), seed=100 * b + k, player_strike=pstrike()); env.reset(); pl.reset(env); done = False
+        while not done:
+            _, _, done, info = env.step(pl.act(env)); mem.observe(env)
+        r = (cond, b, k, info["outcome"], round(1 - env.boss_hp / sp.hp, 3), env.t); print("FIGHT", *r, flush=True); out.append(r)
+    return out
+
+
 def one(args):
     cond, b, K = args
+    if os.environ.get("MIRROR") == "1": return one_mirror(cond, b)
     sp = pboss(b); n = len(sp.program.moves); W = int(os.environ.get("WATCH", 1500))
     acc = float(os.environ.get("WM_ACC", 0.7))
     maps = DangerMaps(n, seed=b, acc=acc); g = (SC.HierGrammar if os.environ.get("WM_HIERG") == "1" else SC.LearnedGrammarPlanner)(n, seed=b, acc=acc)
