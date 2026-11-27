@@ -12,7 +12,8 @@ CK = os.environ.get("MIRROR_CK", f"checkpoints/mirror_{os.environ.get('BOSS', 'm
 
 def watch(frames):
     sp = spec(); n = len(sp.program.moves)
-    mem = MirrorMemory(n, seed=3); g = SC.LearnedGrammarPlanner(n, seed=3)
+    nz = float(os.environ.get("MIRROR_NOISE", 1.0))
+    mem = MirrorMemory(n, seed=3, noise_j=0.03 * nz, noise_p=0.03 * nz); g = SC.LearnedGrammarPlanner(n, seed=3)
     for ep in range(2):
         env = Arena3D(sp, U, clips(), seed=600 + ep, player_strike=pstrike()); env.reset(); mem.reset(env); g.reset(env)
         if ep == 1: env.boss_hp = 0.45 * sp.hp; env.phase = True
