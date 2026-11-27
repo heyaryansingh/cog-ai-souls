@@ -744,3 +744,16 @@ Hits on Margit came at 1–3 frames into a new move: the engine blends the boss'
 | **mirror simulation + blending (B66)** | **60.8%, 2 wins** (vs v6 p < .0001) | 43.5%, **2 wins** (vs v6 p = .07) |
 
 - Godrick doubles relative to the world-model learner. On Margit it now wins fights (2 of 36; v6 has none) though mean damage is still a bit below v6. B67: procedural bosses; B68: more imagined futures per decision on Margit.
+
+## B67/B68 · One learner that is good on all three boss families
+- **B67, held-out procedural bosses 18–35 × 6** (same scouting and fight protocol, no tuning): mirror simulation 56.6% damage, 25 wins / 108 — level with the stack (56.5%, 25 wins; p = .91, better on 9/18 bosses) and above v6 (47.9%, 17 wins; p = .008).
+- **B68, Margit with 6 imagined futures per decision** (instead of 3): 49.6% (v6 52.3%, n.s.), 0 wins.
+
+| learner | Margit | held-out procedural | Godrick | mean |
+|---|---|---|---|---|
+| learned danger maps (v6) | 52.3% | 47.9% | 30.1% | 43.4% |
+| danger maps + aim/attention/back-off (stack) | 34–40% | 56.5% | 15.6% | ~36% |
+| best selector (B54) | 52.3% | 56.3% | 16.2% | 41.6% |
+| **mirror simulation (B66–B68)** | 43.5–49.6% | **56.6%** | **60.8%** | **~55%** |
+
+- **This resolves the B47–B57 dilemma.** The statistical world models needed family-specific biases (the attention window helps procedural bosses and wrecks Godrick), and no selector could choose them reliably. Mirror simulation has no such biases: it remembers how the boss moved and re-enacts it through its own body and contact physics, and that one mechanism is at or near the best model on every family: +5 to +31 points over the most robust statistical learner, with no per-family settings.

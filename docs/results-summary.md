@@ -59,7 +59,7 @@ A move-frequency opponent model (FightingICE-style) reaches only 16.9%, against 
 
 # Arena3D: 3D motion-captured bosses (as of 2026-11-26)
 
-Source: `docs/arena3d-log.md` (entries B11–B60). Bosses are MuJoCo bodies driven by CMU motion capture, with real 3D contact hitboxes. The agent perceives noisy, delayed keypoints and sounds. Margit-like boss timings are calibrated against public Elden Ring footage (B22). Procedural bosses are random movesets, strings and phase switches built from held-out mocap subjects.
+Source: `docs/arena3d-log.md` (entries B11–B68). Bosses are MuJoCo bodies driven by CMU motion capture, with real 3D contact hitboxes. The agent perceives noisy, delayed keypoints and sounds. Margit-like boss timings are calibrated against public Elden Ring footage (B22). Procedural bosses are random movesets, strings and phase switches built from held-out mocap subjects.
 
 ## Margit-like boss (24 paired fights each, 450 HP)
 
@@ -96,10 +96,12 @@ Source: `docs/arena3d-log.md` (entries B11–B60). Bosses are MuJoCo bodies driv
 | selector: try models in 5 s segments, keep the better trader (B54) | 52.3% | 56.3% | 16.2% |
 | same, hits credited to the model in control at decision time (B56/B57) | 43.2% | 51.0% | 26.6% |
 | v6 + seen shockwave fronts in imagination (B60) | 52.3% | – | 34.6% (n.s.) |
+| **mirror simulation: re-enact remembered boss movements through own body/contact physics (B65–B68)** | 43.5–49.6% | **56.6%** | **60.8%** (2–3 wins) |
 
 - **Prediction ≠ control.** Plain v6 predicts felt contacts better on every family, even in the near, decision-relevant frames, yet the stack fights better on procedural bosses. Likelihood-based selection therefore misleads (B47, B51).
 - **The stack's gain is family-specific** and comes almost entirely from the 90-frame after-swing attention window, which is also its main cost on Godrick (B58, B59). Margit is not perceptually unusual (B53), so the agent gets no warning.
 - **Outcome-based selection** works when the outcome signal is dense (hits dealt per hit taken over 5 s segments) and exploited greedily: B54 matches the better model on Margit and procedural bosses. No setting wins on all three families within 6–12 fights; plain v6 + drive is the most robust single choice (mean 43%).
+- **Why the statistical models stall (B62):** with Godrick's true per-move simulator, the same planner wins 6/6 in 26 s; with learned danger maps it wins 0/192. The learned physics is the bottleneck. **Mirror simulation** (B65–B68) replaces danger statistics with episodic memory of the boss's whole-body movement, recognised from recent motion without labels, anchored to the boss's current pose, chained through strings and blended into new movements, then re-enacted on the agent's own copy of the arena. It is the first single learner at or near the best on all three families (mean ~55% vs 43% for v6), and the first to win on Godrick without a simulator.
 - Prior over models learned from earlier bosses of the same family transfers to new bosses of that family (57.9%, B52) but misleads on a different family.
 
 ## Perception and learning findings
