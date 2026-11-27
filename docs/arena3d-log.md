@@ -845,3 +845,24 @@ Bosses 18–35 × 6 fights, mirror simulation + forward rolls + two-step plans, 
 Paired: fights p = 1e-7, bosses p = .0004. Win rate is already 12/18 in fight 1 (97% damage), so on these bosses the gain comes from what the agent learns *within* a fight (memory fills after the first few moves), not across attempts.
 - **Three-family summary with the full method (mirror simulation + forward rolls + two-step plans): Margit 69.6%, Godrick 89.4% (53% wins), procedural 92.7% (68% wins); mean 83.9%**, vs 43.4% for the best statistics-based learner (v6).
 - B76: Margit is now the weakest family. Wider search (top 4 first actions, 5 futures) on Margit; replication of Godrick with new seeds.
+
+## Review (Nov 27) · Leak audit and new reporting rules
+An outside review of B65–B75 found that the mirror learner was reading simulator state that a player never sees:
+- imagination started from the boss's **true** pose and root (plus 3 cm / 0.03 rad of white noise), with no sensor latency, while the older statistical learners used a 6-frame-late sensor;
+- move onsets came from the simulator's move counter (`boss_serial`) on the exact frame, and "is the boss attacking" from `boss.kind`;
+- move identities came from the true `move_id` (70% accurate after 12 frames), and the move count and phase gating of the boss program were known;
+- actions took effect on the frame they were chosen (no input latency), and imagination knew that.
+Phase (visible as the HP bar crossing 50%) is not a leak.
+
+**Reporting rules from now on** (`scripts/stats.py`): wins are the headline, damage is capped at 100% (the killing blow used to overshoot, up to 107%), central tendency is the IQM with 95% stratified-bootstrap CIs, comparisons in one experiment are Holm-corrected. B74/B75 under these rules:
+
+| | wins [95% CI] | damage IQM [CI] | capped mean |
+|---|---|---|---|
+| Godrick, two-step plans | 53% [36, 69] | 95% [88, 99] | 87.2% |
+| procedural 18–35, two-step plans | 68% [63, 72] | 99% [97, 100] | 88.5% |
+| Margit, two-step plans | 11% [3, 22] | 72% [61, 81] | 68.9% |
+
+B74 Holm-corrected: two-step plans on Godrick p = .027 (survives); everything else n.s. Bosses 18–35 and all tuning seeds are now a **development set**; the final configuration will be frozen and tested once on a fresh lockbox of procedural bosses.
+
+## B77 (running) · Honest mode
+`arena3d/percept.py` (`MIRROR_FAIR=1`) puts a perception layer between the boss and everything the mirror learner reads: delayed (6 frames) noisy pose with correlated drift (AR(1), 0.08 rad) + white noise (0.05 rad), 8 cm root noise, bursty dropout (~30% of frames repeat the last good one), blade tip with 15 cm noise; move onsets detected from trunk/arm pose discontinuities (measured recall .76 / .40, precision .56 / .58 on Godrick / Margit, 3.4 frames detection delay on top of the 6-frame latency); move identities discovered by recognition against memory, a new label when nothing is close (NMI with the true moves .40 / .68); the program's move list hidden. Imagination starts from the perceived pose, advanced by the latency. `ARENA_ACT_LAT=4,8` adds 4–8 frames (130–270 ms) of drifting input latency to the real arena only; imagination assumes none. B77 reruns the full method with both, then each alone, on Godrick, Margit and the procedural bosses.
