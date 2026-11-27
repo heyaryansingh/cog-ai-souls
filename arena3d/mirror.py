@@ -164,12 +164,9 @@ class ReplayBoss:
         p = c + 0.1; nxt = int(self.rng.choice(len(p), p=p / p.sum()))
         ep = self.mem.sample(nxt, d, self.rng)
         if ep is None: return False
-        if os.environ.get("MIRROR_CHAIN_PLACE", "1") == "1" and getattr(self, "last_q", None) is not None:
-            o, fw = place(ep["q"][0], self.last_q)          # continue from the pose the boss is in now
-            self._load(ep, 1, o, fw, nxt)
-        else:
-            to_p = player_xy - self.root
-            self._load(ep, 0, self.root.copy(), float(np.arctan2(to_p[1], to_p[0])), nxt)
+        to_p = player_xy - self.root           # a new move starts facing the player (as at every remembered onset)
+        self._load(ep, 0, self.root.copy(), float(np.arctan2(to_p[1], to_p[0])), nxt)
+        self.blend = 8 if os.environ.get("MIRROR_BLEND", "1") == "1" else 0
         return True
 
     def step(self, player_xy, phase=False):
@@ -187,6 +184,13 @@ class ReplayBoss:
             Q = self.ep["q"]
         i = min(max(self.f, 0), len(Q) - 1)
         q = MirrorMemory.from_frame(Q[i], self.origin, self.fwd)
+        lq = getattr(self, "last_q", None)
+        if lq is not None and getattr(self, "blend", 0) > 0:     # bodies move continuously into a new movement
+            w = self.blend / 9.0
+            q[7:] = w * lq[7:] + (1 - w) * q[7:]
+            q0 = lq[3:7] if np.dot(lq[3:7], q[3:7]) >= 0 else -lq[3:7]
+            qq = w * q0 + (1 - w) * q[3:7]; q[3:7] = qq / np.linalg.norm(qq)
+            q[2] = w * lq[2] + (1 - w) * q[2]; self.blend -= 1
         self.f += 1; self.root = q[:2].copy(); self.last_q = q
         return q
 
@@ -277,6 +281,7 @@ class MirrorPlanner:
             if ep is not None:
                 start = -int(rng.integers(0, 16))
                 rb = ReplayBoss(b, ep, 0, b.root.copy(), float(np.arctan2(to_p[1], to_p[0])), mem, lab, self.g, rng, env.phase)
+                rb.last_q = env.d.qpos[:63].copy(); rb.blend = 8 if os.environ.get("MIRROR_BLEND", "1") == "1" else 0
                 if start < 0:     # hold the current pose for the delay, then re-enact
                     rb.f = start; q_now = env.d.qpos[:63].copy(); step0 = rb.step
                     def step(px, ph=False, rb=rb, q_now=q_now, step0=step0):
