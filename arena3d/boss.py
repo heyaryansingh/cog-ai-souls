@@ -17,6 +17,10 @@ import numpy as np
 
 from .mocap import _qmul
 
+# B78 reactive bosses (default off): read rolls and delay the swing past the i-frames, punish attack recovery
+# and heals, and add wind-up jitter to every strike
+REACTIVE = os.environ.get("BOSS_REACTIVE") == "1"
+
 WEAPON_OF = ["sword", "greatsword", "club"]
 
 
@@ -165,10 +169,12 @@ class BossRunner:
             dp = c.pos[u.end - 1, :2] - c.pos[u.start, :2]
             self.yaw_off = want - np.arctan2(dp[1], dp[0]) + rng_ang(self.rng, 0.25)
         self.hold = 0
-        self.hold_at = -1
+        self.hold_at = -1; self._read = False
         if kind == "strike" and s.hold_med[j] > 0:
             self.hold = int(np.clip(round(self.rng.lognormal(np.log(s.hold_med[j]), s.hold_sig)), 1, 90))
             self.hold_at = max(0, self.peak - 5)
+        elif REACTIVE and kind == "strike" and self.rng.random() < 0.5:
+            self.hold = int(self.rng.integers(4, 16)); self.hold_at = max(0, self.peak - 5)    # wind-up jitter
         # lunge so the peak lands at the player: extra translation spread over pre-peak frames
         dist = np.linalg.norm(to_p)
         if kind == "strike":
@@ -196,6 +202,18 @@ class BossRunner:
             q = self._pose(self.f, player_xy, track=True)
             return self._finish(q)
         pre_peak = self.kind == "strike" and self.f < self.peak
+        if REACTIVE and pre_peak and not getattr(self, "_read", False):
+            act, act_t = getattr(self, "pstate", (0, 0))
+            # roll reading: the player commits to a roll shortly before the swing lands -> hold the swing so it
+            # lands as the i-frames end (frames 2-11 of a roll), tracking the player meanwhile
+            if act == 1 and act_t <= 2 and (self.peak - self.f) / max(self.speed, 1e-3) < 14:
+                self._read = True
+                if self.rng.random() < 0.5:
+                    self.hold = int(12 - act_t - (self.peak - self.f) / max(self.speed, 1e-3) + self.rng.integers(0, 4))
+                    self.hold_at = int(self.f)
+                    if self.hold > 0:
+                        self.n_reads = getattr(self, "n_reads", 0) + 1
+                        return self._finish(self._pose(self.f, player_xy, track=True))
         self.f = min(self.f + self.speed, u.length - 1)
         if pre_peak and self.peak > 0:
             step = self.lunge * self.speed / max(self.peak, 1)

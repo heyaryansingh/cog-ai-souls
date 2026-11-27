@@ -199,6 +199,7 @@ class Arena3D:
         # boss
         unit_before = self.boss.unit
         self.boss.player_healing = self.act == HEAL
+        self.boss.pstate = (self.act, self.act_t)
         qb = self.boss.step(self.p_xy, self.phase)
         self.audio[:] = 0
         if self.boss.unit is not unit_before and self.boss.kind == "strike":

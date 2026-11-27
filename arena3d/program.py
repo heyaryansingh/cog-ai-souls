@@ -16,7 +16,7 @@ from dataclasses import dataclass, field
 
 import numpy as np
 
-from .boss import BossRunner, BossSpec, danger_frame
+from .boss import REACTIVE, BossRunner, BossSpec, danger_frame
 
 
 def unit_shape(u, scale=1.7):
@@ -162,7 +162,10 @@ class ProgramRunner(BossRunner):
             return "strike", punish[0]
         ph = 2 if phase else 1
         ok = [s for s in prog.strings if s.min_d <= dist <= s.max_d and s.phase <= ph]
-        if not ok or rng.random() > self.s.aggression:
+        act, act_t = getattr(self, "pstate", (0, 0))
+        # B78: a player stuck in attack recovery or healing gets attacked, never walked around
+        exposed = REACTIVE and ((act == 2 and act_t >= 6) or self.player_healing)
+        if not ok or (rng.random() > self.s.aggression and not exposed):
             return "walk", int(rng.integers(len(self.s.walks)))
         w = np.array([s.weight * (1.5 if s.phase == 2 else 1.0) for s in ok])
         st = ok[int(rng.choice(len(ok), p=w / w.sum()))]
