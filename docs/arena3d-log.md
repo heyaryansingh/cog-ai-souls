@@ -832,3 +832,16 @@ Mirror simulation + forward rolls (B73) as the base, 1.5-min scouting, 3 × 12 p
 - Being cautious about bad futures adds nothing; with 3 futures the worst one is mostly noise.
 - Guard helps a little on Godrick (whose sweeps are slow and frontal) and not on Margit. Kept as an option; realistic guard is on only when the flag is set.
 - B75: two-step plans on the procedural bosses.
+
+## B75 · Two-step plans on the held-out procedural bosses: 73 of 108 fights won
+Bosses 18–35 × 6 fights, mirror simulation + forward rolls + two-step plans, no tuning on these bosses.
+
+| | damage | wins | bosses beaten at least once |
+|---|---|---|---|
+| v6 danger maps | 47.9% | 17 / 108 | – |
+| mirror + forward rolls (B73) | 77.7% | 44 / 108 | 12 / 18 |
+| **+ two-step plans** | **92.7%** | **73 / 108** | **14 / 18** |
+
+Paired: fights p = 1e-7, bosses p = .0004. Win rate is already 12/18 in fight 1 (97% damage), so on these bosses the gain comes from what the agent learns *within* a fight (memory fills after the first few moves), not across attempts.
+- **Three-family summary with the full method (mirror simulation + forward rolls + two-step plans): Margit 69.6%, Godrick 89.4% (53% wins), procedural 92.7% (68% wins); mean 83.9%**, vs 43.4% for the best statistics-based learner (v6).
+- B76: Margit is now the weakest family. Wider search (top 4 first actions, 5 futures) on Margit; replication of Godrick with new seeds.

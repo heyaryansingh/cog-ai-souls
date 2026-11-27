@@ -98,7 +98,7 @@ Source: `docs/arena3d-log.md` (entries B11–B68). Bosses are MuJoCo bodies driv
 | v6 + seen shockwave fronts in imagination (B60) | 52.3% | – | 34.6% (n.s.) |
 | mirror simulation: re-enact remembered boss movements through own body/contact physics (B65–B68) | 43.5–49.6% | 56.6% | 60.8% (2–3 wins) |
 | **mirror simulation + forward rolls, 1.5-min scouting (B72/B73)** | **62.5%** | **77.7% (44/108 wins)** | **77.1% (7 wins)** |
-| **+ two-step plans (act, then follow-up when free; B74)** | **69.6% (4 wins)** | (B75) | **89.4% (19/36 wins)** |
+| **+ two-step plans (act, then follow-up when free; B74)** | **69.6% (4 wins)** | **92.7% (73/108 wins)** | **89.4% (19/36 wins)** |
 | v6 + forward rolls (control, B73) | 36.5% | – | – |
 
 - **Prediction ≠ control.** Plain v6 predicts felt contacts better on every family, even in the near, decision-relevant frames, yet the stack fights better on procedural bosses. Likelihood-based selection therefore misleads (B47, B51).
