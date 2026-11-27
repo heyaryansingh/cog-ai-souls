@@ -35,6 +35,7 @@ class DangerMaps:
         import os
         E = dict(os.environ); E.update(cfg or {})     # per-instance config (B47 model selection) overrides env
         self.persist = E.get("WM_PERSIST", "0") == "1"
+        self.ringobj = E.get("WM_RINGOBJ", "0") == "1"
         self.hier_k = float(E.get("WM_HIER", 0))
         self.ll, self.ll_n = 0.0, 0                   # predictive log-likelihood of felt contacts (B47)
         self.cur = E.get('WM_FRAME', 'onset') == 'current'
@@ -70,9 +71,50 @@ class DangerMaps:
         d = p - origin; c, s = np.cos(-fwd), np.sin(-fwd)
         return (np.array([c * d[0] - s * d[1], s * d[0] + c * d[1]])) / getattr(self, 'unit', 1.0)
 
+    def _track_rings(self, env):
+        """B63 object memory: a shockwave is an object. When one appears, remember (move, time since onset, centre
+        in the move's onset frame); follow it to learn its speed and how far it gets. Perceived with noise."""
+        live = getattr(self, "_rlive", {}); mem = getattr(self, "ring_mem", None)
+        if mem is None: mem = self.ring_mem = {}
+        cur = {}
+        for rg in getattr(env, "rings", []):
+            key = (round(float(rg["c"][0]), 2), round(float(rg["c"][1]), 2))
+            r = rg["r"] + self.rng.normal(0, 0.05)
+            if key in live:
+                e = live[key]; e["r"].append(r)
+            elif self.origin is not None:
+                c = rg["c"] + self.rng.normal(0, 0.1, 2)
+                e = {"tau": env.t - self.onset, "c": self.rel(env, c), "r": [r], "serial": self.serial}
+            else:
+                continue
+            cur[key] = e
+        for key, e in live.items():
+            if key not in cur and len(e["r"]) >= 2:          # ring finished: store it under the move that made it
+                lab = self.label if e["serial"] == self.serial else e.get("label")
+                if lab is None: lab = getattr(self, "prev_label", None)
+                if lab is not None:
+                    v = float(np.median(np.diff(e["r"])))
+                    mem.setdefault(lab, []).append((e["tau"], e["c"], max(v, 0.05) / getattr(self, 'unit', 1.0), max(e["r"]) / getattr(self, 'unit', 1.0)))
+                    mem[lab] = mem[lab][-12:]
+        for e in cur.values():
+            if e["serial"] == self.serial and self.label is not None: e["label"] = self.label
+        self._rlive = cur
+
+    def ring_hazard(self, m, taus, rel, inv):
+        """imagined: for remembered rings of move m, does a front cross my imagined path while I'm vulnerable?"""
+        M = getattr(self, "ring_mem", {}).get(m)
+        if not M: return np.zeros(len(taus))
+        out = np.zeros(len(taus))
+        for (ts, c, v, R) in M:
+            rt = 0.3 / getattr(self, 'unit', 1.0) + v * (np.asarray(taus) - ts)
+            d = np.hypot(rel[:, 0] - c[0], rel[:, 1] - c[1])
+            out += ((rt >= 0) & (rt <= R + 0.1) & (np.abs(d - rt) < 0.5 / getattr(self, 'unit', 1.0)) & (~inv))
+        return np.minimum(1.0, out / len(M))
+
     def observe(self, env, info):
         b = env.boss
         s = getattr(env, "boss_serial", -1)
+        if getattr(self, "ringobj", False): self._track_rings(env)
         if b.kind == "strike" and s != self.serial:
             self.serial, self.onset, self.label, self.pend = s, env.t, None, []
             if getattr(self, 'geom', False) and getattr(self, 'cur_traj', None) and getattr(self, 'prev_label', None) is not None:
@@ -369,6 +411,8 @@ class LearnedModelPlanner:
             return self.hold
         acts = [NONE, 1 * N_BUTTONS + NONE, 5 * N_BUTTONS + NONE, 3 * N_BUTTONS + NONE, 7 * N_BUTTONS + NONE,
                 LIGHT, 3 * N_BUTTONS + ROLL, 7 * N_BUTTONS + ROLL, 5 * N_BUTTONS + ROLL]
+        if os.environ.get("WM_ROLL_FWD") == "1":       # B64: souls players roll *into* attacks (through the blade/front)
+            acts += [1 * N_BUTTONS + ROLL, 2 * N_BUTTONS + ROLL, 8 * N_BUTTONS + ROLL]
         if env.flasks and env.hp < 60:
             acts.append(HEAL)
         ms, tau0 = self._move_samples(env)
@@ -402,6 +446,8 @@ class LearnedModelPlanner:
                     if getattr(self.maps, 'geom', False):
                         h = np.maximum(h, self.maps.geom_hazard(m, np.maximum(taus, 0), rr))
                     h = h * (~inv) * (taus >= 0)
+                    if getattr(self.maps, "ringobj", False):
+                        h = np.maximum(h, self.maps.ring_hazard(m, taus, rel, inv))
                     rs.append(1 - np.prod(1 - h))
                 risk = float(np.mean(rs))
             if rings is not None and rings[0] and os.environ.get("WM_RING_PLAN") == "1":
