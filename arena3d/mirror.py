@@ -268,6 +268,16 @@ class MirrorPlanner:
         rng = np.random.default_rng(seed); mem = self.mem
         V = self.view or env; b = V.boss; lag = V.L if self.view is not None else 0
         sim = env.clone(seed)
+        gs = os.environ.get("MIRROR_GEOM_SCALE")
+        if gs:     # B79: the agent's belief about the boss's limb/blade sizes is off by this factor (imagination only)
+            if getattr(self, "_m2", None) is None:
+                import copy as _c
+                m2 = _c.deepcopy(env.m); f = float(gs)
+                for i in range(m2.ngeom):
+                    if m2.geom(i).name.startswith("b_"):
+                        m2.geom_size[i] *= f; m2.geom_pos[i] *= f; m2.geom_rbound[i] *= f
+                self._m2 = m2
+            sim.m = self._m2
         sim.act_lat = None; sim.aq = []          # imagination doesn't know about input latency (B77)
         if self.view is not None:
             # imagination starts from the perceived boss pose
