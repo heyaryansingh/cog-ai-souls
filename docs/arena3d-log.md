@@ -871,3 +871,17 @@ B74 Holm-corrected: two-step plans on Godrick p = .027 (survives); everything el
 (Ground-truth boss state, as B74; reported under the new rules.)
 - Godrick, two-step plans, **new seeds** (series 3–5): **wins 58% [42, 75]**, damage IQM 95%, capped mean 89.2%. B74 (series 0–2) was 53% [36, 69]. Replicates.
 - Margit, two-step plans with a wider search (top 4 first actions instead of 2, 5 futures instead of 3, 3.3× the compute): wins 11% [3, 22], capped mean 67.1% vs 68.9% (p = .79). Search breadth is not what limits Margit; its fast thrusts and sweeps need better prediction, not more planning.
+
+## B77 · Honest mode: the leaks were carrying most of the result
+Full method (mirror + forward rolls + two-step plans, 1.5-min scouting), 3 × 12.
+
+| | Godrick wins | Godrick damage (capped mean) | Margit damage |
+|---|---|---|---|
+| ground truth (B74) | 53% | 87.2% | 68.9% (11% wins) |
+| **honest: perception + 4–8 frame input lag** | **0 / 36** | 34.7% | 28.4% (0 wins) |
+| input lag only (true perception) | 0 / 36 | 40.7% | – |
+| perception only (no lag) | (running) | | |
+
+- **Input lag that imagination doesn't model is enough on its own to erase every win.** The planner commits to frame-exact rolls and punishes; with 130–270 ms between pressing and acting, a roll that imagination times to the i-frames starts after the blade has landed. Exact timing was what the forward rolls (B72/B73) and two-step plans (B74) were exploiting.
+- Honest perception also costs: in honest-mode fights imagination falls back to "boss holds still" in 10–25% of futures (vs ~0% with truth), because detected onsets are missed or spurious and memory goes empty between detected moves.
+- Fixes being tested (B77c), neither a leak: (1) **imagination models its own typical lag** (6 frames) and the presses it has already queued, but not the jitter (`MIRROR_LAT_MODEL=6`), as a player learns the feel of their controller; (2) **recognition without onsets** (`MIRROR_SEGFREE=1`): match a rolling window of the last 4 perceived poses against whole remembered episodes, so recognition never depends on detecting when a move began.
