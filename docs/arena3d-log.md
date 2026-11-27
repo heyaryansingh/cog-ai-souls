@@ -866,3 +866,8 @@ B74 Holm-corrected: two-step plans on Godrick p = .027 (survives); everything el
 
 ## B77 (running) · Honest mode
 `arena3d/percept.py` (`MIRROR_FAIR=1`) puts a perception layer between the boss and everything the mirror learner reads: delayed (6 frames) noisy pose with correlated drift (AR(1), 0.08 rad) + white noise (0.05 rad), 8 cm root noise, bursty dropout (~30% of frames repeat the last good one), blade tip with 15 cm noise; move onsets detected from trunk/arm pose discontinuities (measured recall .76 / .40, precision .56 / .58 on Godrick / Margit, 3.4 frames detection delay on top of the 6-frame latency); move identities discovered by recognition against memory, a new label when nothing is close (NMI with the true moves .40 / .68); the program's move list hidden. Imagination starts from the perceived pose, advanced by the latency. `ARENA_ACT_LAT=4,8` adds 4–8 frames (130–270 ms) of drifting input latency to the real arena only; imagination assumes none. B77 reruns the full method with both, then each alone, on Godrick, Margit and the procedural bosses.
+
+## B76 · Godrick result replicates; a wider search doesn't help Margit
+(Ground-truth boss state, as B74; reported under the new rules.)
+- Godrick, two-step plans, **new seeds** (series 3–5): **wins 58% [42, 75]**, damage IQM 95%, capped mean 89.2%. B74 (series 0–2) was 53% [36, 69]. Replicates.
+- Margit, two-step plans with a wider search (top 4 first actions instead of 2, 5 futures instead of 3, 3.3× the compute): wins 11% [3, 22], capped mean 67.1% vs 68.9% (p = .79). Search breadth is not what limits Margit; its fast thrusts and sweeps need better prediction, not more planning.
