@@ -334,5 +334,5 @@ class MirrorPlanner:
         seeds = [int(s) for s in self.rng.integers(1 << 30, size=self.n)]
         vals = [np.mean([self._imagine(env, a, s) for s in seeds]) for a in acts]
         a = acts[int(np.argmax(vals))]
-        if a % N_BUTTONS == NONE and a != NONE: self.hold, self.hold_n = a, 5
+        if a % N_BUTTONS == NONE and a != NONE: self.hold, self.hold_n = a, int(os.environ.get("MIRROR_HOLD", 5))
         return a
