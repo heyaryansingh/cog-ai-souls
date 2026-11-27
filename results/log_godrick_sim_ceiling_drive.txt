@@ -1,0 +1,7 @@
+FIGHT mpc_grammar 0 win -0.06 795
+FIGHT mpc_grammar 3 win -0.06 996
+FIGHT mpc_grammar 1 win -0.04 1061
+FIGHT mpc_grammar 4 win -0.04 481
+FIGHT mpc_grammar 5 win -0.04 649
+FIGHT mpc_grammar 2 win -0.04 1211
+mpc_grammar win 1.0 boss hp left -0.05 mean secs 26 events {'hit': 8, 'dodged': 16, 'blocked': 0, 'proj': 0, 'ring': 7}

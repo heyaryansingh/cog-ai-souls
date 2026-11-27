@@ -1,0 +1,14 @@
+FIGHT mpc_grammar 0 win -0.04 3455
+FIGHT mpc_grammar 3 win -0.04 4247
+FIGHT mpc_grammar 2 death 0.36 5642
+FIGHT mpc_grammar 5 win -0.04 1794
+FIGHT mpc_grammar 1 death 0.44 5975
+FIGHT mpc_grammar 4 win -0.06 3239
+FIGHT mpc_scratch 2 death 0.44 2588
+FIGHT mpc_scratch 0 death 0.28 4158
+FIGHT mpc_scratch 1 death 0.12 5014
+FIGHT mpc_scratch 5 win -0.04 3852
+FIGHT mpc_scratch 4 death 0.44 5921
+FIGHT mpc_scratch 3 timeout 0.2 9000
+mpc_grammar win 0.67 boss hp left 0.1 mean secs 122 events {'hit': 25, 'dodged': 41, 'blocked': 0, 'proj': 1, 'ring': 18}
+mpc_scratch win 0.17 boss hp left 0.24 mean secs 153 events {'hit': 28, 'dodged': 105, 'blocked': 0, 'proj': 3, 'ring': 14}

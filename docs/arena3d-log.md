@@ -697,3 +697,19 @@ Shockwaves are visible expanding fronts, so the agent can perceive each live rin
 - **Audit.** `scripts/hit_filmstrip.py` renders the lock-on view for the 1.2 s before each hit (`results/filmstrips/godrick_hits.png`). What it shows on Godrick: (1) the agent rolls *away* from shockwaves, but a ring expands at ~0.4 m/frame vs a roll's 0.2, so it is caught when the i-frames end; (2) during the jump slam's wind-up the engagement drive walks it in; (3) it trades light attacks into a 3-hit axe string and takes a head hit for 29. Structural finding: the plain world model (v6) records exposures only while the boss is in a strike, and rings land after the strike ends, so **v6 cannot learn ring danger at all**; the action set also has no forward or diagonal-forward roll, the standard souls answer to a ring or a sweep.
 - **B63 object memory** (`WM_RINGOBJ=1`): when a ring appears, remember (move, time since onset, centre in the onset frame), follow it to learn expansion speed and how far it gets (learned radii match the true 2.5/4.5/5.5 m to within 0.5 m), and imagine remembered rings of the hypothesised move during planning. Godrick 3 × 12: 29.4% (1 win) vs v6 30.1%; with live-front imagination too, 26.5%. No gain.
 - So knowing where and when rings will be is not what limits Godrick. B62 (true-simulator ceiling) and B64 (forward rolls) next.
+
+## B62 · Where the Godrick ceiling comes from: the learned physics, not the planner or the strings
+Same MPC planner (9 macro-actions, 3 imagined futures, H = 24, move identity read at 12 frames), Godrick, 6 fights each:
+
+| imagined futures from | wins | boss HP left | fight length |
+|---|---|---|---|
+| true per-move simulator + true strings | 4/6 | 10% | 122 s |
+| true simulator + true strings + engagement drive | **6/6** | 0% | **26 s** |
+| true simulator + strings learned from scratch in the fight | 1/6 | 24% | 153 s |
+| learned danger maps + learned strings (v6, B61) | 0/192 | ~70% | – |
+
+- With an accurate model of *how each move moves and hits*, the same planner beats Godrick every time, fast. With the learned danger maps it never wins. **The ceiling is the learned physics model.** Strings matter too (true → learned costs 5 of 6 wins with a true simulator, B62 row 3), but that gap is smaller than the physics gap.
+- This changes the research target: not better selection among statistical hazard maps, but a learned model of the boss's motion that's good enough to simulate. → B65.
+
+## B65 (running) · Mirror simulation: re-enact what you've seen
+`arena3d/mirror.py`. The agent keeps an episodic memory of every boss move it has watched: the boss's perceived full-body pose over the move (pose estimate with noise: 3 cm root, 0.03 rad per joint), in the move's onset frame (origin = boss at onset, x-axis = boss→player line), plus when shockwaves or projectiles appeared and how far rings got. To imagine a future, it re-enacts a remembered episode of the hypothesised move (identity from 70%-accurate reading or learned strings; episode picked by similar onset distance) on its own copy of the arena, aligned to the current boss position, facing and time since onset, and checks real 3D contact against its own imagined body. No boss program, mocap library or boss simulator. This is motor-simulation / mirror-system theory as a world model: predict another body by running its remembered movements through your own body-and-physics model. Smoke test (Godrick, 1 fight each, short scouting): 24% and 48% damage on first fights (v6 first fights ≈ 25%).
