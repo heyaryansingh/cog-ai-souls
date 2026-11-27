@@ -777,3 +777,12 @@ Mirror simulation, 3 × 12, scouting = watching the boss with infinite HP before
 - More watching doesn't help (slightly worse, perhaps because scouting episodes come from a passive circling player and crowd out episodes from real fights). With only 1.5 minutes of watching, mirror simulation reaches 69% on Godrick and 59% on Margit by fights 9–12, above v6's 52% on Margit with six times the scouting.
 - **With no scouting at all it still learns, from its own fights alone**: Margit 28% → 46%, Godrick 53% → 56% (already far above v6 with full scouting). Early in fight 1 there is nothing to re-enact (fallback "boss holds still" in 8–11% of imagined futures); memory fills within a fight or two. This is the human pattern: die, remember what killed you, do better.
 - B71: longer series without scouting (Margit 24 fights) and v6 without scouting as the matched control.
+
+## B71 · Matched control without scouting; longer series
+| no scouting (3 × 12) | Godrick | Margit |
+|---|---|---|
+| v6 danger maps | 19.2%, 0 wins, flat (19 / 24 / 15%) | 43.7%, 0 wins, flat (45 / 44 / 42%) |
+| mirror simulation | **54.5%** (p < .0001), 1 win | 38.5% (n.s.), 1 win, rising (28 / 42 / 46%) |
+
+- Learning only from its own fights, mirror simulation nearly triples v6 on Godrick. On Margit, v6 starts higher (statistics over contacts are useful from the first hits) but doesn't improve; mirror starts lower and climbs.
+- Margit, no scouting, 24 fights: 42.5%, 2 wins; blocks of 6 fights 35 / 42 / 53 / 40%. It plateaus around 45–50%, so Margit needs better fidelity, not more experience. Next: find what still kills it there.
