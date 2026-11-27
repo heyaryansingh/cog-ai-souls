@@ -763,3 +763,17 @@ Integrity audit of `MirrorPlanner._imagine`: when memory had nothing to re-enact
 - procedural 18 × 6: 56.4%, 25 wins (was 56.6%; vs v6 p = .013, vs stack p = .79); fallback used in 0.3% of imagined futures.
 - Godrick 60.8%, 2 wins; Margit 43.5%, 2 wins: identical to B66 (fallback never used, so the runs are the same seed-for-seed).
 The B65–B68 conclusions hold.
+
+## B70 · Learning by fighting: little or no scouting is enough
+Mirror simulation, 3 × 12, scouting = watching the boss with infinite HP before fight 1 (2 × WATCH frames). Memory and strings keep learning in every fight.
+
+| scouting | Godrick | fights 9–12 | Margit | fights 9–12 |
+|---|---|---|---|---|
+| 2 × 9000 frames (~9 min) | 60.8%, 2 wins | 50% | 43.5%, 2 wins | 42% |
+| 2 × 1500 frames (~1.5 min) | **63.4%, 5 wins** | **69%** | **47.9%**, 1 win | **59%** |
+| none: learn only by fighting | 54.5%, 1 win | 56% | 38.5%, 1 win | 46% (from 28% in fights 1–4) |
+| v6 (danger maps), 2 × 9000 | 30.1%, 0 wins | – | 52.3%, 0 wins | – |
+
+- More watching doesn't help (slightly worse, perhaps because scouting episodes come from a passive circling player and crowd out episodes from real fights). With only 1.5 minutes of watching, mirror simulation reaches 69% on Godrick and 59% on Margit by fights 9–12, above v6's 52% on Margit with six times the scouting.
+- **With no scouting at all it still learns, from its own fights alone**: Margit 28% → 46%, Godrick 53% → 56% (already far above v6 with full scouting). Early in fight 1 there is nothing to re-enact (fallback "boss holds still" in 8–11% of imagined futures); memory fills within a fight or two. This is the human pattern: die, remember what killed you, do better.
+- B71: longer series without scouting (Margit 24 fights) and v6 without scouting as the matched control.
