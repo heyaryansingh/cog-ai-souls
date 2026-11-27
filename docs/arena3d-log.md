@@ -814,3 +814,21 @@ Mirror simulation with the three forward rolls added (1.5-min scouting on Godric
 - Control: the same actions make v6 worse by 16 points. A forward roll pays only if the agent can predict *where the blade will be at each i-frame*; statistics over past contacts can't, a re-enacting imagination can. This is the cleanest evidence so far that mirror simulation is a different kind of model, not a better-tuned one: it unlocks a whole class of actions that are suicidal without it.
 - Mean over the three families: **72.4%** (v6 43.4%, stack 41.2%). Forward rolls are now the default for mirror runs.
 - B74 (queued): two-step plans (act, then a follow-up as soon as free, H = 36), risk-averse aggregation over futures (½ mean + ½ worst), and a realistic guard (25% chip damage, guard break = 40-frame stagger) with guard actions in the planner.
+
+## B74 · Two-step plans: Godrick won in 19 of 36 fights
+Mirror simulation + forward rolls (B73) as the base, 1.5-min scouting, 3 × 12 per boss. Three planner/realism changes, one at a time:
+- **two-step plans**: each first action is scored over 36 frames, and for the two best, five follow-ups (attack, roll back/left/right/forward) issued the moment the player is free again; a first action is worth its best continuation.
+- **risk-averse futures**: score = ½ mean + ½ worst of the 3 imagined futures.
+- **realistic guard** (`ARENA_GUARD_REAL=1`): blocks let 25% of the damage through, a guard break doubles it and staggers for 40 frames. The planner gets four guard actions (stand, back, strafe left/right).
+
+| | Margit | Godrick |
+|---|---|---|
+| base (B72/B73) | 62.5%, 0 wins | 77.1%, 7 wins |
+| **two-step plans** | **69.6%, 4 wins** (62 / 67 / 80% by block; p = .21) | **89.4%, 19 wins** (p = .006) |
+| risk-averse | 62.5%, 3 wins (n.s.) | 79.6%, 7 wins (n.s.) |
+| realistic guard + guard actions | 60.7%, 1 win (n.s.) | 84.4%, 13 wins (p = .12) |
+
+- Two-step plans are the next big step: Godrick is now beaten in **53% of fights**, and on Margit the final block of fights reaches 80%. The one-action-then-idle policy class was hiding the core souls pattern (punish, then roll out of the follow-up). Under it, a light attack whose recovery the boss punishes scores as a loss, even when an escape roll exists.
+- Being cautious about bad futures adds nothing; with 3 futures the worst one is mostly noise.
+- Guard helps a little on Godrick (whose sweeps are slow and frontal) and not on Margit. Kept as an option; realistic guard is on only when the flag is set.
+- B75: two-step plans on the procedural bosses.
