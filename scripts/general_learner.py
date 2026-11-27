@@ -73,6 +73,7 @@ def one_mirror(cond, b):
         while not done:
             _, _, done, info = env.step(pl.act(env)); mem.observe(env)
         r = (cond, b, k, info["outcome"], round(1 - env.boss_hp / sp.hp, 3), env.t); print("FIGHT", *r, flush=True); out.append(r)
+        print("STILL", b, k, getattr(pl, "n_still", 0), getattr(pl, "n_imag", 0), flush=True)
     return out
 
 

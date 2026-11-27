@@ -40,6 +40,7 @@ def series(rep):
             _, _, done, info = env.step(pl.act(env)); mem.observe(env)
         r = ("mirror", rep, seed, info["outcome"], round(1 - env.boss_hp / env.spec.hp, 3), env.t)
         print("FIGHT", *r, flush=True); out.append(r)
+        print("STILL", rep, k, getattr(pl, "n_still", 0), getattr(pl, "n_imag", 0), flush=True)
     return out
 
 

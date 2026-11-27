@@ -241,6 +241,17 @@ def recognise(mem, tau, L=4, window=25, T=None, d_now=None):
     return [(w[i],) + out[i][1:] for i in range(len(out))]
 
 
+class StillBoss:
+    """Imagined boss when memory offers nothing to re-enact: it holds its current pose (never the real boss runner)."""
+
+    def __init__(self, real, q):
+        self.kind, self.unit, self.player_healing, self.move_id = "idle", None, False, -1
+        self.root, self.q, self.cur_move, self.f, self.peak, self.hold, self.yaw_off = real.root.copy(), q.copy(), None, 0, 10 ** 6, 0, 0.0
+
+    def step(self, player_xy, phase=False):
+        return self.q
+
+
 class MirrorPlanner:
     """MPC over the agent's macro-actions; futures imagined by re-enacting remembered boss episodes."""
 
@@ -290,6 +301,10 @@ class MirrorPlanner:
                         return step0(px, ph)
                     rb.step = step
                 sim.boss = rb
+        if sim.boss is b or not isinstance(sim.boss, (ReplayBoss, StillBoss)):
+            # no memory to re-enact: never fall back to the real boss runner (that would be a true simulator)
+            sim.boss = StillBoss(b, env.d.qpos[:63]); self.n_still = getattr(self, "n_still", 0) + 1
+        self.n_imag = getattr(self, "n_imag", 0) + 1
         hp0, b0 = sim.hp, sim.boss_hp
         for k in range(self.H):
             mv = a % N_BUTTONS == NONE
