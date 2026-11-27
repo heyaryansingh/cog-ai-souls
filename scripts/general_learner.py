@@ -61,17 +61,45 @@ class _MemAdapter:
     def observe(self, env, info): self.mem.observe(env)
 
 
+def scout_fair(sp, frames, mem, g, seed):
+    """scouting with the B77 honest perception (same scripted player as scout())"""
+    from arena3d.percept import FairView
+    for ep in range(2):
+        env = Arena3D(sp, U, clips(), seed=seed + ep, player_strike=pstrike()); env.reset(); mem.reset(env); g.reset(env)
+        if ep == 1: env.boss_hp = 0.45 * sp.hp; env.phase = True
+        rng = np.random.default_rng(seed + ep); O = FairView(env, mem, seed=seed + ep)
+        for t in range(frames):
+            g.observe(O)
+            dist = np.linalg.norm(env.boss.root - env.p_xy); want = [1.5, 3.0, 5.0, 8.0][(t // 300) % 4]
+            if env.player_free() and rng.random() < 0.03:
+                a = int(rng.choice([3, 5, 7])) * N_BUTTONS + ROLL
+            else:
+                a = (1 if dist > want + 0.4 else 5 if dist < want - 0.4 else int(rng.choice([3, 7]))) * N_BUTTONS + NONE
+            env.step(a); O.update(); mem.observe(O); env.hp = 1e9
+            if ep == 0 and env.boss_hp < 0.5 * sp.hp: env.boss_hp = sp.hp
+
+
 def one_mirror(cond, b):
     """B67: the mirror-simulation learner on a procedural boss (same scouting and fight protocol)."""
     from arena3d.mirror import MirrorMemory, MirrorPlanner
+    from arena3d.percept import FairView, NMAX
+    fair = os.environ.get("MIRROR_FAIR") == "1"
     sp = pboss(b); n = len(sp.program.moves); W = int(os.environ.get("WATCH", 1500))
-    mem = MirrorMemory(n, seed=b); g = SC.LearnedGrammarPlanner(n, seed=b)
-    if W > 0: scout(sp, W, _MemAdapter(mem), g, 500 + b)
-    pl = MirrorPlanner(mem, g, seed=b, n=int(os.environ.get("MIRROR_N", 3))); out = []
+    if fair:
+        mem = MirrorMemory(NMAX, seed=b, acc=1.0, noise_j=0.0, noise_p=0.0); g = SC.LearnedGrammarPlanner(NMAX, seed=b, acc=1.0)
+        if W > 0: scout_fair(sp, W, mem, g, 500 + b)
+    else:
+        mem = MirrorMemory(n, seed=b); g = SC.LearnedGrammarPlanner(n, seed=b)
+        if W > 0: scout(sp, W, _MemAdapter(mem), g, 500 + b)
+    pl = MirrorPlanner(mem, g, seed=b, n=int(os.environ.get("MIRROR_N", 3))); out = []; view = None
     for k in range(int(os.environ.get("NF", 2))):
         env = Arena3D(sp, U, clips(), seed=100 * b + k, player_strike=pstrike()); env.reset(); pl.reset(env); done = False
+        if fair:
+            view = view or FairView(env, mem, seed=b); view.attach(env); pl.view = view
         while not done:
-            _, _, done, info = env.step(pl.act(env)); mem.observe(env)
+            _, _, done, info = env.step(pl.act(env))
+            if fair: view.update()
+            mem.observe(view if fair else env)
         r = (cond, b, k, info["outcome"], round(1 - env.boss_hp / sp.hp, 3), env.t); print("FIGHT", *r, flush=True); out.append(r)
         print("STILL", b, k, getattr(pl, "n_still", 0), getattr(pl, "n_imag", 0), flush=True)
     return out

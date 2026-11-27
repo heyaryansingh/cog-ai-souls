@@ -70,6 +70,11 @@ class Arena3D:
         self.p_xy, self.p_yaw = np.array([0.0, 0.0]), np.pi / 2
         self.hp, self.stamina, self.flasks = 100.0, 100.0, 4
         self.stagger = 0
+        lat = os.environ.get("ARENA_ACT_LAT")          # e.g. "4,8" frames (130-270 ms); default none
+        self.act_lat = tuple(int(x) for x in lat.split(",")) if lat else None
+        self.lat_rng = np.random.default_rng(int(self.rng.integers(1 << 30)) if lat else 0)
+        self.lat_d = self.act_lat[0] + (self.act_lat[1] - self.act_lat[0]) // 2 if lat else 0
+        self.aq, self.lat_last = [], NONE
         self.boss_hp, self.phase = self.spec.hp, False
         self.t, self.walk_phase = 0, 0.0
         self.act, self.act_t, self.act_dir = NONE, 0, np.zeros(2)
@@ -128,6 +133,24 @@ class Arena3D:
     def in_iframes(self):
         return self.act == ROLL and 2 <= self.act_t <= 11
 
+    def _delayed(self, a):
+        """B77 input latency: a press takes effect d frames later, d drifting within [lo, hi] (jitter); presses keep
+        their order, a press never gets lost (a button beats a plain movement that lands on the same frame)."""
+        lo, hi = self.act_lat
+        if self.lat_rng.random() < 0.15:
+            self.lat_d = int(np.clip(self.lat_d + self.lat_rng.choice([-1, 1]), lo, hi))
+        self.aq.append((self.t + self.lat_d, a))
+        due = [x for x in self.aq if x[0] <= self.t]
+        if not due:
+            return NONE if self.lat_last % N_BUTTONS != NONE else self.lat_last    # nothing lands: keep moving as before
+        self.aq = [x for x in self.aq if x[0] > self.t]
+        btns = [u for _, u in due if u % N_BUTTONS != NONE]
+        u = btns[0] if btns else due[-1][1]
+        if len(btns) > 1:      # a second press waits for the next frame
+            self.aq.insert(0, (self.t + 1, btns[1]))
+        self.lat_last = u
+        return u
+
     def player_free(self):
         if getattr(self, "stagger", 0) > 0:
             return False
@@ -136,6 +159,8 @@ class Arena3D:
 
     # --- step --------------------------------------------------------------------------------------
     def step(self, a):
+        if self.act_lat is not None:
+            a = self._delayed(int(a))
         d_i, btn = divmod(int(a), N_BUTTONS)
         to_b = self.boss.root - self.p_xy
         face = np.arctan2(to_b[1], to_b[0])
@@ -372,6 +397,7 @@ class Arena3D:
         c.boss.origin = getattr(self.boss, "origin", self.boss.root).copy()
         c.boss.lunge_dir = getattr(self.boss, "lunge_dir", np.zeros(2)).copy()
         c.hit_lock = dict(self.hit_lock)
+        c.aq = list(getattr(self, "aq", []))
         # program bosses keep mutable plans (string queue); imagination must not consume the real boss's queue
         if hasattr(self.boss, "queue"):
             c.boss.queue = list(self.boss.queue)

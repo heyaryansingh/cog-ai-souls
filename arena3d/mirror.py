@@ -236,7 +236,7 @@ def recognise(mem, tau, L=4, window=25, T=None, d_now=None):
                 pd = np.array(e["pd"]); cost = cost + float(os.environ.get("MIRROR_DW", 0.3)) * np.abs(pd[np.minimum(idx, len(pd) - 1)] - d_now)
             k = int(np.argmin(cost)); out.append((float(cost[k]), e, int(idx[k]), lab))
     if not out: return []
-    c0 = min(o[0] for o in out)
+    c0 = min(o[0] for o in out); mem._c0 = c0
     w = np.array([np.exp(-(o[0] - c0) / T) for o in out]); w /= w.sum()
     return [(w[i],) + out[i][1:] for i in range(len(out))]
 
@@ -257,6 +257,7 @@ class MirrorPlanner:
 
     def __init__(self, mem, grammar, seed=0, H=24, n=3):
         self.mem, self.g, self.H, self.n = mem, grammar, H, n
+        self.view = None          # B77: a percept.FairView; None = ground-truth boss state (B65-B76)
         self.rng = np.random.default_rng(seed)
 
     def reset(self, env):
@@ -264,37 +265,43 @@ class MirrorPlanner:
         self._bhp, self._dmg_t = env.boss_hp, env.t
 
     def _imagine(self, env, a, seed, a2=None, H=None):
-        rng = np.random.default_rng(seed); mem = self.mem; b = env.boss
+        rng = np.random.default_rng(seed); mem = self.mem
+        V = self.view or env; b = V.boss; lag = V.L if self.view is not None else 0
         sim = env.clone(seed)
-        tau = env.t - mem.onset
+        sim.act_lat = None; sim.aq = []          # imagination doesn't know about input latency (B77)
+        if self.view is not None:
+            # imagination starts from the perceived boss pose
+            sim.d.qpos[:63] = V.d.qpos[:63]; sim.prev_qpos[:63] = V.d.qpos[:63]
+        tau = V.t - mem.onset
         rec = getattr(self, "_rec", None)
         if b.kind == "strike" and mem.cur is not None and tau < 90 and rec:
             i = int(rng.choice(len(rec), p=np.array([r[0] for r in rec])))
             _, ep, f, lab = rec[i]
-            q_now = env.d.qpos[:63].copy(); q_now[7:] += rng.normal(0, mem.nj, 56); q_now[:2] += rng.normal(0, mem.np_, 2)
+            q_now = V.d.qpos[:63].copy(); q_now[7:] += rng.normal(0, mem.nj, 56); q_now[:2] += rng.normal(0, mem.np_, 2)
             o, fwd = place(ep["q"][f], q_now)
-            sim.boss = ReplayBoss(b, ep, f + 1, o, fwd, mem, lab, self.g, rng, env.phase)
+            sim.boss = ReplayBoss(b, ep, f + 1 + lag, o, fwd, mem, lab, self.g, rng, env.phase)
         elif b.kind == "strike" and mem.cur is not None and tau < 90:
-            lab = mem.label if mem.label is not None else self.g.sample(env, rng)
+            lab = mem.label if mem.label is not None else self.g.sample(V, rng)
             ep = mem.sample(lab, mem.cur["d0"], rng)
             if ep is not None:
                 if os.environ.get("MIRROR_ANCHOR", "1") == "1":
-                    q_now = env.d.qpos[:63].copy(); q_now[7:] += rng.normal(0, mem.nj, 56); q_now[:2] += rng.normal(0, mem.np_, 2)
+                    q_now = V.d.qpos[:63].copy(); q_now[7:] += rng.normal(0, mem.nj, 56); q_now[:2] += rng.normal(0, mem.np_, 2)
                     f, o, fw = anchor(ep, q_now, tau)
-                    sim.boss = ReplayBoss(b, ep, f + 1, o, fw, mem, lab, self.g, rng, env.phase)
+                    sim.boss = ReplayBoss(b, ep, f + 1 + lag, o, fw, mem, lab, self.g, rng, env.phase)
                 else:
                     sim.boss = ReplayBoss(b, ep, tau + 1, mem.origin, mem.fwd, mem, lab, self.g, rng, env.phase)
         elif os.environ.get("MIRROR_OPENER", "1") == "1":
             # boss between moves: it may open within 0-15 frames; frame = now
-            lab = self.g.sample(env, rng, next_move=True)
+            lab = self.g.sample(V, rng, next_move=True)
             to_p = env.p_xy - b.root; d = float(np.linalg.norm(to_p))
             ep = mem.sample(lab, d, rng)
             if ep is not None:
-                start = -int(rng.integers(0, 16))
+                start = -int(rng.integers(0, 16)) + lag
                 rb = ReplayBoss(b, ep, 0, b.root.copy(), float(np.arctan2(to_p[1], to_p[0])), mem, lab, self.g, rng, env.phase)
-                rb.last_q = env.d.qpos[:63].copy(); rb.blend = 8 if os.environ.get("MIRROR_BLEND", "1") == "1" else 0
+                rb.last_q = V.d.qpos[:63].copy(); rb.blend = 8 if os.environ.get("MIRROR_BLEND", "1") == "1" else 0
+                if start > 0: rb.f = start
                 if start < 0:     # hold the current pose for the delay, then re-enact
-                    rb.f = start; q_now = env.d.qpos[:63].copy(); step0 = rb.step
+                    rb.f = start; q_now = V.d.qpos[:63].copy(); step0 = rb.step
                     def step(px, ph=False, rb=rb, q_now=q_now, step0=step0):
                         if rb.f < 0:
                             rb.f += 1; return q_now
@@ -303,7 +310,7 @@ class MirrorPlanner:
                 sim.boss = rb
         if sim.boss is b or not isinstance(sim.boss, (ReplayBoss, StillBoss)):
             # no memory to re-enact: never fall back to the real boss runner (that would be a true simulator)
-            sim.boss = StillBoss(b, env.d.qpos[:63]); self.n_still = getattr(self, "n_still", 0) + 1
+            sim.boss = StillBoss(b, V.d.qpos[:63]); self.n_still = getattr(self, "n_still", 0) + 1
         self.n_imag = getattr(self, "n_imag", 0) + 1
         hp0, b0 = sim.hp, sim.boss_hp
         mv = a % N_BUTTONS in (NONE, GUARD); k2 = None
@@ -323,7 +330,8 @@ class MirrorPlanner:
         return v
 
     def act(self, env):
-        self.g.observe(env)
+        V = self.view or env
+        self.g.observe(V)
         if not env.player_free():
             return 0
         if self.hold_n > 0:
@@ -337,8 +345,8 @@ class MirrorPlanner:
         if os.environ.get("MIRROR_GUARD") == "1":
             acts += [GUARD, 5 * N_BUTTONS + GUARD, 3 * N_BUTTONS + GUARD, 7 * N_BUTTONS + GUARD]
         if env.flasks and env.hp < 60: acts.append(HEAL)
-        tau = env.t - self.mem.onset
-        self._rec = recognise(self.mem, tau, d_now=float(np.linalg.norm(env.p_xy - env.boss.root))) if (os.environ.get("MIRROR_RECOG", "1") == "1" and env.boss.kind == "strike"
+        tau = V.t - self.mem.onset
+        self._rec = recognise(self.mem, tau, d_now=float(np.linalg.norm(env.p_xy - V.boss.root))) if (os.environ.get("MIRROR_RECOG", "1") == "1" and V.boss.kind == "strike"
                                                   and self.mem.cur is not None and len(self.mem.cur["q"]) >= 2 and tau < 90) else None
         seeds = [int(s) for s in self.rng.integers(1 << 30, size=self.n)]
         risk = float(os.environ.get("MIRROR_RISK", 0.0))     # 0 = mean over futures, 1 = worst future
