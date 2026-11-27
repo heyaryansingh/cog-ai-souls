@@ -285,7 +285,12 @@ class MirrorPlanner:
                         m2.geom_size[i] *= f; m2.geom_pos[i] *= f; m2.geom_rbound[i] *= f
                 self._m2 = m2
             sim.m = self._m2
-        sim.act_lat = None; sim.aq = []          # imagination doesn't know about input latency (B77)
+        lm = os.environ.get("MIRROR_LAT_MODEL")
+        if lm:     # B77c: imagination knows its own *typical* input lag and what it has pressed, not the jitter
+            dl = int(lm); sim.act_lat = (dl, dl); sim.lat_d = dl; sim.lat_rng = np.random.default_rng(seed)
+            sim.aq = [(x[2] + dl, x[1], x[2]) for x in getattr(env, "aq", [])]
+        else:
+            sim.act_lat = None; sim.aq = []          # imagination doesn't know about input latency (B77)
         if self.view is not None:
             # imagination starts from the perceived boss pose
             sim.d.qpos[:63] = V.d.qpos[:63]; sim.prev_qpos[:63] = V.d.qpos[:63]

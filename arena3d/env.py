@@ -139,15 +139,15 @@ class Arena3D:
         lo, hi = self.act_lat
         if self.lat_rng.random() < 0.15:
             self.lat_d = int(np.clip(self.lat_d + self.lat_rng.choice([-1, 1]), lo, hi))
-        self.aq.append((self.t + self.lat_d, a))
+        self.aq.append((self.t + self.lat_d, a, self.t))
         due = [x for x in self.aq if x[0] <= self.t]
         if not due:
             return NONE if self.lat_last % N_BUTTONS != NONE else self.lat_last    # nothing lands: keep moving as before
         self.aq = [x for x in self.aq if x[0] > self.t]
-        btns = [u for _, u in due if u % N_BUTTONS != NONE]
+        btns = [x[1] for x in due if x[1] % N_BUTTONS != NONE]
         u = btns[0] if btns else due[-1][1]
         if len(btns) > 1:      # a second press waits for the next frame
-            self.aq.insert(0, (self.t + 1, btns[1]))
+            self.aq.insert(0, (self.t + 1, btns[1], self.t))
         self.lat_last = u
         return u
 
