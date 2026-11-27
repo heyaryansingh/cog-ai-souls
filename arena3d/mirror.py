@@ -17,7 +17,7 @@ import types
 
 import numpy as np
 
-from .env import N_BUTTONS, NONE, ROLL, LIGHT, HEAL
+from .env import N_BUTTONS, NONE, ROLL, LIGHT, GUARD, HEAL
 from .mocap import _qmul
 from .boss import _qz, heading
 
@@ -263,7 +263,7 @@ class MirrorPlanner:
         self.mem.reset(env); self.g.reset(env); self.hold, self.hold_n = None, 0
         self._bhp, self._dmg_t = env.boss_hp, env.t
 
-    def _imagine(self, env, a, seed):
+    def _imagine(self, env, a, seed, a2=None, H=None):
         rng = np.random.default_rng(seed); mem = self.mem; b = env.boss
         sim = env.clone(seed)
         tau = env.t - mem.onset
@@ -306,9 +306,16 @@ class MirrorPlanner:
             sim.boss = StillBoss(b, env.d.qpos[:63]); self.n_still = getattr(self, "n_still", 0) + 1
         self.n_imag = getattr(self, "n_imag", 0) + 1
         hp0, b0 = sim.hp, sim.boss_hp
-        for k in range(self.H):
-            mv = a % N_BUTTONS == NONE
-            _, _, done, info = sim.step(a if (k == 0 or (mv and k < 6)) else 0)
+        mv = a % N_BUTTONS in (NONE, GUARD); k2 = None
+        for k in range(H or self.H):
+            if a2 is not None and k2 is None and k >= (6 if mv else 1) and sim.player_free():
+                k2 = k
+            if k2 is not None:
+                mv2 = a2 % N_BUTTONS in (NONE, GUARD)
+                u = a2 if (k == k2 or (mv2 and k < k2 + 6)) else 0
+            else:
+                u = a if (k == 0 or (mv and k < 6)) else 0
+            _, _, done, info = sim.step(u)
             if done: break
         v = (b0 - sim.boss_hp) - 2.5 * (hp0 - sim.hp) - (100 if sim.hp <= 0 else 0)
         reach = 0.8 + 0.25 * env.spec.scale
@@ -327,12 +334,24 @@ class MirrorPlanner:
                 LIGHT, 3 * N_BUTTONS + ROLL, 7 * N_BUTTONS + ROLL, 5 * N_BUTTONS + ROLL]
         if os.environ.get("WM_ROLL_FWD") == "1":
             acts += [1 * N_BUTTONS + ROLL, 2 * N_BUTTONS + ROLL, 8 * N_BUTTONS + ROLL]
+        if os.environ.get("MIRROR_GUARD") == "1":
+            acts += [GUARD, 5 * N_BUTTONS + GUARD, 3 * N_BUTTONS + GUARD, 7 * N_BUTTONS + GUARD]
         if env.flasks and env.hp < 60: acts.append(HEAL)
         tau = env.t - self.mem.onset
         self._rec = recognise(self.mem, tau, d_now=float(np.linalg.norm(env.p_xy - env.boss.root))) if (os.environ.get("MIRROR_RECOG", "1") == "1" and env.boss.kind == "strike"
                                                   and self.mem.cur is not None and len(self.mem.cur["q"]) >= 2 and tau < 90) else None
         seeds = [int(s) for s in self.rng.integers(1 << 30, size=self.n)]
-        vals = [np.mean([self._imagine(env, a, s) for s in seeds]) for a in acts]
+        risk = float(os.environ.get("MIRROR_RISK", 0.0))     # 0 = mean over futures, 1 = worst future
+        agg = lambda xs: (1 - risk) * np.mean(xs) + risk * np.min(xs)
+        H2 = int(os.environ.get("MIRROR_H2", 0))
+        if H2:   # two-step plans: first action, then a follow-up as soon as the player is free again
+            vals = [agg([self._imagine(env, a, s, H=H2) for s in seeds]) for a in acts]
+            fol = [LIGHT, 5 * N_BUTTONS + ROLL, 3 * N_BUTTONS + ROLL, 7 * N_BUTTONS + ROLL, 1 * N_BUTTONS + ROLL]
+            for i in np.argsort(vals)[::-1][:int(os.environ.get("MIRROR_TOPK", 2))]:
+                for a2 in fol:
+                    vals[i] = max(vals[i], agg([self._imagine(env, acts[i], s, a2=a2, H=H2) for s in seeds]))
+        else:
+            vals = [agg([self._imagine(env, a, s) for s in seeds]) for a in acts]
         a = acts[int(np.argmax(vals))]
-        if a % N_BUTTONS == NONE and a != NONE: self.hold, self.hold_n = a, int(os.environ.get("MIRROR_HOLD", 5))
+        if a % N_BUTTONS in (NONE, GUARD) and a not in (NONE, GUARD): self.hold, self.hold_n = a, int(os.environ.get("MIRROR_HOLD", 5))
         return a

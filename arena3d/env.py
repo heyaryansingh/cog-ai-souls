@@ -11,6 +11,7 @@ events (move-start grunt, swing whoosh, impact), and proprioception. Ground-trut
 """
 from __future__ import annotations
 
+import os
 import mujoco
 import numpy as np
 
@@ -19,6 +20,7 @@ from .boss import BossRunner, BossSpec, _qz, heading
 from .world import build_world
 
 NONE, ROLL, LIGHT, GUARD, HEAL = range(5)
+GUARD_REAL = os.environ.get("ARENA_GUARD_REAL") == "1"   # chip damage + guard break (default off: old runs unchanged)
 N_BUTTONS = 5
 N_ACTIONS = 9 * N_BUTTONS          # 9 directions (0 = none, 1..8 lock-on frame, 1 = toward boss) x buttons
 KP_BODIES = ["root", "lfemur", "ltibia", "lfoot", "rfemur", "rtibia", "rfoot", "lowerback", "thorax", "head",
@@ -67,6 +69,7 @@ class Arena3D:
         self.boss.reset(np.array([0.0, 5.0 + self.spec.scale]), -np.pi / 2)
         self.p_xy, self.p_yaw = np.array([0.0, 0.0]), np.pi / 2
         self.hp, self.stamina, self.flasks = 100.0, 100.0, 4
+        self.stagger = 0
         self.boss_hp, self.phase = self.spec.hp, False
         self.t, self.walk_phase = 0, 0.0
         self.act, self.act_t, self.act_dir = NONE, 0, np.zeros(2)
@@ -126,6 +129,8 @@ class Arena3D:
         return self.act == ROLL and 2 <= self.act_t <= 11
 
     def player_free(self):
+        if getattr(self, "stagger", 0) > 0:
+            return False
         return self.act in (NONE, GUARD) or (self.act == ROLL and self.act_t >= 16) or \
             (self.act == LIGHT and self.act_t >= 22) or (self.act == HEAL and self.act_t >= 40)
 
@@ -181,6 +186,8 @@ class Arena3D:
         reward, info = self._resolve(q_new)
         reward += self._effects(info)
         self.act_t += 1
+        if getattr(self, "stagger", 0) > 0:
+            self.stagger -= 1
         if self.act in (ROLL, LIGHT, HEAL) and self.player_free() and self.act != GUARD:
             pass
         if self.act == ROLL and self.act_t >= 20 or self.act == LIGHT and self.act_t >= 30 or \
@@ -245,7 +252,15 @@ class Arena3D:
                 if self.act == GUARD and (shield_touch or front):
                     self.stamina -= 25 + 2 * tip_v
                     info["blocked"] = True
-                    if self.stamina < 0:
+                    if GUARD_REAL:
+                        # Elden Ring-like: a medium shield lets ~25% through; a guard break staggers
+                        chip = 0.25 * (8 + 0.9 * tip_v) * (self.spec.scale / 1.6) ** 0.5
+                        if self.stamina < 0:
+                            chip *= 2; self.stagger = 40; self.act, self.act_t = NONE, 0
+                            self.act_dir = np.zeros(2); info["guard_break"] = True
+                        self.hp -= chip; reward -= chip
+                        self.stamina = max(self.stamina, 0.0)
+                    elif self.stamina < 0:
                         self.stamina = 0
                         self.hp -= 10
                 elif self.in_iframes():
