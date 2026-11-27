@@ -681,3 +681,14 @@ Shockwaves are visible expanding fronts, so the agent can perceive each live rin
 - The reflex alone does nothing: in a diagnostic series 13 of 22 shockwave hits landed while the player was already committed (mid-attack or mid-roll), and 25 of 47 triggers had too little stamina to roll. Putting the predicted fronts into imagined futures (so the planner won't start a swing that a ring will cross) helps a little on Godrick; Margit has rings only in phase 2 and doesn't change.
 - **Reading.** Reacting to a visible ring is too late; the cost is set by commitments made before the ring exists, i.e. by *anticipating* the ring from the move (the hazard maps' job). Perceiving live fronts is a small, safe addition; kept as an option.
 - B61: longer series on Godrick (24 fights) to see where v6 + ring perception levels off.
+
+## B61 · Godrick learning levels off at ~30–35% within 7 fights
+4 series × 24 fights (96 per arm), plain v6 + drive, same scouting:
+
+| | fights 1–6 | 7–12 | 13–18 | 19–24 | all | wins |
+|---|---|---|---|---|---|---|
+| v6 | 24.7% | 39.8% | 28.0% | 27.5% | 30.0% | 0 |
+| v6 + seen shockwave fronts | 26.7% | 35.1% | 32.0% | 37.2% | 32.7% (p = .29) | 0 |
+
+- Learning happens in the first ~7 fights and then stops; no wins in 192 fights, while the state oracle (true boss state, 14-frame lookahead) gets to 7% boss HP left and wins 1 of 3 (B55 sanity check). Ring perception adds ~3 points, still not significant with 96 fights.
+- So on Godrick the world-model learner hits a ceiling that more fights don't lift. B62 measures where the ceiling comes from: the same MPC planner with Godrick's true per-move simulator (`mpc_grammar`) and with a learned string model on top of the simulator (`mpc_scratch`). If those win, the ceiling is in the learned danger maps; if not, it's in the planner.
