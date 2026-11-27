@@ -786,3 +786,16 @@ Mirror simulation, 3 × 12, scouting = watching the boss with infinite HP before
 
 - Learning only from its own fights, mirror simulation nearly triples v6 on Godrick. On Margit, v6 starts higher (statistics over contacts are useful from the first hits) but doesn't improve; mirror starts lower and climbs.
 - Margit, no scouting, 24 fights: 42.5%, 2 wins; blocks of 6 fights 35 / 42 / 53 / 40%. It plateaus around 45–50%, so Margit needs better fidelity, not more experience. Next: find what still kills it there.
+
+## B72 · Rolling *into* attacks: Margit 62.5%
+Diag (`scripts/mirror_death_diag.py`, 4 Margit fights): all 22 hits were blade hits, from staff sweeps (13) and thrusts (7), mostly 6–20 frames into the move and mostly while the agent was walking. Three fixes tried (Margit, 1.5-min scouting, 3 × 12):
+
+| variant | damage | fights 1–4 / 5–8 / 9–12 | vs base |
+|---|---|---|---|
+| base (B70) | 47.9%, 1 win | 39 / 45 / 59% | – |
+| replan every 3 frames instead of 6 | 40.2% | 42 / 40 / 39% | p = .19 |
+| weaker engagement drive | 43.7%, 2 wins | 42 / 42 / 48% | p = .43 |
+| **+ forward and diagonal-forward rolls** | **62.5%** | 71 / 56 / 60% | **p = .024** |
+
+- Adding three rolls (toward the boss, and diagonally forward left/right) to the action set lifts Margit by 15 points, above v6 (52.3%). Rolling *through* a sweep or thrust with i-frames, ending close enough to punish, is the standard souls answer, and the agent finds it on its own once it can imagine where the blade will be. Only a simulator-quality imagination can exploit this: a forward roll is the most dangerous action if the timing is wrong.
+- B73: forward rolls on Godrick and procedural bosses, and for v6 as a control.
