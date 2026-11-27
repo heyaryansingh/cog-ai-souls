@@ -160,7 +160,7 @@ def grammar_prior(env, rng):
     if st is not None and pos > 1:
         if pos - 1 < len(st.moves):
             return prog.idx[st.moves[pos - 1]]
-        opts = st.branch.get(len(st.moves))
+        opts = [o for o in (st.branch.get(len(st.moves)) or []) if o[1]]   # an empty continuation = string ends here
         if opts:
             ps = np.array([q for q, _ in opts])
             return prog.idx[opts[int(rng.choice(len(opts), p=ps / ps.sum()))][1][0]]
