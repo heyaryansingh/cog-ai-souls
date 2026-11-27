@@ -72,6 +72,8 @@ class MirrorMemory:
 
     def observe(self, env):
         b = env.boss; s = getattr(env, "boss_serial", -1)
+        if SEGFREE:      # rolling window of perceived poses, independent of any move segmentation
+            rq = env.d.qpos[:63].copy(); self.recent = (getattr(self, "recent", []) + [rq])[-4:]
         # rings: follow each to learn how far it gets (attributed to the move it spawned in)
         cur = {}
         for rg in env.rings:
@@ -217,21 +219,26 @@ def anchor(ep, q_now, tau, rng=None, window=25):
     return f, origin, fwd
 
 
+SEGFREE = os.environ.get("MIRROR_SEGFREE") == "1"    # B77b: recognition without onsets (search whole episodes)
+
+
 def recognise(mem, tau, L=4, window=25, T=None, d_now=None):
     """B65e episodic recognition without labels: which remembered episodes (of any move) look like what the boss
     has done over the last L frames, and where in them is it now? Returns [(weight, episode, frame, label)]."""
-    cur = np.array([q[7:] for q in mem.cur["q"][-L:]]); L = len(cur)
+    src = mem.recent if (SEGFREE and tau is None) else mem.cur["q"]
+    cur = np.array([q[7:] for q in src[-L:]]); L = len(cur)
     T = T or float(os.environ.get("MIRROR_T", 0.5))
     out = []
     for lab, eps in mem.eps.items():
         for e in eps:
             Q = e.setdefault("_J", np.array([q[7:] for q in e["q"]]))
-            lo, hi = max(L - 1, tau - window), min(len(Q) - 1, tau + window)
+            if tau is None: lo, hi = L - 1, len(Q) - 1
+            else: lo, hi = max(L - 1, tau - window), min(len(Q) - 1, tau + window)
             if hi < lo: continue
             # cost of aligning the last L observed frames to episode frames f-L+1..f
             idx = np.arange(lo, hi + 1)
             cost = sum(np.linalg.norm(Q[idx - (L - 1 - j)] - cur[j], axis=1) for j in range(L)) / L
-            cost = cost + 0.02 * np.abs(idx - tau)
+            if tau is not None: cost = cost + 0.02 * np.abs(idx - tau)
             if d_now is not None and "pd" in e:     # lunges depend on how far away the player is
                 pd = np.array(e["pd"]); cost = cost + float(os.environ.get("MIRROR_DW", 0.3)) * np.abs(pd[np.minimum(idx, len(pd) - 1)] - d_now)
             k = int(np.argmin(cost)); out.append((float(cost[k]), e, int(idx[k]), lab))
@@ -284,7 +291,7 @@ class MirrorPlanner:
             sim.d.qpos[:63] = V.d.qpos[:63]; sim.prev_qpos[:63] = V.d.qpos[:63]
         tau = V.t - mem.onset
         rec = getattr(self, "_rec", None)
-        if b.kind == "strike" and mem.cur is not None and tau < 90 and rec:
+        if rec and (SEGFREE or (b.kind == "strike" and mem.cur is not None and tau < 90)):
             i = int(rng.choice(len(rec), p=np.array([r[0] for r in rec])))
             _, ep, f, lab = rec[i]
             q_now = V.d.qpos[:63].copy(); q_now[7:] += rng.normal(0, mem.nj, 56); q_now[:2] += rng.normal(0, mem.np_, 2)
@@ -356,7 +363,10 @@ class MirrorPlanner:
             acts += [GUARD, 5 * N_BUTTONS + GUARD, 3 * N_BUTTONS + GUARD, 7 * N_BUTTONS + GUARD]
         if env.flasks and env.hp < 60: acts.append(HEAL)
         tau = V.t - self.mem.onset
-        self._rec = recognise(self.mem, tau, d_now=float(np.linalg.norm(env.p_xy - V.boss.root))) if (os.environ.get("MIRROR_RECOG", "1") == "1" and V.boss.kind == "strike"
+        if SEGFREE:
+            self._rec = recognise(self.mem, None, d_now=float(np.linalg.norm(env.p_xy - V.boss.root))) if (self.mem.eps and len(getattr(self.mem, "recent", [])) >= 2) else None
+        else:
+          self._rec = recognise(self.mem, tau, d_now=float(np.linalg.norm(env.p_xy - V.boss.root))) if (os.environ.get("MIRROR_RECOG", "1") == "1" and V.boss.kind == "strike"
                                                   and self.mem.cur is not None and len(self.mem.cur["q"]) >= 2 and tau < 90) else None
         seeds = [int(s) for s in self.rng.integers(1 << 30, size=self.n)]
         risk = float(os.environ.get("MIRROR_RISK", 0.0))     # 0 = mean over futures, 1 = worst future
