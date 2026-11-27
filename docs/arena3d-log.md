@@ -713,3 +713,23 @@ Same MPC planner (9 macro-actions, 3 imagined futures, H = 24, move identity rea
 
 ## B65 (running) · Mirror simulation: re-enact what you've seen
 `arena3d/mirror.py`. The agent keeps an episodic memory of every boss move it has watched: the boss's perceived full-body pose over the move (pose estimate with noise: 3 cm root, 0.03 rad per joint), in the move's onset frame (origin = boss at onset, x-axis = boss→player line), plus when shockwaves or projectiles appeared and how far rings got. To imagine a future, it re-enacts a remembered episode of the hypothesised move (identity from 70%-accurate reading or learned strings; episode picked by similar onset distance) on its own copy of the arena, aligned to the current boss position, facing and time since onset, and checks real 3D contact against its own imagined body. No boss program, mocap library or boss simulator. This is motor-simulation / mirror-system theory as a world model: predict another body by running its remembered movements through your own body-and-physics model. Smoke test (Godrick, 1 fight each, short scouting): 24% and 48% damage on first fights (v6 first fights ≈ 25%).
+
+## B65 · Mirror simulation, debugged: first real wins on Godrick
+**First run (as described above):** Godrick 24.2%, Margit 4.9% (dies in ~15 s). The audit tool for this was a fidelity test (`scripts/mirror_fidelity.py`): from mid-move frames, imagine 15 frames ahead and compare the imagined blade tip and "am I hit?" with what really happens.
+- First version: tip error 3.2 m, worse than assuming the blade stays put (0.97 m); the true simulator with hidden hold/identity gets 0.32 m. Causes found and fixed, in order:
+  1. Replayed moves stopped at the end of the episode, so follow-ups in a string were never imagined → **chain** into the next move (the remembered episode says whether a move followed; which one from the learned strings).
+  2. Instances of the same move differ by ~45° in facing and ~1 m in position from the onset frame, because the real boss turns to follow the player and lunges according to distance → **anchor to now**: find where in the remembered move the boss is (closest joint pose near the expected time) and place that frame exactly on the boss's currently perceived root position and facing (facing from the quaternion difference). Tip error 3.2 → 1.3 m.
+  3. 30% of identity labels are wrong → **label-free recognition**: score every remembered episode of every move by how well its frames match the boss's last 4 perceived poses (and the current player distance, since lunges depend on it); sample replays by that match (sharp temperature). Tip error → 0.9 m.
+  4. Counterfactual aim: the replay keeps turning to follow the *imagined* player by the difference between where it is and where the remembered player was, at a learned turn rate, until the remembered swing commits (fastest seen blade motion).
+- Hit prediction for a fixed action, Margit (AUC / Brier; true simulator 1.0 / 0.0): stand 0.92 / 0.10, attack 0.94 / 0.09, roll back 0.98 / 0.05, roll sideways 0.98 / 0.04. Imagined rolls still raise some false alarms.
+
+**Fights (3 series × 12, noisy pose memory, scouting as for the world-model learner):**
+
+| learner | Godrick | Margit |
+|---|---|---|
+| learned danger maps (v6) | 30.1%, 0 wins (0/192 over B55–B61) | **52.3%** |
+| mirror simulation, first version | 24.2% | 4.9% |
+| **mirror simulation, fixed** | **47.2%, 3 wins** (vs v6 p = .018); fights 1–4 / 5–8 / 9–12: 38 / 44 / **60%** | 34.8% (vs v6 p = .003) |
+
+- **On Godrick this is the first learner without a boss simulator to win, and it keeps improving with fights** (60% damage in fights 9–12, where v6 plateaued at ~30% for 24 fights). It learns the boss by remembering whole movements and re-enacting them through its own body-and-contact model.
+- On Margit it is still well behind v6: Margit's staff strings are fast and chain tightly, so recognition errors and chaining errors cost more. Next: more imagined samples, recognise using the blade path as well as the joints, and mix the replay's predictions with the learned danger maps where memory is thin.
