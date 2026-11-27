@@ -799,3 +799,18 @@ Diag (`scripts/mirror_death_diag.py`, 4 Margit fights): all 22 hits were blade h
 
 - Adding three rolls (toward the boss, and diagonally forward left/right) to the action set lifts Margit by 15 points, above v6 (52.3%). Rolling *through* a sweep or thrust with i-frames, ending close enough to punish, is the standard souls answer, and the agent finds it on its own once it can imagine where the blade will be. Only a simulator-quality imagination can exploit this: a forward roll is the most dangerous action if the timing is wrong.
 - B73: forward rolls on Godrick and procedural bosses, and for v6 as a control.
+
+## B73 · Forward rolls generalise: Godrick 77%, procedural bosses 78% (44 wins of 108)
+Mirror simulation with the three forward rolls added (1.5-min scouting on Godrick; procedural bosses 18–35 × 6 fights, held out). v6 with the same rolls on Margit is the control.
+
+| | before (no forward rolls) | + forward rolls | paired test |
+|---|---|---|---|
+| Godrick (3 × 12) | 63.4%, 5 wins | **77.1%, 7 wins** (blocks of 4: 82 / 81 / 69%) | p = .009 |
+| procedural 18–35 × 6 | 56.4%, 25 wins | **77.7%, 44 wins** | fights p = 2e-7, bosses p = .001 |
+| Margit (B72) | 47.9%, 1 win | 62.5% | p = .024 |
+| v6 danger maps, Margit | 52.3%, 0 wins | **36.5%**, 0 wins | rolls *hurt* v6 |
+
+- The gain holds on all three families and is largest on the held-out procedural bosses (+21 points, wins 25 → 44; vs v6 47.9%/17 wins and the stack 56.5%/25 wins).
+- Control: the same actions make v6 worse by 16 points. A forward roll pays only if the agent can predict *where the blade will be at each i-frame*; statistics over past contacts can't, a re-enacting imagination can. This is the cleanest evidence so far that mirror simulation is a different kind of model, not a better-tuned one: it unlocks a whole class of actions that are suicidal without it.
+- Mean over the three families: **72.4%** (v6 43.4%, stack 41.2%). Forward rolls are now the default for mirror runs.
+- B74 (queued): two-step plans (act, then a follow-up as soon as free, H = 36), risk-averse aggregation over futures (½ mean + ½ worst), and a realistic guard (25% chip damage, guard break = 40-frame stagger) with guard actions in the planner.

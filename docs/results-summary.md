@@ -96,12 +96,15 @@ Source: `docs/arena3d-log.md` (entries B11–B68). Bosses are MuJoCo bodies driv
 | selector: try models in 5 s segments, keep the better trader (B54) | 52.3% | 56.3% | 16.2% |
 | same, hits credited to the model in control at decision time (B56/B57) | 43.2% | 51.0% | 26.6% |
 | v6 + seen shockwave fronts in imagination (B60) | 52.3% | – | 34.6% (n.s.) |
-| **mirror simulation: re-enact remembered boss movements through own body/contact physics (B65–B68)** | 43.5–49.6% | **56.6%** | **60.8%** (2–3 wins) |
+| mirror simulation: re-enact remembered boss movements through own body/contact physics (B65–B68) | 43.5–49.6% | 56.6% | 60.8% (2–3 wins) |
+| **mirror simulation + forward rolls, 1.5-min scouting (B72/B73)** | **62.5%** | **77.7% (44/108 wins)** | **77.1% (7 wins)** |
+| v6 + forward rolls (control, B73) | 36.5% | – | – |
 
 - **Prediction ≠ control.** Plain v6 predicts felt contacts better on every family, even in the near, decision-relevant frames, yet the stack fights better on procedural bosses. Likelihood-based selection therefore misleads (B47, B51).
 - **The stack's gain is family-specific** and comes almost entirely from the 90-frame after-swing attention window, which is also its main cost on Godrick (B58, B59). Margit is not perceptually unusual (B53), so the agent gets no warning.
 - **Outcome-based selection** works when the outcome signal is dense (hits dealt per hit taken over 5 s segments) and exploited greedily: B54 matches the better model on Margit and procedural bosses. No setting wins on all three families within 6–12 fights; plain v6 + drive is the most robust single choice (mean 43%).
 - **Why the statistical models stall (B62):** with Godrick's true per-move simulator, the same planner wins 6/6 in 26 s; with learned danger maps it wins 0/192. The learned physics is the bottleneck. **Mirror simulation** (B65–B68) replaces danger statistics with episodic memory of the boss's whole-body movement, recognised from recent motion without labels, anchored to the boss's current pose, chained through strings and blended into new movements, then re-enacted on the agent's own copy of the arena. It is the first single learner at or near the best on all three families (mean ~55% vs 43% for v6), and the first to win on Godrick without a simulator.
+- **Forward rolls (B72/B73):** giving the mirror agent rolls *toward* the boss lifts all three families (mean 72.4%, p ≤ .024 each) while the same actions cost v6 16 points on Margit. Rolling through a swing is only safe with a simulator-quality prediction of the blade at every i-frame, so this action class is unlocked by mirror simulation specifically.
 - Prior over models learned from earlier bosses of the same family transfers to new bosses of that family (57.9%, B52) but misleads on a different family.
 
 ## Perception and learning findings
