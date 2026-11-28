@@ -921,3 +921,17 @@ the spread of the predicted contact time at the moment of commitment, compared w
 things in realism v2 bear on it directly: 14 i-frames instead of 10, and input buffering. And the honest
 headline uses ~100 ms (3 frames) of input lag, not 4–8.
 Fully honest (perception + lag) with all fixes: 3% wins [0, 8], 42.8% (B77 was 0%, 34.7%).
+
+## B81 · Realism v2 with honest perception and ~100 ms lag each way
+`ARENA_REAL=2` (14 roll i-frames, buffering, hitstun, stance/critical, heavy, guard counter, backstep, realistic guard), FairView with 3-frame perception delay, 2–4 frames input lag, per-future lag from measured delays, stance belief. 3 × 12, 1.5-min scouting.
+
+| | wins [95% CI] | damage (capped mean) |
+|---|---|---|
+| Godrick | **31% [17, 44]** (11/36) | 70.3% |
+| Margit | 8% (3/36) | 32.9% |
+| Godrick, old mechanics, honest (4–8 frame lag, B77g) | 3% | 42.8% |
+
+The real game's mechanics make honest play viable again on Godrick: longer i-frames and buffered presses tolerate
+uncertain timing, and stance breaks turn a few good reads into a big critical. Margit, whose fast thrusts and sweeps
+give the least warning, stays hard. Decomposition (which mechanic, which latency) and the true-perception reference
+are next.
