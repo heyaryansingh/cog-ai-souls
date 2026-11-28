@@ -287,7 +287,12 @@ class MirrorPlanner:
             sim.m = self._m2
         lm = os.environ.get("MIRROR_LAT_MODEL")
         if lm:     # B77c: imagination knows its own *typical* input lag and what it has pressed, not the jitter
-            dl = int(lm); sim.act_lat = (dl, dl); sim.lat_d = dl; sim.lat_rng = np.random.default_rng(seed)
+            if lm == "emp":   # B77d: each future gets its own lag, drawn from press-to-motion delays measured online
+                L = getattr(self, "lags", [])
+                dl = int(rng.choice(L)) if len(L) >= 5 else 6
+            else:
+                dl = int(lm)
+            sim.act_lat = (dl, dl); sim.lat_d = dl; sim.lat_rng = np.random.default_rng(seed)
             sim.aq = [(x[2] + dl, x[1], x[2]) for x in getattr(env, "aq", [])]
         else:
             sim.act_lat = None; sim.aq = []          # imagination doesn't know about input latency (B77)
@@ -354,6 +359,11 @@ class MirrorPlanner:
     def act(self, env):
         V = self.view or env
         self.g.observe(V)
+        pend = getattr(self, "_pend", None)    # own press -> motion delay (proprioception)
+        if pend is not None and env.act == pend[1] and env.act_t == 1 and env.t > pend[0]:
+            self.lags = (getattr(self, "lags", []) + [env.t - pend[0] - 1])[-200:]; self._pend = None
+        elif pend is not None and env.t - pend[0] > 20:
+            self._pend = None
         if not env.player_free():
             return 0
         if self.hold_n > 0:
@@ -369,9 +379,9 @@ class MirrorPlanner:
         if env.flasks and env.hp < 60: acts.append(HEAL)
         tau = V.t - self.mem.onset
         if SEGFREE:
-            self._rec = recognise(self.mem, None, d_now=float(np.linalg.norm(env.p_xy - V.boss.root))) if (self.mem.eps and len(getattr(self.mem, "recent", [])) >= 2) else None
+            self._rec = recognise(self.mem, None, d_now=float(np.linalg.norm(V.p_xy - V.boss.root))) if (self.mem.eps and len(getattr(self.mem, "recent", [])) >= 2) else None
         else:
-          self._rec = recognise(self.mem, tau, d_now=float(np.linalg.norm(env.p_xy - V.boss.root))) if (os.environ.get("MIRROR_RECOG", "1") == "1" and V.boss.kind == "strike"
+          self._rec = recognise(self.mem, tau, d_now=float(np.linalg.norm(V.p_xy - V.boss.root))) if (os.environ.get("MIRROR_RECOG", "1") == "1" and V.boss.kind == "strike"
                                                   and self.mem.cur is not None and len(self.mem.cur["q"]) >= 2 and tau < 90) else None
         seeds = [int(s) for s in self.rng.integers(1 << 30, size=self.n)]
         risk = float(os.environ.get("MIRROR_RISK", 0.0))     # 0 = mean over futures, 1 = worst future
@@ -386,5 +396,6 @@ class MirrorPlanner:
         else:
             vals = [agg([self._imagine(env, a, s) for s in seeds]) for a in acts]
         a = acts[int(np.argmax(vals))]
+        if a % N_BUTTONS in (ROLL, LIGHT) and getattr(self, "_pend", None) is None: self._pend = (env.t, a % N_BUTTONS)
         if a % N_BUTTONS in (NONE, GUARD) and a not in (NONE, GUARD): self.hold, self.hold_n = a, int(os.environ.get("MIRROR_HOLD", 5))
         return a
