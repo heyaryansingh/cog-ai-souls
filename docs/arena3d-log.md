@@ -960,3 +960,14 @@ Under 10 frames is faster than the honest agent can see a move (3 frames of sens
 - **Active frames:** in `ARENA_REAL=2`, a boss attack can hit only from 8 frames before to 12 after its danger frame (the fastest blade motion). In imagination the replayed episode's own fastest-blade frame plays that role (learned, not given).
 - **Margit calibration `MARGIT_CAL=2`:** the B22 calibration (hammer leap delay, punish windows) + staff swings slowed by 0.8. Measured after: staff sweep wind-up 0.60 s and 0.63 s, hits at 16–18 frames after onset (0.55–0.6 s), in line with the footage.
 - B82b (ToM) was stopped and is rerun inside B84 so every comparison uses the same mechanics.
+
+## B84 · Margit under realism v2.1, fully honest: 47% wins
+| Margit, honest (~100 ms each way) | wins [95% CI] | damage (capped mean) |
+|---|---|---|
+| realism v2 (B81) | 8% [0, 17] | 32.3% |
+| **realism v2.1** (active frames + footage-timed staff swings) | **47% [31, 64]** (17/36) | 81.1% |
+
+This is a correction to the *simulator*, not a gain of the agent: most of what made honest Margit unbeatable was
+blade contact during between-move blends and staff swings ~20% faster than the real fight. With the game's rule
+(hits only in active frames) and the footage timings, Margit becomes winnable with honest perception and lag, as it
+is for people. All earlier Margit numbers are under the old mechanics.
