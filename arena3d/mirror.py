@@ -143,7 +143,7 @@ class ReplayBoss:
         R = np.median(mem.ring_R[label]) if mem.ring_R.get(label) else 0.0
         self.peak = ep["rings"][0] if (ep["rings"] and R > 0) else (ep["proj"][0] if ep["proj"] else 10 ** 6)
         # remembered fastest blade motion = the active frames; MIRROR_ACTWIN=0: imagination treats any contact as a hit
-        self.act_peak = ep.get("commit", 10 ** 6) if os.environ.get("MIRROR_ACTWIN", "1") == "1" else None
+        self.act_peak = ep.get("commit", 10 ** 6) if os.environ.get("MIRROR_ACTWIN", "0") == "1" else None
         self.cur_move = types.SimpleNamespace(ring=float(R) if ep["rings"] else 0.0, projectile=bool(ep["proj"]))
         self.kind = "strike"
 

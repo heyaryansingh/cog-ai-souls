@@ -974,3 +974,17 @@ is for people. All earlier Margit numbers are under the old mechanics.
 
 ### B84 (cont.) · Godrick gets worse under v2.1
 Godrick honest, realism v2 → v2.1: 31% → **14% [3, 26]** wins (n = 35; a container restart cut the last fight), 70.3% → 60.1%. Hypothesis: in imagination the replayed move's active window is centred on the remembered fastest-blade frame, which under honest perception (15 cm tip noise) can be misplaced, so imagination wrongly treats real hits as harmless. B85: imagination ignores the remembered window and counts any contact (`MIRROR_ACTWIN=0`, conservative), on Godrick and Margit. The reactive/ToM runs wait for this decision.
+
+## B85 · Imagination should not trust its remembered active frames: Margit 69% wins honest
+Realism v2.1, fully honest. In imagination, any contact of the replayed blade counts as a hit (`MIRROR_ACTWIN=0`), instead of only contact near the remembered fastest-blade frame:
+
+| | remembered window | any contact (conservative) | paired |
+|---|---|---|---|
+| Godrick | 14% [3, 26] wins, 60.1% | **28% [14, 42]**, 68.9% | p = .36 |
+| Margit | 47% [31, 64], 81.1% | **69% [53, 83]** (25/36), 92.0% | **p = .022** |
+
+Under honest perception the fastest-blade frame of a remembered episode is noisy (15 cm tip noise), so a window
+centred on it misplaces when the attack is live and imagination underestimates danger. Pessimism about which
+frames can hurt is the better prior when the evidence is noisy, which is what a player does too: treat the swing
+as dangerous until it is clearly over. `MIRROR_ACTWIN=0` is now the default. Headline, honest, realism v2.1:
+**Margit 69% wins, Godrick 28%.**
