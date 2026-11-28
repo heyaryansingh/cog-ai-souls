@@ -88,6 +88,8 @@ MARGIT_MOVES_CAL = [
     _dc.replace(m, delay_med=30) if m.name == "hammer_leap" else m for m in MARGIT_MOVES]
 MARGIT_MOVES_CAL = [_dc.replace(m, recover=25) if m.name in ("hammer_slam", "hammer_leap") else
                     (_dc.replace(m, recover=12) if m.ender else m) for m in MARGIT_MOVES_CAL]
+# B84: staff swings measured at 0.55-0.65 s raise->impact in footage (B22) vs 0.47-0.50 s in the sim: slow them by 0.8
+MARGIT_MOVES_CAL2 = [_dc.replace(m, speed=round(m.speed * 0.8, 3)) if m.name.startswith("staff") else m for m in MARGIT_MOVES_CAL]
 
 
 def build_program_boss(rng, units, allowed, clips, moves=MARGIT_MOVES, strings=MARGIT_STRINGS, scale=1.9,

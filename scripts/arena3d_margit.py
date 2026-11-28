@@ -13,12 +13,12 @@ SPEC = None
 def spec():
     global SPEC
     if SPEC is None:
-        from arena3d.program import MARGIT_MOVES, MARGIT_MOVES_CAL, GODRICK_MOVES, GODRICK_STRINGS
+        from arena3d.program import MARGIT_MOVES, MARGIT_MOVES_CAL, MARGIT_MOVES_CAL2, GODRICK_MOVES, GODRICK_STRINGS
         if os.environ.get("BOSS") == "godrick":    # B55: second hand-authored boss
             SPEC = build_program_boss(np.random.default_rng(43), U, TEST, clips(), moves=GODRICK_MOVES, strings=GODRICK_STRINGS,
                                       scale=2.2, weapon="greatsword", name="godrick_like", hp=500.0)
             return SPEC
-        SPEC = build_program_boss(np.random.default_rng(42), U, TEST, clips(), moves=MARGIT_MOVES_CAL if os.environ.get("MARGIT_CAL") == "1" else MARGIT_MOVES)
+        SPEC = build_program_boss(np.random.default_rng(42), U, TEST, clips(), moves={"1": MARGIT_MOVES_CAL, "2": MARGIT_MOVES_CAL2}.get(os.environ.get("MARGIT_CAL", ""), MARGIT_MOVES))
     return SPEC
 
 

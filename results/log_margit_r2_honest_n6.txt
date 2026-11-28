@@ -1,0 +1,109 @@
+FIGHT mirror 2 208 death 0.0 187
+STILL 2 0 1177 1638
+FAIR 2 0 onsets 2 labels 6
+FIGHT mirror 0 8 death 0.738 452
+STILL 0 0 720 4332
+FAIR 0 0 onsets 5 labels 6
+FIGHT mirror 0 9 death 0.0 274
+STILL 0 1 1380 6696
+FAIR 0 1 onsets 3 labels 6
+FIGHT mirror 1 108 death 0.267 944
+STILL 1 0 2136 10284
+FAIR 1 0 onsets 13 labels 6
+FIGHT mirror 1 109 death 0.284 397
+STILL 1 1 2946 13368
+FAIR 1 1 onsets 6 labels 6
+FIGHT mirror 2 209 death 0.089 1265
+STILL 2 1 3555 19884
+FAIR 2 1 onsets 15 labels 6
+FIGHT mirror 2 210 death 0.089 236
+STILL 2 2 3915 21894
+FAIR 2 2 onsets 3 labels 6
+FIGHT mirror 1 110 death 0.089 436
+STILL 1 2 3516 16998
+FAIR 1 2 onsets 5 labels 6
+FIGHT mirror 2 211 death 0.089 186
+STILL 2 3 5061 23520
+FAIR 2 3 onsets 1 labels 6
+FIGHT mirror 0 10 death 0.373 1103
+STILL 0 2 2373 21324
+FAIR 0 2 onsets 20 labels 6
+FIGHT mirror 1 111 death 0.916 681
+STILL 1 3 4960 24744
+FAIR 1 3 onsets 9 labels 6
+FIGHT mirror 0 11 death 0.089 743
+STILL 0 3 5133 30006
+FAIR 0 3 onsets 7 labels 6
+FIGHT mirror 2 212 death 0.373 1196
+STILL 2 4 6111 36714
+FAIR 2 4 onsets 21 labels 6
+FIGHT mirror 1 112 death 0.916 1154
+STILL 1 4 6560 37032
+FAIR 1 4 onsets 19 labels 6
+FIGHT mirror 0 12 death 0.916 905
+STILL 0 4 6093 37806
+FAIR 0 4 onsets 16 labels 6
+FIGHT mirror 2 213 death 0.284 925
+STILL 2 5 8721 46296
+FAIR 2 5 onsets 9 labels 6
+FIGHT mirror 1 113 death 0.88 735
+STILL 1 5 7820 42468
+FAIR 1 5 onsets 11 labels 6
+FIGHT mirror 2 214 death 0.178 365
+STILL 2 6 8931 50280
+FAIR 2 6 onsets 7 labels 6
+FIGHT mirror 2 215 death 0.142 254
+STILL 2 7 10011 52638
+FAIR 2 7 onsets 1 labels 6
+FIGHT mirror 0 13 win 1.004 964
+STILL 0 5 6636 46290
+FAIR 0 5 onsets 20 labels 6
+FIGHT mirror 1 114 death 0.32 469
+STILL 1 6 9268 46278
+FAIR 1 6 onsets 5 labels 6
+FIGHT mirror 2 216 death 0.089 454
+STILL 2 8 10915 57342
+FAIR 2 8 onsets 6 labels 6
+FIGHT mirror 0 14 death 0.498 775
+STILL 0 6 7690 53700
+FAIR 0 6 onsets 12 labels 6
+FIGHT mirror 1 115 win 1.058 850
+STILL 1 7 11038 56034
+FAIR 1 7 onsets 12 labels 6
+FIGHT mirror 0 15 death 0.089 385
+STILL 0 7 8980 58926
+FAIR 0 7 onsets 4 labels 6
+FIGHT mirror 2 217 death 0.462 949
+STILL 2 9 11611 67806
+FAIR 2 9 onsets 16 labels 6
+FIGHT mirror 0 16 death 0.142 349
+STILL 0 8 9760 62538
+FAIR 0 8 onsets 3 labels 6
+FIGHT mirror 1 116 death 0.462 712
+STILL 1 8 12388 63456
+FAIR 1 8 onsets 8 labels 6
+FIGHT mirror 2 218 death 0.142 364
+STILL 2 10 12541 71622
+FAIR 2 10 onsets 4 labels 6
+FIGHT mirror 1 117 death 0.827 790
+STILL 1 9 13501 69246
+FAIR 1 9 onsets 13 labels 6
+FIGHT mirror 2 219 death 0.738 574
+STILL 2 11 13207 75450
+FAIR 2 11 onsets 7 labels 6
+FIGHT mirror 0 17 death 0.462 948
+STILL 0 9 10812 71394
+FAIR 0 9 onsets 13 labels 6
+FIGHT mirror 0 18 death 0.0 325
+STILL 0 10 11355 73938
+FAIR 0 10 onsets 4 labels 6
+FIGHT mirror 1 118 death 0.267 757
+STILL 1 10 14641 77202
+FAIR 1 10 onsets 9 labels 6
+FIGHT mirror 0 19 death 0.773 566
+STILL 0 11 11655 78840
+FAIR 0 11 onsets 9 labels 6
+FIGHT mirror 1 119 death 0.32 465
+STILL 1 11 16301 82818
+FAIR 1 11 onsets 6 labels 6
+mirror wins 2 / 36 damage 0.399

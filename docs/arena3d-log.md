@@ -947,3 +947,16 @@ Realism v2, honest (~100 ms each way), `BOSS_REACTIVE=1` (roll reading with dela
 
 Damage holds but wins halve on Godrick: the delayed swings that catch early rolls and the punished recoveries
 turn near-wins into deaths. The ToM runs (H2) crashed on a bug (`sum(..., None)`), fixed; rerunning after B83.
+
+## B83 · Where honest Godrick loses its wins; what kills honest Margit
+Realism v2, Godrick (3 × 12): true perception 58% wins → perception delay/noise only 39% [22, 56] → input lag (2–4 frames) only 28% [14, 42] → both 31%. Input lag is the larger cost. Margit with 6 futures instead of 3: 39.7% vs 32.9% damage, wins 6% (p = .19).
+
+**Margit death diagnosis** (`scripts/honest_death_diag.py`, 4 honest fights, 39 hits): staff sweeps (25) and thrusts (13); **33 of 39 hits came less than 20 frames after the move's onset, 16 of them under 10 frames**; 18 while walking, 11 within 25 frames of pressing heal, 4 in hitstun chains.
+Under 10 frames is faster than the honest agent can see a move (3 frames of sensor delay + ~3 of detection) and act (2–4 frames). Measuring the sim against the B22 footage table showed why:
+- staff swings wound up in 0.47–0.50 s, against 0.55–0.65 s raise → impact in the real fight;
+- hits at under 10 frames were the blade touching the player **while the body blended from the previous move into the new one**. In the real games an attack's hitbox is live only during its active frames.
+
+## Realism v2.1 (B84)
+- **Active frames:** in `ARENA_REAL=2`, a boss attack can hit only from 8 frames before to 12 after its danger frame (the fastest blade motion). In imagination the replayed episode's own fastest-blade frame plays that role (learned, not given).
+- **Margit calibration `MARGIT_CAL=2`:** the B22 calibration (hammer leap delay, punish windows) + staff swings slowed by 0.8. Measured after: staff sweep wind-up 0.60 s and 0.63 s, hits at 16–18 frames after onset (0.55–0.6 s), in line with the footage.
+- B82b (ToM) was stopped and is rerun inside B84 so every comparison uses the same mechanics.
