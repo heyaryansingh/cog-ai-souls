@@ -366,6 +366,8 @@ class MirrorPlanner:
             self._pend = None
         if not env.player_free():
             return 0
+        if os.environ.get("MIRROR_WAIT_PRESS", "1") == "1" and any(x[1] % N_BUTTONS in (ROLL, LIGHT, HEAL) for x in getattr(env, "aq", [])):
+            return 0      # B77f: a press is still in flight (input lag): don't re-decide until it lands
         if self.hold_n > 0:
             self.hold_n -= 1; return self.hold
         if env.boss_hp != self._bhp: self._bhp, self._dmg_t = env.boss_hp, env.t
