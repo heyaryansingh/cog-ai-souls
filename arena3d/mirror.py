@@ -17,7 +17,7 @@ import types
 
 import numpy as np
 
-from .env import N_BUTTONS, NONE, ROLL, LIGHT, GUARD, HEAL
+from .env import N_BUTTONS, NONE, ROLL, LIGHT, GUARD, HEAL, HEAVY, BACKSTEP, REAL2
 from .mocap import _qmul
 from .boss import _qz, heading
 
@@ -287,18 +287,25 @@ class MirrorPlanner:
             sim.m = self._m2
         lm = os.environ.get("MIRROR_LAT_MODEL")
         if lm:     # B77c: imagination knows its own *typical* input lag and what it has pressed, not the jitter
-            if lm == "emp":   # B77d: each future gets its own lag, drawn from press-to-motion delays measured online
+            if lm == "oracle":   # diagnostic only: imagination knows the exact queue and future lag drift
+                import copy as _c
+                sim.act_lat = env.act_lat; sim.lat_d = env.lat_d; sim.lat_rng = _c.deepcopy(env.lat_rng); sim.aq = list(env.aq)
+                dl = None
+            elif lm == "emp":   # B77d: each future gets its own lag, drawn from press-to-motion delays measured online
                 L = getattr(self, "lags", [])
                 dl = int(rng.choice(L)) if len(L) >= 5 else 6
             else:
                 dl = int(lm)
-            sim.act_lat = (dl, dl); sim.lat_d = dl; sim.lat_rng = np.random.default_rng(seed)
-            sim.aq = [(x[2] + dl, x[1], x[2]) for x in getattr(env, "aq", [])]
+            if dl is not None:
+                sim.act_lat = (dl, dl); sim.lat_d = dl; sim.lat_rng = np.random.default_rng(seed)
+                sim.aq = [(x[2] + dl, x[1], x[2]) for x in getattr(env, "aq", [])]
         else:
             sim.act_lat = None; sim.aq = []          # imagination doesn't know about input latency (B77)
         if self.view is not None:
             # imagination starts from the perceived boss pose
             sim.d.qpos[:63] = V.d.qpos[:63]; sim.prev_qpos[:63] = V.d.qpos[:63]
+        if REAL2 and hasattr(self, "st_est"):   # the boss's stance is hidden: imagination uses the agent's belief
+            sim.stance, sim.stance_max, sim.stance_t = self.st_est, self.st_max, self.st_t
         tau = V.t - mem.onset
         rec = getattr(self, "_rec", None)
         if rec and (SEGFREE or (b.kind == "strike" and mem.cur is not None and tau < 90)):
@@ -357,9 +364,27 @@ class MirrorPlanner:
         v -= self._w * max(0.0, float(np.linalg.norm(b.root - sim.p_xy)) - reach)
         return v
 
+    def _stance_belief(self, env):
+        """H3: belief over the boss's hidden stance, from my own hits (seen on the HP bar), the published rules
+        (stance damage per attack type, regen 13/s after max/13 s) and a prior max of 100, re-estimated at each
+        observed break (the boss visibly goes down)."""
+        from .env import STANCE_DMG
+        if not hasattr(self, "st_max"): self.st_max = float(os.environ.get("MIRROR_STANCE_PRIOR", 100.0)); self.st_dealt = 0.0
+        if not hasattr(self, "st_est") or env.t == 0: self.st_est, self.st_t, self._bhp_s, self._down = self.st_max, -999, env.boss_hp, False
+        if env.t - self.st_t > self.st_max / 13.0 * 30: self.st_est = min(self.st_max, self.st_est + 13.0 / 30 * max(1, env.t - getattr(self, "_st_last", env.t)))
+        self._st_last = env.t
+        down = env.boss_stun > 0
+        if env.boss_hp < self._bhp_s and not down and not self._down:
+            k = "light" if env.act == LIGHT else ("gc" if env.gc else "heavy")
+            self.st_est -= STANCE_DMG[k]; self.st_dealt += STANCE_DMG[k]; self.st_t = env.t
+        if down and not self._down:     # observed break: learn the boss's max stance from what I had dealt since full
+            self.st_max = 0.5 * self.st_max + 0.5 * max(40.0, self.st_max - self.st_est + 0.0); self.st_est = self.st_max
+        self._down = down; self._bhp_s = env.boss_hp
+
     def act(self, env):
         V = self.view or env
         self.g.observe(V)
+        if REAL2: self._stance_belief(env)
         pend = getattr(self, "_pend", None)    # own press -> motion delay (proprioception)
         if pend is not None and env.act == pend[1] and env.act_t == 1 and env.t > pend[0]:
             self.lags = (getattr(self, "lags", []) + [env.t - pend[0] - 1])[-200:]; self._pend = None
@@ -367,7 +392,7 @@ class MirrorPlanner:
             self._pend = None
         if not env.player_free():
             return 0
-        if os.environ.get("MIRROR_WAIT_PRESS", "1") == "1" and any(x[1] % N_BUTTONS in (ROLL, LIGHT, HEAL) for x in getattr(env, "aq", [])):
+        if os.environ.get("MIRROR_WAIT_PRESS", "1") == "1" and any(x[1] % N_BUTTONS in (ROLL, LIGHT, HEAL, HEAVY, BACKSTEP) for x in getattr(env, "aq", [])):
             return 0      # B77f: a press is still in flight (input lag): don't re-decide until it lands
         if self.hold_n > 0:
             self.hold_n -= 1; return self.hold
@@ -377,7 +402,9 @@ class MirrorPlanner:
                 LIGHT, 3 * N_BUTTONS + ROLL, 7 * N_BUTTONS + ROLL, 5 * N_BUTTONS + ROLL]
         if os.environ.get("WM_ROLL_FWD") == "1":
             acts += [1 * N_BUTTONS + ROLL, 2 * N_BUTTONS + ROLL, 8 * N_BUTTONS + ROLL]
-        if os.environ.get("MIRROR_GUARD") == "1":
+        if REAL2:
+            acts += [HEAVY, BACKSTEP]
+        if os.environ.get("MIRROR_GUARD") == "1" or REAL2:
             acts += [GUARD, 5 * N_BUTTONS + GUARD, 3 * N_BUTTONS + GUARD, 7 * N_BUTTONS + GUARD]
         if env.flasks and env.hp < 60: acts.append(HEAL)
         tau = V.t - self.mem.onset
@@ -393,12 +420,13 @@ class MirrorPlanner:
         if H2:   # two-step plans: first action, then a follow-up as soon as the player is free again
             vals = [agg([self._imagine(env, a, s, H=H2) for s in seeds]) for a in acts]
             fol = [LIGHT, 5 * N_BUTTONS + ROLL, 3 * N_BUTTONS + ROLL, 7 * N_BUTTONS + ROLL, 1 * N_BUTTONS + ROLL]
+            if REAL2: fol.append(HEAVY)
             for i in np.argsort(vals)[::-1][:int(os.environ.get("MIRROR_TOPK", 2))]:
                 for a2 in fol:
                     vals[i] = max(vals[i], agg([self._imagine(env, acts[i], s, a2=a2, H=H2) for s in seeds]))
         else:
             vals = [agg([self._imagine(env, a, s) for s in seeds]) for a in acts]
         a = acts[int(np.argmax(vals))]
-        if a % N_BUTTONS in (ROLL, LIGHT) and getattr(self, "_pend", None) is None: self._pend = (env.t, a % N_BUTTONS)
+        if a % N_BUTTONS in (ROLL, LIGHT, HEAVY, BACKSTEP) and getattr(self, "_pend", None) is None: self._pend = (env.t, a % N_BUTTONS)
         if a % N_BUTTONS in (NONE, GUARD) and a not in (NONE, GUARD): self.hold, self.hold_n = a, int(os.environ.get("MIRROR_HOLD", 5))
         return a

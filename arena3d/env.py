@@ -19,9 +19,14 @@ from . import mocap
 from .boss import BossRunner, BossSpec, _qz, heading
 from .world import build_world
 
-NONE, ROLL, LIGHT, GUARD, HEAL = range(5)
-GUARD_REAL = os.environ.get("ARENA_GUARD_REAL") == "1"   # chip damage + guard break (default off: old runs unchanged)
-N_BUTTONS = 5
+NONE, ROLL, LIGHT, GUARD, HEAL, HEAVY, BACKSTEP = range(7)
+# realism v2 (docs/research-plan-v3.md): 14 roll i-frames, input buffer, hitstun, boss stance/critical, heavy attack,
+# guard counter, backstep, realistic guard. Default off: old runs unchanged.
+REAL2 = os.environ.get("ARENA_REAL") == "2"
+GUARD_REAL = os.environ.get("ARENA_GUARD_REAL") == "1" or REAL2   # chip damage + guard break
+N_BUTTONS = 7 if REAL2 else 5
+STANCE_DMG = {"light": 14.0, "heavy": 35.0, "gc": 49.0}
+HIT_MULT = {"light": 1.0, "heavy": 1.6, "gc": 1.4, "crit": 3.5}
 N_ACTIONS = 9 * N_BUTTONS          # 9 directions (0 = none, 1..8 lock-on frame, 1 = toward boss) x buttons
 KP_BODIES = ["root", "lfemur", "ltibia", "lfoot", "rfemur", "rtibia", "rfoot", "lowerback", "thorax", "head",
              "lhumerus", "lradius", "lhand", "rhumerus", "rradius", "rhand"]
@@ -70,6 +75,9 @@ class Arena3D:
         self.p_xy, self.p_yaw = np.array([0.0, 0.0]), np.pi / 2
         self.hp, self.stamina, self.flasks = 100.0, 100.0, 4
         self.stagger = 0
+        self.buf, self.gc, self.last_block = None, False, -999
+        self.stance_max = float(getattr(self.spec, "stance", 100.0) or 100.0) * (self.spec.hp / 500.0) ** 0.25
+        self.stance, self.stance_t, self.boss_stun = self.stance_max, -999, 0
         lat = os.environ.get("ARENA_ACT_LAT")          # e.g. "4,8" frames (130-270 ms); default none
         self.act_lat = tuple(int(x) for x in lat.split(",")) if lat else None
         self.lat_rng = np.random.default_rng(int(self.rng.integers(1 << 30)) if lat else 0)
@@ -99,6 +107,11 @@ class Arena3D:
         elif self.act == LIGHT and self.player_strike is not None:
             u = self.player_strike
             c, t = self.C[u.clip], u.start + min(self.act_t, u.length - 1)
+        elif self.act == HEAVY and self.player_strike is not None:
+            u = self.player_strike; sp = 1.0 if self.gc else 22 / 34      # same swing, slower wind-up
+            c, t = self.C[u.clip], u.start + min(int(self.act_t * sp), u.length - 1)
+        elif self.act == BACKSTEP:
+            c, t = self.C[CROUCH[0]], CROUCH[1]
         elif np.linalg.norm(self.act_dir) > 0 and self.act in (NONE, GUARD):
             c = self.walk
             n = WALK[2] - WALK[1]
@@ -131,6 +144,8 @@ class Arena3D:
         return self._jmap.get(name)
 
     def in_iframes(self):
+        if REAL2:
+            return self.act == ROLL and 1 <= self.act_t <= 14
         return self.act == ROLL and 2 <= self.act_t <= 11
 
     def _delayed(self, a):
@@ -155,7 +170,8 @@ class Arena3D:
         if getattr(self, "stagger", 0) > 0:
             return False
         return self.act in (NONE, GUARD) or (self.act == ROLL and self.act_t >= 16) or \
-            (self.act == LIGHT and self.act_t >= 22) or (self.act == HEAL and self.act_t >= 40)
+            (self.act == LIGHT and self.act_t >= 22) or (self.act == HEAL and self.act_t >= 40) or \
+            (self.act == HEAVY and self.act_t >= (24 if self.gc else 34)) or (self.act == BACKSTEP and self.act_t >= 10)
 
     # --- step --------------------------------------------------------------------------------------
     def step(self, a):
@@ -164,6 +180,11 @@ class Arena3D:
         d_i, btn = divmod(int(a), N_BUTTONS)
         to_b = self.boss.root - self.p_xy
         face = np.arctan2(to_b[1], to_b[0])
+        if REAL2:     # input buffer: a press while busy is kept for 10 frames and fires at the first free frame
+            if btn in (ROLL, LIGHT, HEAVY, BACKSTEP, HEAL) and not self.player_free():
+                self.buf = (d_i, btn, self.t)
+            elif self.player_free() and btn in (NONE, GUARD) and self.buf is not None and self.t - self.buf[2] <= 10:
+                d_i, btn = self.buf[0], self.buf[1]; self.buf = None
         if self.player_free():
             if btn == ROLL and self.stamina >= 18:
                 self.act, self.act_t = ROLL, 0
@@ -175,6 +196,13 @@ class Arena3D:
                 self.act, self.act_t, self.stamina = LIGHT, 0, self.stamina - 12
                 self.act_dir = np.zeros(2)
                 self.p_serial += 1
+            elif REAL2 and btn == HEAVY and self.stamina >= 22:
+                self.gc = self.t - self.last_block <= 20         # guard counter: heavy right after a block
+                self.act, self.act_t, self.stamina = HEAVY, 0, self.stamina - (16 if self.gc else 22)
+                self.act_dir = np.zeros(2); self.p_serial += 1
+            elif REAL2 and btn == BACKSTEP and self.stamina >= 10:
+                self.act, self.act_t, self.stamina = BACKSTEP, 0, self.stamina - 10
+                self.act_dir = np.array([-np.cos(face), -np.sin(face)])
             elif btn == HEAL and self.flasks > 0:
                 self.act, self.act_t, self.flasks = HEAL, 0, self.flasks - 1
                 self.act_dir = np.zeros(2)
@@ -187,7 +215,8 @@ class Arena3D:
                 else:
                     self.act_dir = np.zeros(2)
         # player motion
-        spd = {NONE: 4.0, GUARD: 2.0, ROLL: 6.5 if self.act_t < 14 else 0.0, LIGHT: 0.0, HEAL: 0.8}[self.act] * 0.03
+        spd = {NONE: 4.0, GUARD: 2.0, ROLL: 6.5 if self.act_t < 14 else 0.0, LIGHT: 0.0, HEAL: 0.8, HEAVY: 0.0,
+               BACKSTEP: 5.0 if self.act_t < 8 else 0.0}[self.act] * 0.03
         self.p_xy = self.p_xy + self.act_dir * spd
         self.p_xy = np.clip(self.p_xy, -15, 15)
         self.walk_phase += 1.2 if np.linalg.norm(self.act_dir) > 0 else 0
@@ -200,7 +229,13 @@ class Arena3D:
         unit_before = self.boss.unit
         self.boss.player_healing = self.act == HEAL
         self.boss.pstate = (self.act, self.act_t)
-        qb = self.boss.step(self.p_xy, self.phase)
+        if REAL2 and self.boss_stun > 0:      # stance broken: the boss is down (kneels), nothing advances
+            self.boss_stun -= 1; qb = self.d.qpos[:63].copy() if self.prev_qpos is None else self.prev_qpos[:63].copy()
+        else:
+            qb = self.boss.step(self.p_xy, self.phase)
+        if REAL2:     # stance regeneration: 13/s after a delay of max/13 s since the last stance damage (wiki)
+            if self.t - self.stance_t > self.stance_max / 13.0 * 30:
+                self.stance = min(self.stance_max, self.stance + 13.0 / 30)
         self.audio[:] = 0
         if self.boss.unit is not unit_before and self.boss.kind == "strike":
             self.move_serial += 1
@@ -217,7 +252,8 @@ class Arena3D:
         if self.act in (ROLL, LIGHT, HEAL) and self.player_free() and self.act != GUARD:
             pass
         if self.act == ROLL and self.act_t >= 20 or self.act == LIGHT and self.act_t >= 30 or \
-                self.act == HEAL and self.act_t >= 50:
+                self.act == HEAL and self.act_t >= 50 or self.act == HEAVY and self.act_t >= (30 if self.gc else 40) or \
+                self.act == BACKSTEP and self.act_t >= 12:
             self.act, self.act_t = NONE, 0
         self.t += 1
         if not self.phase and self.boss_hp < 0.5 * self.spec.hp and self.spec.phase2:
@@ -277,7 +313,7 @@ class Arena3D:
                 front = np.cos(np.arctan2(to_b[1], to_b[0]) - self.p_yaw) > 0.0
                 if self.act == GUARD and (shield_touch or front):
                     self.stamina -= 25 + 2 * tip_v
-                    info["blocked"] = True
+                    info["blocked"] = True; self.last_block = self.t
                     if GUARD_REAL:
                         # Elden Ring-like: a medium shield lets ~25% through; a guard break staggers
                         chip = 0.25 * (8 + 0.9 * tip_v) * (self.spec.scale / 1.6) ** 0.5
@@ -297,12 +333,24 @@ class Arena3D:
                     self.hp -= dmg
                     reward -= dmg
                     info["hit"] = (part, float(dmg))
-                    if self.act in (LIGHT, HEAL):
+                    if REAL2:      # hitstun: an unarmoured player staggers on every hit (player poise < 51)
+                        self.act, self.act_t, self.act_dir = NONE, 0, np.zeros(2); self.stagger = max(self.stagger, 14)
+                    elif self.act in (LIGHT, HEAL):
                         self.act, self.act_t = NONE, 0       # interrupted
-            if pbl_touch is not None and self.act == LIGHT and ("p", self.p_serial) not in self.hit_lock:
+            if pbl_touch is not None and self.act in (LIGHT, HEAVY) and ("p", self.p_serial) not in self.hit_lock:
                 self.hit_lock[("p", self.p_serial)] = 1
                 part = m.body(m.geom_bodyid[pbl_touch]).name[2:]
                 dmg = 50.0 * PART_MULT.get(part, 0.8)
+                if REAL2:
+                    kind = "light" if self.act == LIGHT else ("gc" if self.gc else "heavy")
+                    to_b = self.boss.root - self.p_xy
+                    if self.boss_stun > 0 and kind == "light" and np.linalg.norm(to_b) < 2.0:
+                        kind = "crit"; self.boss_stun = 0; self.stance = self.stance_max; info["critical"] = True
+                    dmg *= HIT_MULT[kind]
+                    if kind != "crit" and self.boss_stun == 0:
+                        self.stance -= STANCE_DMG[kind]; self.stance_t = self.t
+                        if self.stance <= 0:
+                            self.boss_stun = 100; self.stance = self.stance_max; info["stance_break"] = True
                 self.boss_hp -= dmg
                 reward += dmg * 100.0 / self.spec.hp
                 info["boss_hit"] = (part, dmg)
