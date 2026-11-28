@@ -342,7 +342,8 @@ class MirrorPlanner:
         hp0, b0 = sim.hp, sim.boss_hp
         mv = a % N_BUTTONS in (NONE, GUARD); k2 = None
         for k in range(H or self.H):
-            if a2 is not None and k2 is None and k >= (6 if mv else 1) and sim.player_free():
+            if a2 is not None and k2 is None and k >= (6 if mv else 1) and sim.player_free() and \
+                    not any(x[1] % N_BUTTONS != NONE for x in sim.aq):     # under lag: only once the first press has landed
                 k2 = k
             if k2 is not None:
                 mv2 = a2 % N_BUTTONS in (NONE, GUARD)
