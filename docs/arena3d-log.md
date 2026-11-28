@@ -930,8 +930,9 @@ Fully honest (perception + lag) with all fixes: 3% wins [0, 8], 42.8% (B77 was 0
 | Godrick | **31% [17, 44]** (11/36) | 70.3% |
 | Margit | 8% (3/36) | 32.9% |
 | Godrick, old mechanics, honest (4–8 frame lag, B77g) | 3% | 42.8% |
+| Godrick, realism v2, **true perception, no lag** (reference) | 58% [42, 72] | 85.5% |
 
 The real game's mechanics make honest play viable again on Godrick: longer i-frames and buffered presses tolerate
 uncertain timing, and stance breaks turn a few good reads into a big critical. Margit, whose fast thrusts and sweeps
-give the least warning, stays hard. Decomposition (which mechanic, which latency) and the true-perception reference
-are next.
+give the least warning, stays hard. With true perception and no lag realism v2 gives the same 58% as the old mechanics, so the honesty gap shrinks from
+53 → 3 points of wins (old) to 58 → 31 (v2). Decomposition (which mechanic, which latency) is next.

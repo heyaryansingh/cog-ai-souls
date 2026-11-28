@@ -1,0 +1,74 @@
+episodes {'jump_slam': 5, 'axe_overhead': 4, 'axe_sweep': 10, 'whirlwind': 2, 'dragon_breath': 7, 'axe_sweep_b': 3, 'dragon_swipe': 5, 'dragon_slam': 3, 'axe_charge': 3, 'stomp': 2} rings {5: [5.0, 4.1, 3.7, 3.7, 3.7], 2: [2.4, 2.4], 8: [3.7, 4.2], 9: [3.7, 4.2, 4.2, 4.1], 6: [5.1], 3: [4.1, 4.2]}
+FIGHT mirror 2 208 win 1.016 809
+STILL 2 0 0 8106
+FIGHT mirror 0 8 death 0.776 976
+STILL 0 0 0 7665
+FIGHT mirror 1 108 death 0.784 1521
+STILL 1 0 0 14598
+FIGHT mirror 2 209 win 1.064 1183
+STILL 2 1 0 21879
+FIGHT mirror 0 9 win 1.064 1642
+STILL 0 1 0 22446
+FIGHT mirror 0 10 death 0.336 324
+STILL 0 2 0 24345
+FIGHT mirror 2 210 death 0.672 971
+STILL 2 2 0 29091
+FIGHT mirror 1 109 death 0.8 1707
+STILL 1 1 0 30006
+FIGHT mirror 0 11 win 1.032 843
+STILL 0 3 0 31107
+FIGHT mirror 2 211 win 1.048 686
+STILL 2 3 0 35394
+FIGHT mirror 1 110 win 1.08 922
+STILL 1 2 0 39825
+FIGHT mirror 2 212 death 0.208 1228
+STILL 2 4 0 45591
+FIGHT mirror 0 12 win 1.112 1014
+STILL 0 4 0 43257
+FIGHT mirror 1 111 win 1.064 839
+STILL 1 3 0 48111
+FIGHT mirror 0 13 win 1.032 827
+STILL 0 5 0 51987
+FIGHT mirror 1 112 win 1.272 1158
+STILL 1 4 0 57309
+FIGHT mirror 2 213 win 1.064 1151
+STILL 2 5 0 58287
+FIGHT mirror 1 113 win 1.064 1265
+STILL 1 5 0 71001
+FIGHT mirror 0 14 death 0.904 1614
+STILL 0 6 0 68292
+FIGHT mirror 2 214 death 0.856 2022
+STILL 2 6 0 79026
+FIGHT mirror 0 15 death 0.776 832
+STILL 0 7 0 77382
+FIGHT mirror 1 114 win 1.096 889
+STILL 1 6 0 81981
+FIGHT mirror 0 16 death 0.128 524
+STILL 0 8 0 80820
+FIGHT mirror 1 115 win 1.016 652
+STILL 1 7 0 88281
+FIGHT mirror 2 215 win 1.032 924
+STILL 2 7 0 87504
+FIGHT mirror 0 17 death 0.736 1285
+STILL 0 9 0 92262
+FIGHT mirror 2 216 win 1.016 995
+STILL 2 8 0 97416
+FIGHT mirror 1 116 win 1.16 1288
+STILL 1 8 0 98643
+FIGHT mirror 0 18 win 1.032 434
+STILL 0 10 0 96672
+FIGHT mirror 1 117 death 0.416 613
+STILL 1 9 0 102708
+FIGHT mirror 0 19 win 1.032 763
+STILL 0 11 0 101097
+FIGHT mirror 2 217 win 1.112 1206
+STILL 2 9 0 109212
+FIGHT mirror 1 118 win 1.048 1057
+STILL 1 10 0 110739
+FIGHT mirror 1 119 death 0.816 1874
+STILL 1 11 0 129300
+FIGHT mirror 2 218 death 0.736 1979
+STILL 2 10 0 129300
+FIGHT mirror 2 219 death 0.846 640
+STILL 2 11 0 132735
+mirror wins 21 / 36 damage 0.896
