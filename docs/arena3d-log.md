@@ -936,3 +936,14 @@ The real game's mechanics make honest play viable again on Godrick: longer i-fra
 uncertain timing, and stance breaks turn a few good reads into a big critical. Margit, whose fast thrusts and sweeps
 give the least warning, stays hard. With true perception and no lag realism v2 gives the same 58% as the old mechanics, so the honesty gap shrinks from
 53 → 3 points of wins (old) to 58 → 31 (v2). Decomposition (which mechanic, which latency) is next.
+
+## B82 · Reactive bosses cost honest play
+Realism v2, honest (~100 ms each way), `BOSS_REACTIVE=1` (roll reading with delayed swings, recovery and heal punish, wind-up jitter):
+
+| | wins | damage (capped mean) |
+|---|---|---|
+| Godrick, passive → reactive | 31% → **17% [6, 31]** | 70.3% → 70.5% |
+| Margit, passive → reactive | 8% → **3%** | 32.9% → 32.4% |
+
+Damage holds but wins halve on Godrick: the delayed swings that catch early rolls and the punished recoveries
+turn near-wins into deaths. The ToM runs (H2) crashed on a bug (`sum(..., None)`), fixed; rerunning after B83.

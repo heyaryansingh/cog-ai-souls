@@ -165,7 +165,7 @@ class ReplayBoss:
         if TOM:   # H2: the imagined boss chooses its next move given what the imagined player is doing
             key = (lab, d > 4.0, bool(self.phase), _uclass(getattr(self, "pstate", (0, 0))[0]))
             c = conts.get(key)
-            pool = sum((v for k, v in conts.items() if k[:3] == key[:3]), None)
+            vs = [v for k, v in conts.items() if k[:3] == key[:3]]; pool = sum(vs) if vs else None
             if pool is not None: c = (c if c is not None else 0) + 2.0 * pool / max(pool.sum(), 1.0)
         else:
             c = conts.get((lab, d > 4.0, bool(self.phase)))
