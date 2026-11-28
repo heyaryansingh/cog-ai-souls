@@ -263,6 +263,15 @@ def grammar_oracle(env, rng):
     return perceptual_oracle(env, rng, grammar=True)
 
 
+import os as _os
+TOM = _os.environ.get("MIRROR_TOM") == "1"
+
+
+def _uclass(act):
+    """what the player is doing, as the boss can see it: 0 neutral, 1 healing, 2 attacking/recovering, 3 dodging, 4 guarding"""
+    return {4: 1, 2: 2, 5: 2, 1: 3, 6: 3, 3: 4}.get(int(act), 0)
+
+
 class LearnedGrammarPlanner:
     """Planner with realistic perception that LEARNS the boss program between deaths. Moves are identified
     READ_K frames after onset with READ_ACC accuracy (B11: ~.7 at 12-16 frames); each identification updates
@@ -284,6 +293,8 @@ class LearnedGrammarPlanner:
         b = env.boss
         opener = self.prev is None or env.t - self.prev_end > 45
         dist = np.linalg.norm(env.p_xy - b.origin)
+        if TOM:     # H2: the boss's choice also depends on what I am doing (theory of mind: its policy is about me)
+            return ("open" if opener else self.prev, dist > 4.0, bool(env.phase), _uclass(getattr(env, "act", 0)))
         return ("open" if opener else self.prev, dist > 4.0, bool(env.phase))
 
     def observe(self, env):
@@ -306,6 +317,9 @@ class LearnedGrammarPlanner:
     def sample(self, env, rng, next_move=False):
         ctx = self._ctx(env) if next_move else (self.ctx_cur or self._ctx(env))
         c = self.counts.get(ctx, np.zeros(self.n)) + self.alpha
+        if TOM:     # hierarchical back-off: pool over my-action classes, weighted as a Dirichlet prior of strength 2
+            pool = sum((v for k, v in self.counts.items() if k[:3] == ctx[:3]), np.zeros(self.n))
+            c = c + 2.0 * pool / max(pool.sum(), 1.0)
         prog = env.spec.program
         ok = np.array([m.phase <= (2 if env.phase else 1) for m in prog.moves], float)
         p = c * ok

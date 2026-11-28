@@ -161,8 +161,15 @@ class ReplayBoss:
             if self.rng.random() > n_cont / n_lab: return False
         if not conts: return False
         d = float(np.linalg.norm(player_xy - self.root))
-        c = conts.get((lab, d > 4.0, bool(self.phase)))
-        if c is None or c.sum() == 0: c = sum(conts.values())
+        from .scripted import TOM, _uclass
+        if TOM:   # H2: the imagined boss chooses its next move given what the imagined player is doing
+            key = (lab, d > 4.0, bool(self.phase), _uclass(getattr(self, "pstate", (0, 0))[0]))
+            c = conts.get(key)
+            pool = sum((v for k, v in conts.items() if k[:3] == key[:3]), None)
+            if pool is not None: c = (c if c is not None else 0) + 2.0 * pool / max(pool.sum(), 1.0)
+        else:
+            c = conts.get((lab, d > 4.0, bool(self.phase)))
+        if c is None or np.sum(c) == 0: c = sum(conts.values())
         p = c + 0.1; nxt = int(self.rng.choice(len(p), p=p / p.sum()))
         ep = self.mem.sample(nxt, d, self.rng)
         if ep is None: return False
