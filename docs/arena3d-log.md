@@ -903,3 +903,21 @@ Full method (mirror + forward rolls + two-step plans, 1.5-min scouting), 3 × 12
 ### B77e/f
 - Per-future lag drawn from the agent's measured delays: Godrick lag-only 6% wins [0, 14], 54.7% (fixed 6-frame model: 6%, 52.3%). No real difference.
 - **Bug found while reading the planner under lag:** the planner only stops deciding when the player is busy. With input lag the player stays "free" for 4–8 frames after a roll is pressed, so it re-planned every frame and kept pressing, and a later press (e.g. an attack) could land right after the roll. Fixed (`MIRROR_WAIT_PRESS`, default on): while one of its own presses is in flight, it doesn't decide again. All lag results above predate the fix; B77f reruns them, and the latency sweep (B80) uses it.
+
+### B77f/g · Lag is costly even when imagination knows it exactly
+Godrick, true perception, 4–8 frames of input lag, all planner fixes:
+
+| imagination's knowledge of the lag | wins | damage (capped mean) |
+|---|---|---|
+| none (B77) | 0% | 40.7% |
+| measured distribution, a sample per future | 3% [0, 8] | 56.3% |
+| **oracle: the exact queue and future lag** (diagnostic, 12 fights) | 8% [0, 25] | 54.3% |
+| no lag (B74) | 53% | 87.2% |
+
+Knowing the lag perfectly is no better than sampling it from measured delays, so the cost is not uncertainty
+about the lag but the lag itself: the agent has to commit 4–8 frames earlier, when its prediction of the
+boss (recognition plus re-enactment) is less certain. This is H1 in `docs/research-plan-v3.md`: what matters is
+the spread of the predicted contact time at the moment of commitment, compared with the i-frame window. Two
+things in realism v2 bear on it directly: 14 i-frames instead of 10, and input buffering. And the honest
+headline uses ~100 ms (3 frames) of input lag, not 4–8.
+Fully honest (perception + lag) with all fixes: 3% wins [0, 8], 42.8% (B77 was 0%, 34.7%).
