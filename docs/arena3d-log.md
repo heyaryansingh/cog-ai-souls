@@ -880,7 +880,9 @@ Full method (mirror + forward rolls + two-step plans, 1.5-min scouting), 3 × 12
 | ground truth (B74) | 53% | 87.2% | 68.9% (11% wins) |
 | **honest: perception + 4–8 frame input lag** | **0 / 36** | 34.7% | 28.4% (0 wins) |
 | input lag only (true perception) | 0 / 36 | 40.7% | – |
-| perception only (no lag) | (running) | | |
+| perception only (no lag) | 11% [3, 22] | 63.1% | – |
+| input lag only + imagination models a 6-frame lag (B77c) | 6% [0, 14] | 52.3% | (running) |
+| all honest + 6-frame lag model + onset-free recognition (B77c) | 0 / 36 | 31.1% | – |
 
 - **Input lag that imagination doesn't model is enough on its own to erase every win.** The planner commits to frame-exact rolls and punishes; with 130–270 ms between pressing and acting, a roll that imagination times to the i-frames starts after the blade has landed. Exact timing was what the forward rolls (B72/B73) and two-step plans (B74) were exploiting.
 - Honest perception also costs: in honest-mode fights imagination falls back to "boss holds still" in 10–25% of futures (vs ~0% with truth), because detected onsets are missed or spurious and memory goes empty between detected moves.
@@ -892,3 +894,8 @@ Full method (mirror + forward rolls + two-step plans, 1.5-min scouting), 3 × 12
 - `d_now` in recognition now uses the delayed player position (memory stored delayed boss with delayed player).
 - B77d: each imagined future gets its own lag drawn from the agent's own measured press-to-motion delays (`MIRROR_LAT_MODEL=emp`; measured 4–8 frames, as set), so plans whose i-frames cover the spread win (Bouteiller et al. 2021).
 - Note: 4–8 frames of input lag + 6 frames of perception delay is 300–420 ms total, more than a real game; a latency sweep (0–400 ms) with the human baseline at the same delays is queued.
+
+### B77c
+- Honest perception alone costs a lot but leaves some wins (Godrick 53% → 11% wins, 87% → 63% damage); unmodelled input lag alone erases them (0%, 41%). Modelling the typical lag in imagination wins some back (6%, 52%).
+- Onset-free recognition does **not** help in the full honest setting (31% vs 35% with detected onsets), although its top-1 accuracy offline was fine. Probably because without an onset prior it also matches walk/idle segments and starts replays at frames where the boss is between moves; kept off.
+- B77e: per-future lag from measured own delays (`emp`) with detected-onset recognition, Godrick lag-only and full honest, then Margit full honest.
