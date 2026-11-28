@@ -899,3 +899,7 @@ Full method (mirror + forward rolls + two-step plans, 1.5-min scouting), 3 × 12
 - Honest perception alone costs a lot but leaves some wins (Godrick 53% → 11% wins, 87% → 63% damage); unmodelled input lag alone erases them (0%, 41%). Modelling the typical lag in imagination wins some back (6%, 52%).
 - Onset-free recognition does **not** help in the full honest setting (31% vs 35% with detected onsets), although its top-1 accuracy offline was fine. Probably because without an onset prior it also matches walk/idle segments and starts replays at frames where the boss is between moves; kept off.
 - B77e: per-future lag from measured own delays (`emp`) with detected-onset recognition, Godrick lag-only and full honest, then Margit full honest.
+
+### B77e/f
+- Per-future lag drawn from the agent's measured delays: Godrick lag-only 6% wins [0, 14], 54.7% (fixed 6-frame model: 6%, 52.3%). No real difference.
+- **Bug found while reading the planner under lag:** the planner only stops deciding when the player is busy. With input lag the player stays "free" for 4–8 frames after a roll is pressed, so it re-planned every frame and kept pressing, and a later press (e.g. an attack) could land right after the roll. Fixed (`MIRROR_WAIT_PRESS`, default on): while one of its own presses is in flight, it doesn't decide again. All lag results above predate the fix; B77f reruns them, and the latency sweep (B80) uses it.
