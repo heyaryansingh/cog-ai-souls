@@ -971,3 +971,6 @@ This is a correction to the *simulator*, not a gain of the agent: most of what m
 blade contact during between-move blends and staff swings ~20% faster than the real fight. With the game's rule
 (hits only in active frames) and the footage timings, Margit becomes winnable with honest perception and lag, as it
 is for people. All earlier Margit numbers are under the old mechanics.
+
+### B84 (cont.) · Godrick gets worse under v2.1
+Godrick honest, realism v2 → v2.1: 31% → **14% [3, 26]** wins (n = 35; a container restart cut the last fight), 70.3% → 60.1%. Hypothesis: in imagination the replayed move's active window is centred on the remembered fastest-blade frame, which under honest perception (15 cm tip noise) can be misplaced, so imagination wrongly treats real hits as harmless. B85: imagination ignores the remembered window and counts any contact (`MIRROR_ACTWIN=0`, conservative), on Godrick and Margit. The reactive/ToM runs wait for this decision.
