@@ -307,7 +307,7 @@ class Arena3D:
             if REAL2 and melee:      # attack hitboxes are live only during the move's active frames (as in the games),
                 b = self.boss          # not while the body repositions or blends between moves
                 apk = getattr(b, "act_peak", getattr(b, "peak", 0))
-                melee = b.kind == "strike" and apk - 8 <= getattr(b, "f", 0) <= apk + 12
+                melee = b.kind == "strike" and (apk is None or apk - 8 <= getattr(b, "f", 0) <= apk + 12)
             if melee and (shield_touch or body_touch is not None) and tip_v > 2.5 and key not in self.hit_lock:
                 self.hit_lock[key] = 1
                 self.audio[2] = 1
