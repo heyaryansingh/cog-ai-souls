@@ -988,3 +988,6 @@ centred on it misplaces when the attack is live and imagination underestimates d
 frames can hurt is the better prior when the evidence is noisy, which is what a player does too: treat the swing
 as dangerous until it is clearly over. `MIRROR_ACTWIN=0` is now the default. Headline, honest, realism v2.1:
 **Margit 69% wins, Godrick 28%.**
+
+## B86 · Reactive bosses under v2.1 (honest), and the boss-intent model (H2)
+Godrick, `BOSS_REACTIVE=1`: 17% wins [6, 31], 69.0% (passive v2.1: 28%). With the action-conditioned boss model (`MIRROR_TOM=1`, n = 33 before a container restart): 24% [12, 39] wins but 60.5% damage; paired n.s. (p = .20). No clear effect of H2 on Godrick yet. Margit pending.
